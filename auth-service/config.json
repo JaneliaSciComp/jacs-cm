@@ -1,0 +1,13 @@
+{
+    "ldap": {
+        "url": "ldap://ldap-vip1.int.janelia.org:389",
+        "bindCredentials": "password",
+        "searchBase": "ou=People,dc=hhmi,dc=org",
+        "searchFilter": "(uid={{username}})",
+        "timeout": 5000,
+        "connectTimeout": 10000,
+        "reconnect": true
+    },
+    "jwt": {
+    }
+}

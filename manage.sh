@@ -3,17 +3,34 @@
 # Management script for Docker containers
 #
 
-DOCKER="sudo docker"
-REGISTRY_SERVER="registry.int.janelia.org"
-NAMESPACE="scsw"
-
 # Exit on error
 set -e
 
-if [ "$#" -lt 2 ]; then
-    echo "Usage: `basename $0` [build|run|shell|push] [tool1] [tool2] .. [tooln]"
+# Constants
+DOCKER="docker"
+DOCKER_COMPOSE="docker-compose"
+REGISTRY_SERVER="registry.int.janelia.org"
+NAMESPACE="scsw"
+SSH_PRIVATE_KEY=`cat ~/.ssh/id_dsa`
+
+if [[ -z "$SSH_PRIVATE_KEY" ]]; then
+    echo "You need to set up password-less SSH for Github before using this script"
+fi
+
+
+if [[ "$#" -lt 2 ]]; then
+    echo "Usage: `basename $0` [build|run|shell|push|up|down] [tool1] [tool2] .. [tooln]"
     echo "       You can combine multiple commands with a plus, e.g. build+push"
+    echo "       For the up/down commands, the argument must be a tier name like 'dev' or 'prod'"
     exit 1
+fi
+
+if [[ -z "$DOCKER_USER" ]]; then
+    UNAME=jacs
+    GNAME=jacsdata
+    MYUID=$(id -u $UNAME)
+    MYGID=`cut -d: -f3 < <(getent group $GNAME)`
+    DOCKER_USER=$MYUID:$MYGID
 fi
 
 COMMANDS=$1
@@ -22,9 +39,9 @@ shift 1 # remove command parameter from args
 
 for COMMAND in "${CMDARR[@]}"
 do
-    echo "Executing $COMMAND command on these targets: $@"
+    #echo "Executing $COMMAND command on these targets: $@"
 
-    if [ "$COMMAND" == "build" ]; then
+    if [[ "$COMMAND" == "build" ]]; then
 
         echo "Will build these images: $@"
 
@@ -34,31 +51,36 @@ do
             VERSION=`cat $NAME/VERSION`
             CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
             VNAME=$CNAME:${VERSION}
+            DNAME=$CNAME:dev
+            LNAME=$CNAME:latest
             echo "---------------------------------------------------------------------------------"
             echo " Building image for $NAME"
+            echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $DNAME -t $LNAME $NAME"
             echo "---------------------------------------------------------------------------------"
-            $DOCKER build -t $VNAME $NAME
+            sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $DNAME -t $LNAME $NAME
         done
 
-    elif [ "$COMMAND" == "run" ]; then
+    elif [[ "$COMMAND" == "run" ]]; then
 
         NAME=${1%/}
         VERSION=`cat $NAME/VERSION`
         CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
         VNAME=$CNAME:${VERSION}
 
-        $DOCKER run -it --rm $VNAME
+        echo "sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
+        sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME
 
-    elif [ "$COMMAND" == "shell" ]; then
+    elif [[ "$COMMAND" == "shell" ]]; then
 
         NAME=${1%/}
         VERSION=`cat $NAME/VERSION`
         CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
         VNAME=$CNAME:${VERSION}
 
-        $DOCKER run -it $VNAME /bin/bash
+        echo "sudo $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
+        sudo $DOCKER run -it $VNAME /bin/bash
 
-    elif [ "$COMMAND" == "push" ]; then
+    elif [[ "$COMMAND" == "push" ]]; then
 
         echo "Will push $@ to $REGISTRY_SERVER"
 
@@ -70,9 +92,18 @@ do
             VNAME=$CNAME:${VERSION}
             echo "---------------------------------------------------------------------------------"
             echo " Pushing image for $VNAME"
+            echo " sudo $DOCKER push $VNAME"
             echo "---------------------------------------------------------------------------------"
-            $DOCKER push $VNAME
+            sudo $DOCKER push $VNAME
         done
+
+    elif [[ "$COMMAND" == "up" || "$COMMAND" == "down" ]]; then
+
+        TIER=$1
+        echo "Bringing $COMMAND $TIER tier"
+
+        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml up"
+        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND
 
     else
         echo "Unknown command: $COMMAND"

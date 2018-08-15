@@ -1,0 +1,72 @@
+version: '3'
+services:
+
+  auth-service:
+    build: 
+        context: auth-service
+        args:
+          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+    image: registry.int.janelia.org/scsw/auth-service:latest
+    volumes:
+        - /opt/config/jwt_secret:/app/jwt_secret
+    expose:
+      - "3000"
+
+  solr-search:
+    build: 
+        context: solr-search
+    image: registry.int.janelia.org/scsw/solr-search:latest
+    volumes:
+      - /data:/data
+    ports:
+      - "8890:8080"
+  jacs-sync:
+    build: 
+        context: jacs-sync
+        args:
+          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+    image: registry.int.janelia.org/scsw/jacs-sync:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/jacs-sync:/app/config
+    environment:
+      JACS2_CONFIG: /app/config/jacs.properties
+      JACS2_SYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
+    expose:
+      - "8080"
+    depends_on:
+      - solr-search
+
+  jacs-async:
+    build: 
+        context: jacs-async
+        args:
+          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+    image: registry.int.janelia.org/scsw/jacs-async:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/jacs-async:/app/config
+    environment:
+      JACS2_CONFIG: /app/config/jacs.properties
+      JACS2_ASYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
+    expose:
+      - "8080"
+    depends_on:
+      - solr-search
+
+  api-gateway:
+    build: 
+        context: api-gateway
+        args:
+            SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+    image: registry.int.janelia.org/scsw/api-gateway:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/jwt_secret:/app/jwt_secret
+      - /opt/certs:/app/certs
+    ports:
+      - "8443:443"
+    depends_on:
+      - auth-service
+      - jacs-sync
+      - jacs-async
