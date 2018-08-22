@@ -90,11 +90,23 @@ do
             VERSION=`cat $NAME/VERSION`
             CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
             VNAME=$CNAME:${VERSION}
+            DNAME=$CNAME:dev
+            LNAME=$CNAME:latest
             echo "---------------------------------------------------------------------------------"
             echo " Pushing image for $VNAME"
             echo " sudo $DOCKER push $VNAME"
             echo "---------------------------------------------------------------------------------"
             sudo $DOCKER push $VNAME
+            echo "---------------------------------------------------------------------------------"
+            echo " Pushing image for $DNAME"
+            echo " sudo $DOCKER push $DNAME"
+            echo "---------------------------------------------------------------------------------"
+            sudo $DOCKER push $DNAME
+            echo "---------------------------------------------------------------------------------"
+            echo " Pushing image for $LNAME"
+            echo " sudo $DOCKER push $LNAME"
+            echo "---------------------------------------------------------------------------------"
+            sudo $DOCKER push $LNAME
         done
 
     elif [[ "$COMMAND" == "up" || "$COMMAND" == "down" ]]; then

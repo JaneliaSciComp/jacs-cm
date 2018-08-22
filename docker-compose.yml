@@ -20,6 +20,7 @@ services:
       - /data:/data
     ports:
       - "8890:8080"
+
   jacs-sync:
     build: 
         context: jacs-sync
@@ -60,7 +61,6 @@ services:
         args:
             SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     image: registry.int.janelia.org/scsw/api-gateway:latest
-    user: ${DOCKER_USER}
     volumes:
       - /opt/config/jwt_secret:/app/jwt_secret
       - /opt/certs:/app/certs
