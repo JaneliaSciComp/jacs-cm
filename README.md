@@ -8,7 +8,7 @@ For information on how to create a new service, read about [Contributing](CONTRI
 
 ## Configuration
 
-Before using the manage.sh script, make sure that the variables at the top reflect your current reality. In particular, it's preconfigured to use the SCSW Docker Registry.
+Before using the `manage.sh` script, make sure that the variables at the top reflect your current reality. In particular, it's preconfigured to use the SCSW Docker Registry, which may or may not be what you want.
 
 ## Build
 To build one or more service:
@@ -46,15 +46,15 @@ For example, to bring up dev in a detatched state:
 ```
 
 ## Fancy Stuff
-The script allows you to combine multiple commands with the `+` sign, and it ignores any paths without VERSION files, so you can run shortcuts like this:
+The script allows you to combine multiple commands with the `+` sign, and it ignores any paths without VERSION files, so you can use awesome shortcuts like this:
 ```
 ./manage build+push *
 ```
 
 ## Environments
-Each environment is defined in a docker-compose file with the name docker-compose.<env>.yml. This file is automatically loaded on top of the default docker-compose.yml when you use the manage.sh script to bring a given environment up or down.
+Each environment is defined in a compose file with the name `docker-compose.<env>.yml`. This file is automatically loaded on top of the default `docker-compose.yml` when you use the manage.sh script to bring a given environment up or down. You should make a `docker-compose.local.yml` if you're testing locally. This file will be automatically ignored by Git.
 
 ## Versioning
-Container versioning with a file called VERSION in each subdirectory. When making changes to a service, make sure to increment the
-variable in the VERSION file before building or deploying that container.
+Container versioning with a file called `VERSION` in each subdirectory. When making changes to a service, make sure to increment the
+variable in the `VERSION` file before building or deploying that container.
 
