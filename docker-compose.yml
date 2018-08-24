@@ -2,30 +2,22 @@ version: '3'
 services:
 
   auth-service:
-    build: 
-        context: auth-service
-        args:
-          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     image: registry.int.janelia.org/scsw/auth-service:latest
     volumes:
         - /opt/config/jwt_secret:/app/jwt_secret
     expose:
       - "3000"
+    restart: unless-stopped
 
   solr-search:
-    build: 
-        context: solr-search
     image: registry.int.janelia.org/scsw/solr-search:latest
     volumes:
-      - /data:/data
+      - /opt/data:/data
     ports:
       - "8890:8080"
+    restart: unless-stopped
 
   jacs-sync:
-    build: 
-        context: jacs-sync
-        args:
-          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     image: registry.int.janelia.org/scsw/jacs-sync:latest
     user: ${DOCKER_USER}
     volumes:
@@ -37,12 +29,9 @@ services:
       - "8080"
     depends_on:
       - solr-search
+    restart: unless-stopped
 
   jacs-async:
-    build: 
-        context: jacs-async
-        args:
-          SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     image: registry.int.janelia.org/scsw/jacs-async:latest
     user: ${DOCKER_USER}
     volumes:
@@ -54,19 +43,17 @@ services:
       - "8080"
     depends_on:
       - solr-search
+    restart: unless-stopped
 
   api-gateway:
-    build: 
-        context: api-gateway
-        args:
-            SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
     image: registry.int.janelia.org/scsw/api-gateway:latest
     volumes:
       - /opt/config/jwt_secret:/app/jwt_secret
-      - /opt/certs:/app/certs
+      - /opt/config/certs:/app/certs
     ports:
       - "8443:443"
     depends_on:
       - auth-service
       - jacs-sync
+    restart: unless-stopped
       - jacs-async
