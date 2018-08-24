@@ -48,37 +48,47 @@ do
         for NAME in "$@"
         do
             NAME=${NAME%/}
-            VERSION=`cat $NAME/VERSION`
-            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
-            VNAME=$CNAME:${VERSION}
-            DNAME=$CNAME:dev
-            LNAME=$CNAME:latest
-            echo "---------------------------------------------------------------------------------"
-            echo " Building image for $NAME"
-            echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $DNAME -t $LNAME $NAME"
-            echo "---------------------------------------------------------------------------------"
-            sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $DNAME -t $LNAME $NAME
+            if [[ -e $NAME/VERSION ]]; then
+                VERSION=`cat $NAME/VERSION`
+                CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+                VNAME=$CNAME:${VERSION}
+                DNAME=$CNAME:dev
+                LNAME=$CNAME:latest
+                echo "---------------------------------------------------------------------------------"
+                echo " Building image for $NAME"
+                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $DNAME -t $LNAME $NAME"
+                echo "---------------------------------------------------------------------------------"
+                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $DNAME -t $LNAME $NAME
+            else
+                echo "No $NAME/VERSION found"
+            fi
         done
 
     elif [[ "$COMMAND" == "run" ]]; then
 
         NAME=${1%/}
-        VERSION=`cat $NAME/VERSION`
-        CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
-        VNAME=$CNAME:${VERSION}
-
-        echo "sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
-        sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME
+        if [[ -e $NAME/VERSION ]]; then
+            VERSION=`cat $NAME/VERSION`
+            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+            VNAME=$CNAME:${VERSION}
+            echo "sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
+            sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME
+        else
+            echo "No $NAME/VERSION found"
+        fi
 
     elif [[ "$COMMAND" == "shell" ]]; then
 
         NAME=${1%/}
-        VERSION=`cat $NAME/VERSION`
-        CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
-        VNAME=$CNAME:${VERSION}
-
-        echo "sudo $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
-        sudo $DOCKER run -it $VNAME /bin/bash
+        if [[ -e $NAME/VERSION ]]; then
+            VERSION=`cat $NAME/VERSION`
+            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+            VNAME=$CNAME:${VERSION}
+            echo "sudo $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
+            sudo $DOCKER run -it $VNAME /bin/bash
+        else
+            echo "No $NAME/VERSION found"
+        fi
 
     elif [[ "$COMMAND" == "push" ]]; then
 
@@ -87,26 +97,30 @@ do
         for NAME in "$@"
         do
             NAME=${NAME%/}
-            VERSION=`cat $NAME/VERSION`
-            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
-            VNAME=$CNAME:${VERSION}
-            DNAME=$CNAME:dev
-            LNAME=$CNAME:latest
-            echo "---------------------------------------------------------------------------------"
-            echo " Pushing image for $VNAME"
-            echo " sudo $DOCKER push $VNAME"
-            echo "---------------------------------------------------------------------------------"
-            sudo $DOCKER push $VNAME
-            echo "---------------------------------------------------------------------------------"
-            echo " Pushing image for $DNAME"
-            echo " sudo $DOCKER push $DNAME"
-            echo "---------------------------------------------------------------------------------"
-            sudo $DOCKER push $DNAME
-            echo "---------------------------------------------------------------------------------"
-            echo " Pushing image for $LNAME"
-            echo " sudo $DOCKER push $LNAME"
-            echo "---------------------------------------------------------------------------------"
-            sudo $DOCKER push $LNAME
+            if [[ -e $NAME/VERSION ]]; then
+                VERSION=`cat $NAME/VERSION`
+                CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+                VNAME=$CNAME:${VERSION}
+                DNAME=$CNAME:dev
+                LNAME=$CNAME:latest
+                echo "---------------------------------------------------------------------------------"
+                echo " Pushing image for $VNAME"
+                echo " sudo $DOCKER push $VNAME"
+                echo "---------------------------------------------------------------------------------"
+                sudo $DOCKER push $VNAME
+                echo "---------------------------------------------------------------------------------"
+                echo " Pushing image for $DNAME"
+                echo " sudo $DOCKER push $DNAME"
+                echo "---------------------------------------------------------------------------------"
+                sudo $DOCKER push $DNAME
+                echo "---------------------------------------------------------------------------------"
+                echo " Pushing image for $LNAME"
+                echo " sudo $DOCKER push $LNAME"
+                echo "---------------------------------------------------------------------------------"
+                sudo $DOCKER push $LNAME
+            else
+                echo "No $NAME/VERSION found"
+            fi
         done
 
     elif [[ "$COMMAND" == "up" || "$COMMAND" == "down" ]]; then
