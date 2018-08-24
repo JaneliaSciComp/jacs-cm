@@ -13,6 +13,7 @@ services:
   jacs-async:
     image: registry.int.janelia.org/scsw/jacs-async:dev
     environment:
+      HOSTNAME: jacs-dev.int.janelia.org
       jacs_service_queue_id: jacs-dev
     volumes:
       - /data:/data
@@ -21,5 +22,5 @@ services:
   api-gateway:
     image: registry.int.janelia.org/scsw/api-gateway:dev
     environment:
-      NGINX_SERVERNAME: jacs-dev
+      NGINX_SERVERNAME: jacs-dev.int.janelia.org
 

@@ -32,6 +32,6 @@ COPY --from=builder /tmp/ldap-jwt /app
 COPY ./config.json /app/config/config.json
 COPY ./start.sh /app/
 WORKDIR /app
-CMD [ "/bin/sh", "/app/start.sh" ]
+CMD [ "/bin/bash", "/app/start.sh" ]
 EXPOSE 3000
 
