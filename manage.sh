@@ -126,10 +126,10 @@ do
     elif [[ "$COMMAND" == "up" || "$COMMAND" == "down" ]]; then
 
         TIER=$1
+        shift 1 # remove tier
         echo "Bringing $COMMAND $TIER tier"
-
-        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml up"
-        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND
+        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND $@"
+        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND $@
 
     else
         echo "Unknown command: $COMMAND"

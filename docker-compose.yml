@@ -55,5 +55,6 @@ services:
     depends_on:
       - auth-service
       - jacs-sync
-    restart: unless-stopped
       - jacs-async
+    restart: unless-stopped
+
