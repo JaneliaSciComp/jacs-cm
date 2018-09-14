@@ -4,10 +4,17 @@ services:
   auth-service:
     image: registry.int.janelia.org/scsw/auth-service:latest
     volumes:
-        - /opt/config/jwt_secret:/app/jwt_secret
+      - /opt/config/jwt_secret:/app/jwt_secret
     expose:
       - "3000"
+    depends_on:
+      - fluentd
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: auth-service
 
   solr-search:
     image: registry.int.janelia.org/scsw/solr-search:latest
@@ -15,7 +22,14 @@ services:
       - /opt/data:/data
     ports:
       - "8890:8080"
+    depends_on:
+      - fluentd
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: solr-search
 
   jacs-sync:
     image: registry.int.janelia.org/scsw/jacs-sync:latest
@@ -29,7 +43,13 @@ services:
       - "8080"
     depends_on:
       - solr-search
+      - fluentd
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: jacs-sync
 
   jacs-async:
     image: registry.int.janelia.org/scsw/jacs-async:latest
@@ -43,7 +63,13 @@ services:
       - "8080"
     depends_on:
       - solr-search
+      - fluentd
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: jacs-async
 
   api-gateway:
     image: registry.int.janelia.org/scsw/api-gateway:latest
@@ -56,5 +82,46 @@ services:
       - auth-service
       - jacs-sync
       - jacs-async
+      - fluentd
     restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: api-gateway
+
+  fluentd:
+    image: registry.int.janelia.org/scsw/fluentd:latest
+    volumes:
+      - ./fluentd/conf:/fluentd/etc
+    depends_on:
+      - elasticsearch
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
+  elasticsearch:
+    image: registry.int.janelia.org/scsw/elasticsearch:latest
+    container_name: elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/elasticsearch:/usr/share/elasticsearch/data
+    expose:
+      - 9200
+    ports:
+      - "9200:9200"
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.0
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
 
