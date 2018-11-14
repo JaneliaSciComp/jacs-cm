@@ -17,12 +17,6 @@ To build one or more service:
 ```
 This creates a Docker container in your local repository.
 
-## Push
-To push one or more built containers to the remote repository:
-```
-./manage.sh deploy [service1] [service2] [service3] ...
-```
-
 ## Shell
 To open a shell into a built container:
 ```
@@ -32,10 +26,41 @@ To open a shell into a built container:
 ## Run
 To run a container in and tail its logs:
 ```
-./manage run [service]
+./manage.sh run [service]
+```
+
+## Push to Docker Repository
+To push one or more built containers to the remote repository:
+```
+./manage.sh deploy [service1] [service2] [service3] ...
+```
+
+## Multiple Commands
+The script allows you to combine multiple commands with the `+` sign, and it ignores any paths without VERSION files, so you can use awesome shortcuts like this:
+```
+./manage.sh build+push *
 ```
 
 ## Compose
+
+### Initial Setup
+When deploying to a new environment, we need to provision the filesystem and databases before starting the full stack. 
+If you haven't built and deployed them yet, you'll need to build all the containers first:
+```
+./manage.sh build *
+```
+
+Ensure that your /data/db and /opt/config directories are empty, and then:
+```
+./manage.sh init-filesystem
+./manage.sh up dev --dbonly -d
+./manage.sh init-databases
+./manage.sh down dev --dbonly
+```
+
+You can customize the default configurations in /opt/config now, before starting the full stack.
+
+### Bringing up the complete stack
 To bring an environment up or down:
 ```
 ./manage up [env] [arg]
@@ -43,12 +68,6 @@ To bring an environment up or down:
 For example, to bring up dev in a detatched state:
 ```
 ./manage up dev -d
-```
-
-## Fancy Stuff
-The script allows you to combine multiple commands with the `+` sign, and it ignores any paths without VERSION files, so you can use awesome shortcuts like this:
-```
-./manage build+push *
 ```
 
 ## Environments

@@ -2,25 +2,25 @@ version: '3'
 services:
 
   auth-service:
-    image: registry.int.janelia.org/scsw/auth-service:dev
+    image: registry.int.janelia.org/scsw/auth-service:latest
 
   solr-search:
-    image: registry.int.janelia.org/scsw/solr-search:dev
+    image: registry.int.janelia.org/scsw/solr-search:latest
 
   jacs-sync:
-    image: registry.int.janelia.org/scsw/jacs-sync:dev
+    image: registry.int.janelia.org/scsw/jacs-sync:latest
 
   jacs-async:
-    image: registry.int.janelia.org/scsw/jacs-async:dev
+    image: registry.int.janelia.org/scsw/jacs-async:latest
     environment:
       HOSTNAME: jacs-dev.int.janelia.org
-      jacs_service_queue_id: jacs-dev
+      jacs_service_queue_id: jacs-dev2
     volumes:
       - /data:/data
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev
 
   api-gateway:
-    image: registry.int.janelia.org/scsw/api-gateway:dev
+    image: registry.int.janelia.org/scsw/api-gateway:latest
     environment:
-      NGINX_SERVERNAME: jacs-dev.int.janelia.org
+      NGINX_SERVERNAME: jacs-dev2.int.janelia.org
 

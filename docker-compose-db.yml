@@ -1,107 +1,6 @@
 version: '3'
 services:
 
-  auth-service:
-    image: registry.int.janelia.org/scsw/auth-service:latest
-    volumes:
-      - /opt/config/jwt_secret:/app/jwt_secret
-    expose:
-      - "3000"
-    depends_on:
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: auth-service
-    networks:
-      - jacs-net
-
-  solr-search:
-    image: registry.int.janelia.org/scsw/solr-search:latest
-    volumes:
-      - /opt/data:/data
-    ports:
-      - "8890:8080"
-    depends_on:
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: solr-search
-    networks:
-      - jacs-net
-
-  jacs-sync:
-    image: registry.int.janelia.org/scsw/jacs-sync:latest
-    user: ${DOCKER_USER}
-    volumes:
-      - /opt/config/jacs-sync:/app/config
-    environment:
-      JACS2_CONFIG: /app/config/jacs.properties
-      JACS2_SYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
-    expose:
-      - "8080"
-    depends_on:
-      - solr-search
-      - mongo1
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jacs-sync
-    networks:
-      - jacs-net
-
-  jacs-async:
-    image: registry.int.janelia.org/scsw/jacs-async:latest
-    user: ${DOCKER_USER}
-    volumes:
-      - /opt/config/jacs-async:/app/config
-    environment:
-      JACS2_CONFIG: /app/config/jacs.properties
-      JACS2_ASYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
-    expose:
-      - "8080"
-    depends_on:
-      - solr-search
-      - mongo1
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jacs-async
-    networks:
-      - jacs-net
-
-  api-gateway:
-    image: registry.int.janelia.org/scsw/api-gateway:latest
-    volumes:
-      - /opt/config/jwt_secret:/app/jwt_secret
-      - /opt/config/certs:/app/certs
-    ports:
-      - "8443:443"
-    depends_on:
-      - auth-service
-      - jacs-sync
-      - jacs-async
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: api-gateway
-    networks:
-      - jacs-net
-
   rabbitmq:
     image: rabbitmq:3.6.16-management
     expose:
@@ -121,7 +20,7 @@ services:
       - jacs-net
 
   mongo1:
-    image: mongo:3.2
+    image: mongo:3.6
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
       - /data/db/mongo/jacs/replica1:/data/db
@@ -142,7 +41,7 @@ services:
       - jacs-net
 
   mongo2:
-    image: mongo:3.2
+    image: mongo:3.6
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
       - /data/db/mongo/jacs/replica2:/data/db
@@ -159,7 +58,7 @@ services:
       - jacs-net
 
   mongo3:
-    image: mongo:3.2
+    image: mongo:3.6
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 1 --quiet
     volumes:
       - /data/db/mongo/jacs/replica3:/data/db
@@ -174,13 +73,6 @@ services:
         tag: mongo3
     networks:
       - jacs-net
-
-  #jacs-init:
-  #  image: registry.int.janelia.org/scsw/jacs-init:latest
-  #  depends_on:
-  #    - rabbitmq
-  #    - mongo1
-
 
   elasticsearch:
     image: registry.int.janelia.org/scsw/elasticsearch:latest

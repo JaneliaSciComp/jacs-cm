@@ -24,8 +24,8 @@ COPY --from=builder /tmp/nginx-jwt/lib/ /usr/local/openresty/site/lualib/
 COPY ./conf/ /usr/local/openresty/nginx/conf/
 
 # Runtime configuration
-WORKDIR /pp
 RUN mkdir /app
+WORKDIR /app
 COPY start.sh /app/
 EXPOSE 443
 EXPOSE 80

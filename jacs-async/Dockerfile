@@ -10,10 +10,10 @@
 
 # Builder container
 FROM registry.int.janelia.org/scsw/builder as builder
-ARG SSH_PRIVATE_KEY
 ARG TAG_JACS=master
 
 # Setup SSH for github access
+ARG SSH_PRIVATE_KEY
 RUN mkdir /root/.ssh/
 RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_dsa
 RUN chmod 700 /root/.ssh/id_dsa

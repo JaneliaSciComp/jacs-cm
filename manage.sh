@@ -12,16 +12,10 @@ DOCKER_COMPOSE="docker-compose"
 REGISTRY_SERVER="registry.int.janelia.org"
 NAMESPACE="scsw"
 SSH_PRIVATE_KEY=`cat ~/.ssh/id_dsa`
+DIR=$(cd "$(dirname "$0")"; pwd)
 
 if [[ -z "$SSH_PRIVATE_KEY" ]]; then
     echo "You need to set up password-less SSH for Github before using this script"
-fi
-
-
-if [[ "$#" -lt 2 ]]; then
-    echo "Usage: `basename $0` [build|run|shell|push|up|down] [tool1] [tool2] .. [tooln]"
-    echo "       You can combine multiple commands with a plus, e.g. build+push"
-    echo "       For the up/down commands, the argument must be a tier name like 'dev' or 'prod'"
     exit 1
 fi
 
@@ -31,6 +25,25 @@ if [[ -z "$DOCKER_USER" ]]; then
     MYUID=$(id -u $UNAME)
     MYGID=`cut -d: -f3 < <(getent group $GNAME)`
     DOCKER_USER=$MYUID:$MYGID
+fi
+
+if [[ "$1" == "init-filesystem" ]]; then
+    $DIR/setup/init-filesystem.sh $DOCKER_USER
+    echo "Filesystem initialized"
+    exit 0
+fi
+
+if [[ "$1" == "init-databases" ]]; then
+    sudo $DOCKER run --rm --env-file setup/db-variables.env --network jacs-cm_jacs-net registry.int.janelia.org/scsw/jacs-init:latest
+    echo "Databases initialized"
+    exit 0
+fi
+
+if [[ "$#" -lt 2 ]]; then
+    echo "Usage: `basename $0` [build|run|shell|push|up|down] [tool1] [tool2] .. [tooln]"
+    echo "       You can combine multiple commands with a plus, e.g. build+push"
+    echo "       For the up/down commands, the argument must be a tier name like 'dev' or 'prod'"
+    exit 1
 fi
 
 COMMANDS=$1
@@ -52,13 +65,12 @@ do
                 VERSION=`cat $NAME/VERSION`
                 CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
                 VNAME=$CNAME:${VERSION}
-                DNAME=$CNAME:dev
                 LNAME=$CNAME:latest
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $DNAME -t $LNAME $NAME"
+                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $LNAME $NAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $DNAME -t $LNAME $NAME
+                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $LNAME $NAME
             else
                 echo "No $NAME/VERSION found"
             fi
@@ -101,18 +113,12 @@ do
                 VERSION=`cat $NAME/VERSION`
                 CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
                 VNAME=$CNAME:${VERSION}
-                DNAME=$CNAME:dev
                 LNAME=$CNAME:latest
                 echo "---------------------------------------------------------------------------------"
                 echo " Pushing image for $VNAME"
                 echo " sudo $DOCKER push $VNAME"
                 echo "---------------------------------------------------------------------------------"
                 sudo $DOCKER push $VNAME
-                echo "---------------------------------------------------------------------------------"
-                echo " Pushing image for $DNAME"
-                echo " sudo $DOCKER push $DNAME"
-                echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER push $DNAME
                 echo "---------------------------------------------------------------------------------"
                 echo " Pushing image for $LNAME"
                 echo " sudo $DOCKER push $LNAME"
@@ -127,9 +133,15 @@ do
 
         TIER=$1
         shift 1 # remove tier
+        if [[ $1 == "--dbonly" ]]; then
+            shift 1 # remove dbonly flag
+            YML="-f docker-compose-db.yml"
+        else
+            YML="-f docker-compose-db.yml -f docker-compose-app.yml -f docker-compose.${TIER}.yml"
+        fi
         echo "Bringing $COMMAND $TIER tier"
-        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND $@"
-        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE -f docker-compose.yml -f docker-compose.${TIER}.yml $COMMAND $@
+        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
+        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
 
     else
         echo "Unknown command: $COMMAND"
