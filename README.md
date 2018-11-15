@@ -63,11 +63,15 @@ You can customize the default configurations in /opt/config now, before starting
 ### Bringing up the complete stack
 To bring an environment up or down:
 ```
-./manage up [env] [arg]
+./manage.sh up [env] [args]
 ```
 For example, to bring up dev in a detatched state:
 ```
-./manage up dev -d
+./manage.sh up dev -d
+```
+To update a single container:
+```
+./manage.sh up dev -d --no-deps api-gateway
 ```
 
 ## Environments
