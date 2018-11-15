@@ -11,8 +11,9 @@ fi
 
 project=jacs
 datadir=/data
-db_dir=$datadir/db/mongo
+db_dir=$datadir/db
 mongo_data_dir=$db_dir/mongo/$project
+mysql_data_dir=$db_dir/mysql/$project
 config_dir=/opt/config_test
 
 if [[ ! -e $config_dir ]]; then
@@ -33,6 +34,19 @@ if [[ ! -e $mongo_data_dir ]]; then
     echo $mongo_data_dir/replica{1..3} | xargs -n 1 cp mongodb-keyfile
     rm mongodb-keyfile
     sudo chown -R $user $mongo_data_dir
+fi
+
+if [[ ! -e $mysql_data_dir ]]; then
+    echo "Initializing MySQL data directory"
+    mkdir -p $mysql_data_dir
+    sudo chown -R $user $mysql_data_dir
+fi
+
+if [[ ! -e $config_dir/mysql ]]; then
+    echo "Deploying MySQL configuration"
+    mkdir -p $config_dir/mysql/$project
+    cp -R $DIR/mysql/conf $config_dir/mysql/$project
+    cp -R $DIR/mysql/sql $config_dir/mysql/$project
 fi
 
 if [[ ! -e $config_dir/jwt_secret ]]; then
