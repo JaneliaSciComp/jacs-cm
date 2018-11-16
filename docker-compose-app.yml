@@ -41,6 +41,54 @@ services:
     networks:
       - jacs-net
 
+  jade-master:
+    image: registry.int.janelia.org/scsw/jade-master:latest
+    depends_on:
+      - mongo1
+    volumes:
+      - /opt/config/jade:/app/config
+    environment:
+      - JACSSTORAGE_CONFIG=/app/config/config.properties
+      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-master.xml
+    expose:
+      - '8080'
+    ports:
+      - '9880:8080'
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: jade-master
+    networks:
+      - jacs-net
+
+  jade-agent:
+    image: registry.int.janelia.org/scsw/jade-agent:latest
+    depends_on:
+      - jade-master
+      - mongo1
+    volumes:
+      - /opt/config/jade:/app/config
+    environment:
+      - JACSSTORAGE_CONFIG=/app/config/config.properties
+      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml
+      - MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
+    env_file:
+     - ./jacs.env
+    expose:
+      - '8080'
+    ports:
+      - '9881:8080'
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: jade-agent
+    networks:
+      - jacs-net
+
   jacs-sync:
     image: registry.int.janelia.org/scsw/jacs-sync:latest
     user: ${DOCKER_USER}

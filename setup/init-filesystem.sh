@@ -72,3 +72,9 @@ if [[ ! -e $config_dir/jacs-sync ]]; then
     cp $DIR/jacs/* $config_dir/jacs-sync/
 fi
 
+if [[ ! -e $config_dir/jade ]]; then
+    echo "Initializing Jade Config at $config_dir/jade"
+    mkdir -p $config_dir/jade
+    cp $DIR/jade/* $config_dir/jade/
+fi
+
