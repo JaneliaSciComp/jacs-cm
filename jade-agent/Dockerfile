@@ -22,7 +22,7 @@ LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="Jade Storage (Agent)"
 
 # Install JRE for running
-RUN yum install -y java-1.8.0-openjdk-headless
+RUN yum install -y java-1.8.0-openjdk
 
 # Create jacs user (these can be overridden)
 ARG UNAME=jacs
@@ -54,9 +54,9 @@ CMD ["sh", "-c", \
 "-b", "0.0.0.0", \
 "-p", "8080", \
 "-publicPort", "$EXPOSED_PORT", \
-"-masterURL, "$MASTER_URL", \
+"-masterURL", "$MASTER_URL", \
 "-DStorageAgent.StorageHost=${EXPOSED_HOST}", \
 "-DStorageAgent.InitialPingDelayInSeconds=10", \
-"-bootstrapStorageVolumes"
+"-bootstrapStorageVolumes" \
 ]
 
