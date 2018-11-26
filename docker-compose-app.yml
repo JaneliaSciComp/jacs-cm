@@ -41,6 +41,28 @@ services:
     networks:
       - jacs-net
 
+  jacs-messaging:
+    image: registry.int.janelia.org/scsw/jacs-messaging:latest
+    depends_on:
+      - rabbitmq
+      - jacs-sync
+    volumes:
+      - /opt/data/rabbitmq/backup:/app/backup
+    environment:
+      - RABBITMQ_HOSTNAME=rabbitmq
+      - JACS_URL=http://jacs-sync:8080/rest-v2/
+      - SYSTEM_OWNER=group:mouselight
+      - RABBITMQ_USER=admin
+      - RABBITMQ_PASSWORD=mlShar@d
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: jacs-messaging
+    networks:
+      - jacs-net
+
   jade-master:
     image: registry.int.janelia.org/scsw/jade-master:latest
     depends_on:
