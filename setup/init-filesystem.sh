@@ -14,6 +14,7 @@ datadir=/data
 db_dir=$datadir/db
 mongo_data_dir=$db_dir/mongo/$project
 mysql_data_dir=$db_dir/mysql/$project
+rabbitmq_data_dir=$db_dir/rabbitmq/$project
 config_dir=/opt/config_test
 
 if [[ ! -e $config_dir ]]; then
@@ -47,6 +48,12 @@ if [[ ! -e $config_dir/mysql ]]; then
     mkdir -p $config_dir/mysql/$project
     cp -R $DIR/mysql/conf $config_dir/mysql/$project
     cp -R $DIR/mysql/sql $config_dir/mysql/$project
+fi
+
+if [[ ! -e $rabbitmq_data_dir ]]; then
+    echo "Initializing RabbitMQ data directory"
+    mkdir -p $rabbitmq_data_dir
+    sudo chown -R $user $rabbitmq_data_dir
 fi
 
 if [[ ! -e $config_dir/jwt_secret ]]; then

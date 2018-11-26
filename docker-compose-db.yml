@@ -8,6 +8,8 @@ services:
     ports:
      - "5672:5672"
      - "15672:15672"
+    volumes:
+      - /data/db/rabbitmq/jacs:/var/lib/rabbitmq
     depends_on:
       - fluentd
     restart: unless-stopped
