@@ -33,7 +33,7 @@ LABEL description="JACS Sync Services"
 ENV HOSTNAME=localhost
 
 # Install JRE for running
-RUN yum install -y java-1.8.0-openjdk
+RUN yum install -y java-1.8.0-openjdk-headless
 
 # Create jacs user (these can be overridden)
 ARG UNAME=jacs
