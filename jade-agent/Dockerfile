@@ -44,19 +44,20 @@ COPY --from=builder /tmp/jade/jacsstorage-agentweb/build/install/jacsstorage-age
 # Expose port
 EXPOSE 8080
 
-ENV EXPOSED_HOST=localhost
-ENV EXPOSED_PORT=8080
-ENV MASTER_URL=unset
+# These variables must be set when running this container
+ENV JADE_AGENT_EXPOSED_HOST=
+ENV JADE_AGENT_EXPOSED_PORT=
+ENV JADE_MASTER_URL=
 
 # Command for running the application
-CMD ["sh", "-c", \
-"/app/bin/jacsstorage-agentweb", \
-"-b", "0.0.0.0", \
-"-p", "8080", \
-"-publicPort", "$EXPOSED_PORT", \
-"-masterURL", "$MASTER_URL", \
-"-DStorageAgent.StorageHost=${EXPOSED_HOST}", \
-"-DStorageAgent.InitialPingDelayInSeconds=10", \
-"-bootstrapStorageVolumes" \
-]
+CMD ["sh", "-c", "/app/bin/jacsstorage-agentweb -b 0.0.0.0 -p 8080 -publicPort $JADE_AGENT_EXPOSED_PORT -masterURL $JADE_MASTER_URL -DStorageAgent.StorageHost=${JADE_AGENT_EXPOSED_HOST} -DStorageAgent.InitialPingDelayInSeconds=10 -bootstrapStorageVolumes"]
+#"/app/bin/jacsstorage-agentweb", \
+#"-b", "0.0.0.0", \
+#"-p", "8080", \
+#"-publicPort", "$EXPOSED_PORT", \
+#"-masterURL", "$MASTER_URL", \
+#"-DStorageAgent.StorageHost=${EXPOSED_HOST}", \
+#"-DStorageAgent.InitialPingDelayInSeconds=10", \
+#"-bootstrapStorageVolumes" \
+#]
 

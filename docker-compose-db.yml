@@ -1,6 +1,17 @@
 version: '3'
 services:
 
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/portainer:/data
+    networks:
+      - jacs-net
+
   rabbitmq:
     image: rabbitmq:3.6.16-management
     expose:
@@ -29,8 +40,9 @@ services:
       - /data/db/mysql/jacs:/var/lib/mysql
       - /opt/config/mysql/jacs/conf:/etc/mysql/conf.d
       - /opt/config/mysql/jacs/sql:/docker-entrypoint-initdb.d
-    env_file:
-      - ./setup/db-variables.env
+    environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
     user: ${DOCKER_USER}
     restart: always
     depends_on:
@@ -48,8 +60,10 @@ services:
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
       - /data/db/mongo/jacs/replica1:/data/db
-    env_file:
-      - ./setup/db-variables.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     user: ${DOCKER_USER}
     restart: always
     depends_on:

@@ -15,7 +15,7 @@ db_dir=$datadir/db
 mongo_data_dir=$db_dir/mongo/$project
 mysql_data_dir=$db_dir/mysql/$project
 rabbitmq_data_dir=$db_dir/rabbitmq/$project
-config_dir=/opt/config_test
+config_dir=/opt/config
 
 if [[ ! -e $config_dir ]]; then
     echo "Before running this script, create your config directory ($config_dir) and ensure you have write privileges to it."
@@ -45,9 +45,11 @@ fi
 
 if [[ ! -e $config_dir/mysql ]]; then
     echo "Deploying MySQL configuration"
-    mkdir -p $config_dir/mysql/$project
-    cp -R $DIR/mysql/conf $config_dir/mysql/$project
-    cp -R $DIR/mysql/sql $config_dir/mysql/$project
+    mysql_config_dir=$config_dir/mysql
+    mkdir -p $mysql_config_dir/$project
+    cp -R $DIR/mysql/conf $mysql_config_dir/$project
+    cp -R $DIR/mysql/sql $mysql_config_dir/$project
+    sudo chown -R $user $mysql_config_dir
 fi
 
 if [[ ! -e $rabbitmq_data_dir ]]; then
@@ -59,29 +61,41 @@ fi
 if [[ ! -e $config_dir/jwt_secret ]]; then
     echo "Generating new JWT Secret"
     openssl rand -base64 741 > $config_dir/jwt_secret
+    sudo chown root:root $cert_dir/jwt_secret
+    sudo chmod 640 $cert_dir/jwt_secret
 fi
 
 if [[ ! -e $config_dir/certs ]]; then
     echo "Generating TLS Certificates"
-    mkdir -p $config_dir/certs
-    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $config_dir/certs/cert.key -out $config_dir/certs/cert.crt -config $DIR/selfsigned.conf
+    cert_dir=$config_dir/certs
+    mkdir -p $cert_dir
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $certs_dir/cert.key -out $cert_dir/cert.crt -config $DIR/selfsigned.conf
+    sudo chown root:root $cert_dir
+    sudo chmod 750 $cert_dir
+    sudo chmod 640 $cert_dir/*
 fi
 
 if [[ ! -e $config_dir/jacs-async ]]; then
-    echo "Initializing Async Services Config at $config_dir/jacs-async"
-    mkdir -p $config_dir/jacs-async
-    cp $DIR/jacs/* $config_dir/jacs-async/
+    jacs_async_dir=$config_dir/jacs-async
+    echo "Initializing Async Services Config at $jacs_async_dir"
+    mkdir -p $jacs_async_dir
+    cp $DIR/jacs/* $jacs_async_dir
+    sudo chown -R $user $jacs_async_dir
 fi
 
 if [[ ! -e $config_dir/jacs-sync ]]; then
-    echo "Initializing Sync Services Config at $config_dir/jacs-sync"
-    mkdir -p $config_dir/jacs-sync
-    cp $DIR/jacs/* $config_dir/jacs-sync/
+    jacs_sync_dir=$config_dir/jacs-sync
+    echo "Initializing Sync Services Config at $jacs_sync_dir"
+    mkdir -p $jacs_sync_dir
+    cp $DIR/jacs/* $jacs_sync_dir
+    sudo chown -R $user $jacs_sync_dir
 fi
 
 if [[ ! -e $config_dir/jade ]]; then
-    echo "Initializing Jade Config at $config_dir/jade"
-    mkdir -p $config_dir/jade
-    cp $DIR/jade/* $config_dir/jade/
+    jade_dir=$config_dir/jade
+    echo "Initializing Jade Config at $jade_dir"
+    mkdir -p $jade_dir
+    cp $DIR/jade/* $jade_dir
+    sudo chown -R $user $jade_dir
 fi
 

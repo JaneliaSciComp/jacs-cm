@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z "$MONGO_INITDB_ROOT_USERNAME" ]]; then
-    echo "You must specify the db-variables.env file containing the Mongo credentials"
+    echo "You must specify the env file containing the Mongo initialization parameters"
     exit 1
 fi
 
