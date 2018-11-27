@@ -22,6 +22,7 @@ LABEL description="JACS API Gateway"
 COPY --from=builder /tmp/nginx-jwt/nginx-jwt.lua /usr/local/openresty/site/lualib/
 COPY --from=builder /tmp/nginx-jwt/lib/ /usr/local/openresty/site/lualib/
 COPY ./conf/ /usr/local/openresty/nginx/conf/
+COPY ./html/ /usr/local/openresty/nginx/html/
 
 # Runtime configuration
 RUN mkdir /app
