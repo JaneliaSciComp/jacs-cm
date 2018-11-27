@@ -19,6 +19,12 @@ if [[ -z "$SSH_PRIVATE_KEY" ]]; then
     exit 1
 fi
 
+if [[ -z $DIR/.env ]]; then
+    echo "You need to configure your .env file before using this script. Get started by copying the template:"
+    echo '  cp .env.template .env'
+    exit 1
+fi
+
 if [[ -z "$DOCKER_USER" ]]; then
     UNAME=jacs
     GNAME=jacsdata
@@ -66,11 +72,12 @@ do
                 CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
+                APP_TAG="${APP_TAG:-master}"
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> -t $VNAME -t $LNAME $NAME"
+                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" -t $VNAME -t $LNAME $NAME
+                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
             else
                 echo "No $NAME/VERSION found"
             fi

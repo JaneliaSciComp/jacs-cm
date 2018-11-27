@@ -10,7 +10,7 @@
 
 # Builder container
 FROM registry.int.janelia.org/scsw/builder as builder
-ARG TAG_JACS=master
+ARG APP_TAG=master
 
 # Setup SSH for github access
 ARG SSH_PRIVATE_KEY
@@ -23,7 +23,7 @@ RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 WORKDIR /tmp
 RUN git clone ssh://git@github.com/JaneliaSciComp/jacs.git
 WORKDIR /tmp/jacs
-RUN git checkout $TAG_JACS
+RUN git checkout $APP_TAG
 RUN ./gradlew installDist
 
 # Build the final container

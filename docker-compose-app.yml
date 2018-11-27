@@ -9,8 +9,8 @@ services:
 
   auth-service:
     image: registry.int.janelia.org/scsw/auth-service:latest
-    volumes:
-      - /opt/config/jwt_secret:/app/jwt_secret
+    environment:
+      - JWT_SECRET=${JWT_SECRET_KEY}
     expose:
       - "3000"
     depends_on:
@@ -43,6 +43,7 @@ services:
 
   jacs-messaging:
     image: registry.int.janelia.org/scsw/jacs-messaging:latest
+    user: ${DOCKER_USER}
     depends_on:
       - rabbitmq
       - jacs-sync
@@ -88,7 +89,6 @@ services:
       options:
         fluentd-address: localhost:24224
         tag: jade-master
-        labels: application
     networks:
       - jacs-net
 
@@ -106,7 +106,7 @@ services:
       - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
-      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT}
+      - JADE_AGENT_EXPOSED_PORT=9881
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
@@ -121,7 +121,6 @@ services:
       options:
         fluentd-address: localhost:24224
         tag: jade-agent
-        labels: application
     networks:
       - jacs-net
 
@@ -131,8 +130,11 @@ services:
     volumes:
       - /opt/config/jacs-sync:/app/config
     environment:
-      JACS2_CONFIG: /app/config/jacs.properties
-      JACS2_SYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
+      - JACS2_CONFIG=/app/config/jacs.properties
+      - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
+      - jacs_MongoDB_ServerURL=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
+      - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
     expose:
       - "8080"
     depends_on:
@@ -154,8 +156,11 @@ services:
     volumes:
       - /opt/config/jacs-async:/app/config
     environment:
-      JACS2_CONFIG: /app/config/jacs.properties
-      JACS2_ASYNCWEB_OPTS: -Dlogback.configurationFile=/app/config/logback.xml
+      - JACS2_CONFIG=/app/config/jacs.properties
+      - JACS2_ASYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
+      - jacs_MongoDB_ServerURL=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
+      - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
     expose:
       - "8080"
     depends_on:
@@ -174,8 +179,9 @@ services:
   api-gateway:
     image: registry.int.janelia.org/scsw/api-gateway:latest
     volumes:
-      - /opt/config/jwt_secret:/app/jwt_secret
       - /opt/config/certs:/app/certs
+    environment:
+      - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
     depends_on:

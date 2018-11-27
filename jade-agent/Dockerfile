@@ -1,6 +1,6 @@
 # Build the jade agent container
 FROM registry.int.janelia.org/scsw/builder as builder
-ARG BUILD_TAG=master
+ARG APP_TAG=master
 
 # Setup SSH for github access
 ARG SSH_PRIVATE_KEY
@@ -13,7 +13,7 @@ RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
 RUN git clone git@github.com:JaneliaSciComp/jacs-storage.git .
-RUN git checkout $BUILD_TAG
+RUN git checkout $APP_TAG
 RUN ./gradlew installDist -x test
 
 # Build the final container
