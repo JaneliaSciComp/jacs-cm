@@ -10,12 +10,28 @@ For information on how to create a new service, read about [Contributing](CONTRI
 
 Before using the `manage.sh` script, make sure that the variables at the top reflect your current reality. In particular, it's preconfigured to use the SCSW Docker Registry, which may or may not be what you want.
 
+Next, create a .env file which defines the environment (usernames, passwords, etc.) You can copy the template to get started:
+```
+cp .env.template .env
+vi .env
+```
+
 ## Build
 To build one or more service:
 ```
 ./manage.sh build [service1] [service2] [service3] ...
 ```
-This creates a Docker container in your local repository.
+This creates a Docker container image in your local repository.
+
+To build multiple containers, you can use shell wildcards. For example, to build the JACS and JADE containers:
+```
+./manage build ja*
+```
+
+For JACS services, you can specify an APP_TAG to check out and build a specific branch, e.g.:
+```
+APP_TAG=my_branch build jacs-async
+```
 
 ## Shell
 To open a shell into a built container:
@@ -24,7 +40,7 @@ To open a shell into a built container:
 ```
 
 ## Run
-To run a container in and tail its logs:
+To run a single container and tail its logs:
 ```
 ./manage.sh run [service]
 ```
@@ -32,7 +48,7 @@ To run a container in and tail its logs:
 ## Push to Docker Repository
 To push one or more built containers to the remote repository:
 ```
-./manage.sh deploy [service1] [service2] [service3] ...
+./manage.sh push [service1] [service2] [service3] ...
 ```
 
 ## Multiple Commands
@@ -41,16 +57,18 @@ The script allows you to combine multiple commands with the `+` sign, and it ign
 ./manage.sh build+push *
 ```
 
-## Compose
+## Running the Full Service Stack
+
+The full JACS service stack is comprised of 15+ containers, orchestrated by Docker compose. 
 
 ### Initial Setup
-When deploying to a new environment, we need to provision the filesystem and databases before starting the full stack. 
+When deploying to a new environment, you need to provision the filesystem and databases before starting the full stack. 
 If you haven't built and deployed them yet, you'll need to build all the containers first:
 ```
 ./manage.sh build *
 ```
 
-Ensure that your /data/db and /opt/config directories are empty, and then:
+Ensure that your /data/db and /opt/config directories are empty and writeable by you, and then execute these commands:
 ```
 ./manage.sh init-filesystem
 ./manage.sh up dev --dbonly -d
@@ -58,7 +76,7 @@ Ensure that your /data/db and /opt/config directories are empty, and then:
 ./manage.sh down dev --dbonly
 ```
 
-You can customize the default configurations in /opt/config now, before starting the full stack.
+You can customize the default configurations in /opt/config now, before bringing up the full stack.
 
 ### Bringing up the complete stack
 To bring an environment up or down:
@@ -80,4 +98,5 @@ Each environment is defined in a compose file with the name `docker-compose.<env
 ## Versioning
 Container versioning with a file called `VERSION` in each subdirectory. When making changes to a service, make sure to increment the
 variable in the `VERSION` file before building or deploying that container.
+
 
