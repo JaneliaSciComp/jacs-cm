@@ -58,13 +58,6 @@ if [[ ! -e $rabbitmq_data_dir ]]; then
     sudo chown -R $user $rabbitmq_data_dir
 fi
 
-if [[ ! -e $config_dir/jwt_secret ]]; then
-    echo "Generating new JWT Secret"
-    openssl rand -base64 741 > $config_dir/jwt_secret
-    sudo chown root:root $cert_dir/jwt_secret
-    sudo chmod 640 $cert_dir/jwt_secret
-fi
-
 if [[ ! -e $config_dir/certs ]]; then
     echo "Generating TLS Certificates"
     cert_dir=$config_dir/certs
