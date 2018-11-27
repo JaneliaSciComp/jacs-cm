@@ -14,6 +14,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.6.16-management
+    hostname: jacs-rabbit
     expose:
      - 5672
     ports:
