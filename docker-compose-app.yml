@@ -71,7 +71,6 @@ services:
       - mongo1
     volumes:
       - /opt/config/jade:/app/config
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
     environment:
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - JACSSTORAGE_LOG_CONFIG=/app/config/logback-master.xml
@@ -100,7 +99,6 @@ services:
       - mongo1
     volumes:
       - /opt/config/jade:/app/config
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
     environment:
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml

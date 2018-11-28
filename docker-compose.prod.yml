@@ -1,11 +1,30 @@
 version: '3'
 services:
 
+  elasticsearch:
+    image: registry.int.janelia.org/scsw/elasticsearch:1.0.0
+
+  fluentd:
+    image: registry.int.janelia.org/scsw/fluentd:1.0.0
+
   auth-service:
     image: registry.int.janelia.org/scsw/auth-service:1.0.0
 
   solr-search:
     image: registry.int.janelia.org/scsw/solr-search:1.0.0
+
+  jacs-messaging:
+    image: registry.int.janelia.org/scsw/jacs-messaging:1.0.0
+
+  jade-master:
+    volumes:
+      - /data:/data
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+
+  jade-agent:
+    volumes:
+      - /data:/data
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
 
   jacs-sync:
     image: registry.int.janelia.org/scsw/jacs-sync:1.0.0
@@ -13,14 +32,17 @@ services:
   jacs-async:
     image: registry.int.janelia.org/scsw/jacs-async:1.0.0
     environment:
-        jacs_service_queue_id: jacs-prod
+        HOSTNAME: jacs.int.janelia.org
+        jacs_service_queue_id: jacs
     volumes:
       - /data:/data
-      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
       - /groups/jacs/jacsHosts:/groups/jacs/jacsHosts
 
   api-gateway:
     image: registry.int.janelia.org/scsw/api-gateway:1.0.0
     environment:
-      NGINX_SERVERNAME: api
+        NGINX_SERVERNAME: jacs
+
+
+
 
