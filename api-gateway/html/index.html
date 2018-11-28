@@ -11,19 +11,20 @@
 </style>
 </head>
 <script>
-// From https://stackoverflow.com/questions/6016120/relative-url-to-a-different-port-number-in-a-hyperlink
-// delegate event for performance, and save attaching a million events to each anchor
 document.addEventListener('click', function(event) {
-  var target = event.target;
-  if (target.tagName.toLowerCase() == 'a')
-  {
-      var port = target.getAttribute('href').match(/^:(\d+)(.*)/);
-      if (port)
-      {
-         target.href = window.location.origin;
-         target.port = port[1];
-      }
-  }
+    var target = event.target;
+    if (target.tagName.toLowerCase() == 'a')
+    {
+        href = target.getAttribute('href')
+        if (href.indexOf('HOST:') >= 0) {
+            // target already has port
+            target.href = href.replace("HOST",window.location.hostname)
+         }
+         else if (href.indexOf('HOST') >= 0) {
+            // target does not have port, keep the current port
+            target.href = href.replace("HOST",window.location.host)
+         }
+    }
 }, false);
 </script>
 <body>
@@ -32,22 +33,23 @@ document.addEventListener('click', function(event) {
 This API Gateway provides centralized, authenticated access to the JACS web service APIs. Currently available endpoints are listed below. To use one, simply authenticate with the AuthenticationService, and then include the JWT token in any requests to the other services. There are two ways to include the JWT: as a header called Authorization with value "Bearer &lt;tokenValue&gt;", or alternatively, as a query parameter called "access_token".
 </p>
 
-
 <h2>Administration</h2>
 <ul>
-    <li><a href=":9000">Portainer</a> - container management</li>
-    <li><a href=":5601">Kibana</a> - container logs</li>
+    <li><a href="https://HOST:9000">Portainer</a> - container management</li>
+    <li><a href="http://HOST:5601">Kibana</a> - container logs</li>
 </ul>
 
 <h2>Services</h2>
 <ul>
-    <li><a href="/SCSW/AuthenticationService/v1/">Authentication Service</a></li>
-    <li><a href="/SCSW/JACS2SyncServices/v2/">JACS Sync Services</a></li>
-    <li><a href="/SCSW/JACS2AsyncServices/v2/">JACS Async Services</a></li>
-    <li><a href="/SCSW/SageResponder/v1/">Sage Responder</a></li>
-    <li><a href=":9880">Jade Master</a></li>
-    <li><a href=":9881">Jade Agent</a></li>
-    <li><a href=":15672">RabbitMQ</a></li>
+    <li><a href="https://HOST/SCSW/AuthenticationService/v1/">Authentication Service</a></li>
+    <li><a href="https://HOST/SCSW/JACS2SyncServices/v2/">JACS Sync Services</a></li>
+    <li><a href="https://HOST/SCSW/JACS2AsyncServices/v2/">JACS Async Services</a></li>
+    <li><a href="https://HOST/SCSW/SageResponder/v1/">Sage Responder</a></li>
+    <li><a href="http://HOST:9880">Jade Master</a></li>
+    <li><a href="http://HOST:9881">Jade Agent</a></li>
+    <li><a href="http://HOST:15672">RabbitMQ</a></li>
+    <li><a href="/workstation">Workstation Website</a></li>
+    <li><a href="/updates/updates.xml">Workstation Update Center</a></li>
 </ul>
 
 </body>

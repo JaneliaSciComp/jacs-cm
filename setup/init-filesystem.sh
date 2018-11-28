@@ -12,17 +12,18 @@ fi
 project=jacs
 datadir=/data
 db_dir=$datadir/db
+www_dir=$datadir/www
 mongo_data_dir=$db_dir/mongo/$project
 mysql_data_dir=$db_dir/mysql/$project
 rabbitmq_data_dir=$db_dir/rabbitmq/$project
 config_dir=/opt/config
 
-if [[ ! -e $config_dir ]]; then
+if [[ ! -w $config_dir ]]; then
     echo "Before running this script, create your config directory ($config_dir) and ensure you have write privileges to it."
     exit 1
 fi
 
-if [[ ! -e $db_dir ]]; then
+if [[ ! -w $db_dir ]]; then
     echo "Before running this script, create your data directory ($db_dir) and ensure you have write privileges to it."
     exit 1
 fi
@@ -90,5 +91,11 @@ if [[ ! -e $config_dir/jade ]]; then
     mkdir -p $jade_dir
     cp $DIR/jade/* $jade_dir
     sudo chown -R $user $jade_dir
+fi
+
+if [[ ! -e $www_dir ]]; then
+    mkdir -p $www_dir/updates
+    mkdir -p $www_dir/workstation
+    sudo chown -R $user $www_dir
 fi
 
