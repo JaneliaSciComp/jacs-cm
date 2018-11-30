@@ -16,6 +16,7 @@ www_dir=$datadir/www
 mongo_data_dir=$db_dir/mongo/$project
 mysql_data_dir=$db_dir/mysql/$project
 rabbitmq_data_dir=$db_dir/rabbitmq/$project
+elasticsearch_data_dir=$db_dir/elasticsearch/$project
 config_dir=/opt/config
 
 if [[ ! -w $config_dir ]]; then
@@ -57,6 +58,12 @@ if [[ ! -e $rabbitmq_data_dir ]]; then
     echo "Initializing RabbitMQ data directory"
     mkdir -p $rabbitmq_data_dir
     sudo chown -R $user $rabbitmq_data_dir
+fi
+
+if [[ ! -e $elasticsearch_data_dir ]]; then
+    echo "Initializing ElasticSearch data directory"
+    mkdir -p $elasticsearch_data_dir
+    sudo chown -R $user $elasticsearch_data_dir
 fi
 
 if [[ ! -e $config_dir/certs ]]; then

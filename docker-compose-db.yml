@@ -124,7 +124,7 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - /data/elasticsearch:/usr/share/elasticsearch/data
+      - /data/db/elasticsearch/jacs:/usr/share/elasticsearch/data
     expose:
       - 9200
     ports:
