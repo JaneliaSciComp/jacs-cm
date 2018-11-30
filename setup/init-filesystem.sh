@@ -62,11 +62,9 @@ fi
 if [[ ! -e $config_dir/certs ]]; then
     echo "Generating TLS Certificates"
     cert_dir=$config_dir/certs
-    mkdir -p $cert_dir
-    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $certs_dir/cert.key -out $cert_dir/cert.crt -config $DIR/selfsigned.conf
-    sudo chown root:root $cert_dir
+    sudo mkdir -p $cert_dir
     sudo chmod 750 $cert_dir
-    sudo chmod 640 $cert_dir/*
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout $cert_dir/cert.key -out $cert_dir/cert.crt -config $DIR/selfsigned.conf
 fi
 
 if [[ ! -e $config_dir/jacs-async ]]; then

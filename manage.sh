@@ -11,7 +11,15 @@ DOCKER="docker"
 DOCKER_COMPOSE="docker-compose"
 REGISTRY_SERVER="registry.int.janelia.org"
 NAMESPACE="scsw"
-SSH_PRIVATE_KEY=`cat ~/.ssh/id_dsa`
+
+if [ -z "${SSH_PRIVATE_KEY}" ]; then
+    if [[ -e ~/.ssh/id_dsa ]]; then
+	SSH_PRIVATE_KEY="$(cat ~/.ssh/id_dsa)"
+    elif [[ -e ~/.ssh/id_rsa ]]; then
+	SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
+    fi
+fi
+
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 if [[ -z "$SSH_PRIVATE_KEY" ]]; then
@@ -40,7 +48,7 @@ if [[ "$1" == "init-filesystem" ]]; then
 fi
 
 if [[ "$1" == "init-databases" ]]; then
-    sudo $DOCKER run --rm --env-file .env --network jacs-cm_jacs-net registry.int.janelia.org/scsw/jacs-init:latest
+    sudo $DOCKER run --rm --env-file .env --network jacscm_jacs-net registry.int.janelia.org/scsw/jacs-init:latest
     echo "Databases initialized"
     exit 0
 fi
