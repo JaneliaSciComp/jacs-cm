@@ -144,8 +144,8 @@ do
             fi
         done
 
-    elif [[ "$COMMAND" == "up" || "$COMMAND" == "down" ]]; then
-
+    else
+        # any other command is passed to docker-compose
         TIER=$1
         shift 1 # remove tier
         if [[ $1 == "--dbonly" ]]; then
@@ -158,22 +158,6 @@ do
         echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
         sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
 
-    elif [[ "$COMMAND" == "ps" ]]; then
-
-        TIER=$1
-        shift 1 # remove tier
-        if [[ $1 == "--dbonly" ]]; then
-            shift 1 # remove dbonly flag
-            YML="-f docker-compose-db.yml"
-        else
-            YML="-f docker-compose-db.yml -f docker-compose-app.yml -f docker-compose.${TIER}.yml"
-        fi
-        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
-
-    else
-        echo "Unknown command: $COMMAND"
-        exit 1
     fi
 
 done

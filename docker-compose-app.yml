@@ -104,7 +104,7 @@ services:
       - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
-      - JADE_AGENT_EXPOSED_PORT=9881
+      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
