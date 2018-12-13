@@ -130,7 +130,7 @@ services:
     environment:
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
-      - jacs_MongoDB_ServerURL=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
     expose:
@@ -156,7 +156,7 @@ services:
     environment:
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_ASYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
-      - jacs_MongoDB_ServerURL=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
     expose:
