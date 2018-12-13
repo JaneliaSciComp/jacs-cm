@@ -12,6 +12,7 @@ services:
       - /data:/data
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+      - /nrs/mouselight:/nrs/mouselight
 
   jacs-async:
     environment:
