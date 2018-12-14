@@ -133,6 +133,8 @@ services:
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
+      - jacs_mouselight_db_user=${MYSQL_JACS_USER}
+      - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
     expose:
       - "8080"
     depends_on:
