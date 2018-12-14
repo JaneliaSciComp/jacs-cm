@@ -48,10 +48,10 @@ services:
       - rabbitmq
       - jacs-sync
     volumes:
-      - /opt/data/rabbitmq/backup:/app/backup
+      - /opt/data/rabbitmq/backup:/appdata/backup
     environment:
       - RABBITMQ_HOSTNAME=rabbitmq
-      - JACS_URL=http://jacs-sync:8080/rest-v2/
+      - JACS_URL=http://jacs-sync:8080/api/rest-v2/
       - SYSTEM_OWNER=${SYSTEM_OWNER}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
