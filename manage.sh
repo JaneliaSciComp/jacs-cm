@@ -151,8 +151,24 @@ do
         if [[ $1 == "--dbonly" ]]; then
             shift 1 # remove dbonly flag
             YML="-f docker-compose-db.yml"
+            if [ -n "${TIER}" ]; then
+	        if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
+		    YML="$YML -f docker-compose.${TIER}-db.yml"
+		fi
+            fi
         else
-            YML="-f docker-compose-db.yml -f docker-compose-app.yml -f docker-compose.${TIER}.yml"
+            YML="-f docker-compose-db.yml -f docker-compose-app.yml"
+            if [ -n "${TIER}" ]; then
+	        if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
+		    YML="$YML -f docker-compose.${TIER}-db.yml"
+		fi
+	        if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
+		    YML="$YML -f docker-compose.${TIER}-app.yml"
+		fi
+	        if [[ -e "docker-compose.${TIER}.yml" ]]; then
+		    YML="$YML -f docker-compose.${TIER}.yml"
+		fi
+            fi
         fi
         echo "Bringing $COMMAND $TIER tier"
         echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
