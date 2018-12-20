@@ -29,6 +29,11 @@ if [[ ! -w $db_dir ]]; then
     exit 1
 fi
 
+if [[ ! -w $www_dir ]]; then
+    echo "Before running this script, create your data directory ($www_dir) and ensure you have write privileges to it."
+    exit 1
+fi
+
 if [[ ! -e $mongo_data_dir ]]; then
     echo "Initializing MongoDB data directories"
     mkdir -p $mongo_data_dir/replica{1..3}
