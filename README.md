@@ -99,4 +99,6 @@ Each environment is defined in a compose file with the name `docker-compose.<env
 Container versioning with a file called `VERSION` in each subdirectory. When making changes to a service, make sure to increment the
 variable in the `VERSION` file before building or deploying that container.
 
-
+## Notes
+* For elastic search make sure that the vm.max_map_count is set to at least 262144
+`sysctl -w vm.max_map_count=262144`
