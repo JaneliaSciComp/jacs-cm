@@ -76,6 +76,7 @@ services:
       - JACSSTORAGE_LOG_CONFIG=/app/config/logback-master.xml
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
+      - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
       - jade_MongoDB_Password=${MONGODB_JADE_PASSWORD}
     expose:
@@ -107,6 +108,7 @@ services:
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
+      - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
       - jade_MongoDB_Password=${MONGODB_JADE_PASSWORD}
     expose:
@@ -131,6 +133,7 @@ services:
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
@@ -159,6 +162,7 @@ services:
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_ASYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
+      - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
     expose:
