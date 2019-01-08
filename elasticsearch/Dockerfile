@@ -1,4 +1,4 @@
-ARG VERSION=6.4.0
+ARG VERSION=6.5.4
 FROM docker.elastic.co/elasticsearch/elasticsearch:$VERSION
 
 # Create jacs user (these can be overridden)
