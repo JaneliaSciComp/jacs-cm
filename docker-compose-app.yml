@@ -138,6 +138,7 @@ services:
       - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
       - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
+      - jacs_Solr_ServerURL=http://solr-search:8080/solr/FlyWorkstation
     expose:
       - "8080"
     depends_on:
