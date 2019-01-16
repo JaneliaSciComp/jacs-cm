@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+
+  auth-service:
+    ports:
+      - '8030:3000'
+    logging:
+      driver: "json-file"
+
+  jade-master:
+    ports:
+      - '5001:5005'
+    volumes:
+      - /data:/data
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+    environment:
+      - JAVA_OPTS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    logging:
+      driver: "json-file"
+
+  jade-agent:
+    ports:
+      - '5002:5005'
+    volumes:
+      - /data:/data
+      - /groups/jacs:/groups/jacs
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+      - /nrs/mouselight:/nrs/mouselight
+      - /groups/scicomp/reports/nrs_usage:/groups/scicomp/reports/nrs_usage
+    environment:
+      - JAVA_OPTS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    logging:
+      driver: "json-file"
+
+  jacs-sync:
+    ports:
+      - '8800:8080'
+      - '5003:5005'
+    volumes:
+      - /nrs/mouselight:/nrs/mouselight
+      - /data/jacsstorage:/data/jacsstorage
+    environment:
+      - JAVA_OPTS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    logging:
+      driver: "json-file"
+
+  jacs-async:
+    ports:
+      - '8801:8080'
+      - '5004:5005'
+    environment:
+      - JAVA_OPTS='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+      - HOSTNAME=jade2.int.janelia.org
+      - jacs_service_queue_id=jade2.docker
+    volumes:
+      - /data:/data
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
+      - /groups/scicompsoft:/groups/scicompsoft
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+    logging:
+      driver: "json-file"
+
+  api-gateway:
+    environment:
+      NGINX_SERVERNAME: jade2.int.janelia.org
