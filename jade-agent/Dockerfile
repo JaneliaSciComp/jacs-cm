@@ -2,17 +2,10 @@
 FROM registry.int.janelia.org/scsw/builder as builder
 ARG APP_TAG=master
 
-# Setup SSH for github access
-ARG SSH_PRIVATE_KEY
-RUN mkdir /root/.ssh
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
-RUN chmod 700 /root/.ssh/id_rsa
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-
 # Checkout and build the code
 RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
-RUN git clone git@github.com:JaneliaSciComp/jacs-storage.git .
+RUN git clone https://github.com/JaneliaSciComp/jacs-storage.git .
 RUN git checkout $APP_TAG
 RUN ./gradlew installDist -x test
 

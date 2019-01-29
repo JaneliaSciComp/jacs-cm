@@ -12,20 +12,7 @@ DOCKER_COMPOSE="docker-compose"
 REGISTRY_SERVER="registry.int.janelia.org"
 NAMESPACE="scsw"
 
-if [ -z "${SSH_PRIVATE_KEY}" ]; then
-    if [[ -e ~/.ssh/id_dsa ]]; then
-        SSH_PRIVATE_KEY="$(cat ~/.ssh/id_dsa)"
-    elif [[ -e ~/.ssh/id_rsa ]]; then
-        SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
-    fi
-fi
-
 DIR=$(cd "$(dirname "$0")"; pwd)
-
-if [[ -z "$SSH_PRIVATE_KEY" ]]; then
-    echo "You need to set up password-less SSH for Github before using this script"
-    exit 1
-fi
 
 if [[ -z $DIR/.env ]]; then
     echo "You need to configure your .env file before using this script. Get started by copying the template:"
@@ -83,9 +70,9 @@ do
                 APP_TAG="${APP_TAG:-master}"
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY=<hidden> --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
+                echo " sudo $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER build --no-cache --build-arg SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
+                sudo $DOCKER build --no-cache --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
             else
                 echo "No $NAME/VERSION found"
             fi
@@ -171,8 +158,8 @@ do
             fi
         fi
         echo "Bringing $COMMAND $TIER tier"
-        echo "sudo SSH_PRIVATE_KEY=<hidden> DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-        sudo SSH_PRIVATE_KEY="$SSH_PRIVATE_KEY" DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
+        echo "sudo DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
+        sudo DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
 
     fi
 

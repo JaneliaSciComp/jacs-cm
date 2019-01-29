@@ -2,7 +2,6 @@
 #
 # When building, provide the following parameters:
 #   --build-arg APP_TAG=<git tag for the jacs repo>
-#   --build-arg SSH_PRIVATE_KEY=<your private key>
 #
 # When running, provide the -e hostname=host.int.janelia.org for the machine you're running on if you want Swagger UI to work. 
 # If you're running in an orchestrated environment, you can simply set hostname to localhost.
@@ -12,16 +11,9 @@
 FROM registry.int.janelia.org/scsw/builder as builder
 ARG APP_TAG=master
 
-# Setup SSH for github access
-ARG SSH_PRIVATE_KEY
-RUN mkdir /root/.ssh/
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_dsa
-RUN chmod 700 /root/.ssh/id_dsa
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
-
 # Checkout and build the code
 WORKDIR /tmp
-RUN git clone ssh://git@github.com/JaneliaSciComp/jacs.git
+RUN git clone https://github.com/JaneliaSciComp/jacs.git
 WORKDIR /tmp/jacs
 RUN git checkout $APP_TAG
 RUN ./gradlew installDist

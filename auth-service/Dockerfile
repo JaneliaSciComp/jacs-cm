@@ -1,21 +1,14 @@
 #
-# When building, expects the SSH_PRIVATE_KEY variable
+# When building, expects the TAG_LDAP_JWT argument for which git tag to use.
 #
 # When running, expects an environment variable called JWT_SECRET
 #
 
 # Builder container
 FROM node:6.9.2 as builder
-ARG SSH_PRIVATE_KEY
 ARG TAG_LDAP_JWT=master
 RUN apt-get install git-core
 WORKDIR /tmp
-
-# Setup SSH for github access
-RUN mkdir /root/.ssh/
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_dsa
-RUN chmod 700 /root/.ssh/id_dsa
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 # Checkout and build the code
 RUN git clone https://github.com/JaneliaSciComp/ldap-jwt.git

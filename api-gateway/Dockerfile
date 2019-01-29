@@ -1,12 +1,5 @@
 FROM registry.int.janelia.org/scsw/builder as builder
-ARG SSH_PRIVATE_KEY
 ARG TAG_NGINX_JWT=master
-
-# Setup SSH for github access
-RUN mkdir /root/.ssh/
-RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_dsa
-RUN chmod 700 /root/.ssh/id_dsa
-RUN ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
 
 # Checkout and build the code
 WORKDIR /tmp
