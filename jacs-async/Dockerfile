@@ -16,7 +16,7 @@ WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/jacs-compute.git
 WORKDIR /tmp/jacs-compute
 RUN git checkout $APP_TAG
-RUN ./gradlew installDist
+RUN gradle installDist
 
 # Build the final container
 FROM scientificlinux/sl:7
