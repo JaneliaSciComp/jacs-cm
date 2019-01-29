@@ -6,14 +6,19 @@ Each subdirectory contains a versioned, containerized service which can be built
 
 For information on how to create a new service, read about [Contributing](CONTRIBUTING.md).
 
-## Configuration
+## Initial Setup
 
-Before using the `manage.sh` script, make sure that the variables at the top reflect your current reality. In particular, it's preconfigured to use the SCSW Docker Registry, which may or may not be what you want.
+Before using the `manage.sh` script, make sure that the variables at the top reflect your current reality. In particular, it's preconfigured to use Janelia's internal Docker Registry, which may or may not be what you want.
 
 Next, create a .env file which defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
 cp .env.template .env
 vi .env
+```
+
+Finally, build the `builder` image which is necessary for building other services:
+```
+./manage.sh build builder
 ```
 
 ## Build
