@@ -14,9 +14,9 @@ NAMESPACE="scsw"
 
 if [ -z "${SSH_PRIVATE_KEY}" ]; then
     if [[ -e ~/.ssh/id_dsa ]]; then
-	SSH_PRIVATE_KEY="$(cat ~/.ssh/id_dsa)"
+        SSH_PRIVATE_KEY="$(cat ~/.ssh/id_dsa)"
     elif [[ -e ~/.ssh/id_rsa ]]; then
-	SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
+        SSH_PRIVATE_KEY="$(cat ~/.ssh/id_rsa)"
     fi
 fi
 
@@ -152,22 +152,22 @@ do
             shift 1 # remove dbonly flag
             YML="-f docker-compose-db.yml"
             if [ -n "${TIER}" ]; then
-	        if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
-		    YML="$YML -f docker-compose.${TIER}-db.yml"
-		fi
+            if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
+            YML="$YML -f docker-compose.${TIER}-db.yml"
+        fi
             fi
         else
             YML="-f docker-compose-db.yml -f docker-compose-app.yml"
             if [ -n "${TIER}" ]; then
-	        if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
-		    YML="$YML -f docker-compose.${TIER}-db.yml"
-		fi
-	        if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
-		    YML="$YML -f docker-compose.${TIER}-app.yml"
-		fi
-	        if [[ -e "docker-compose.${TIER}.yml" ]]; then
-		    YML="$YML -f docker-compose.${TIER}.yml"
-		fi
+            if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
+            YML="$YML -f docker-compose.${TIER}-db.yml"
+        fi
+            if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
+            YML="$YML -f docker-compose.${TIER}-app.yml"
+        fi
+            if [[ -e "docker-compose.${TIER}.yml" ]]; then
+            YML="$YML -f docker-compose.${TIER}.yml"
+        fi
             fi
         fi
         echo "Bringing $COMMAND $TIER tier"
