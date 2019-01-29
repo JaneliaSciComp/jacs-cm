@@ -48,7 +48,7 @@ if [[ "$1" == "init-filesystem" ]]; then
 fi
 
 if [[ "$1" == "init-databases" ]]; then
-    sudo $DOCKER run --rm --env-file .env --network jacs-cm_jacs-net registry.int.janelia.org/scsw/jacs-init:latest
+    sudo $DOCKER run --rm --env-file .env --network jacs-cm_jacs-net $REGISTRY_SERVER/$NAMESPACE/jacs-init:latest
     echo "Databases initialized"
     exit 0
 fi
