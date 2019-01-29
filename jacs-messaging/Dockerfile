@@ -21,7 +21,7 @@ WORKDIR /tmp
 RUN git clone ssh://git@github.com/JaneliaSciComp/jacs-messaging.git
 WORKDIR /tmp/jacs-messaging
 RUN git checkout $APP_TAG
-RUN ./gradlew brokerJar
+RUN gradle brokerJar
 
 # Build the final container
 FROM scientificlinux/sl:7
