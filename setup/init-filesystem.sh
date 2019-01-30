@@ -59,6 +59,13 @@ if [[ ! -e $config_dir/mysql ]]; then
     sudo chown -R $user $mysql_config_dir
 fi
 
+if [[ ! -e $config_dir/ipp ]]; then
+    echo "Deploying IPP configuration"
+    cp -R $DIR/ipp $config_dir
+    sudo chown -R $user $config_dir/ipp
+fi
+
+
 if [[ ! -e $rabbitmq_data_dir ]]; then
     echo "Initializing RabbitMQ data directory"
     mkdir -p $rabbitmq_data_dir

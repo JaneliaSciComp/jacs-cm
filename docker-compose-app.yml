@@ -181,6 +181,25 @@ services:
     networks:
       - jacs-net
 
+  ipp:
+    image: registry.int.janelia.org/scsw/ipp:latest
+    volumes:
+      - /opt/config/ipp:/app/config
+    environment:
+      - LIGHTSHEET_INTERFACE_SETTINGS=/app/config/env_config.py
+    expose:
+      - "8000"
+    depends_on:
+      - fluentd
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: ipp
+    networks:
+      - jacs-net
+
   api-gateway:
     image: registry.int.janelia.org/scsw/api-gateway:latest
     volumes:
@@ -191,17 +210,21 @@ services:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
+      - "8080:8080"
+      - "8090:8090"
     depends_on:
       - auth-service
       - jacs-sync
       - jacs-async
+      - ipp
       - fluentd
     restart: unless-stopped
     logging:
       driver: "fluentd"
       options:
-        fluentd-address: localhost:24224
-        tag: api-gateway
+         fluentd-address: localhost:24224
+         tag: api-gateway
     networks:
       - jacs-net
+
 

@@ -15,6 +15,10 @@ WORKDIR /tmp/jacs-dashboard
 RUN apk add python make g++ # Necessary for node-gyp
 RUN npm install && npm run build
 
+# Checkout IPP
+WORKDIR /tmp
+RUN git clone https://github.com/JaneliaSciComp/lightsheet-pipeline.git
+
 # Build the final container
 FROM openresty/openresty:1.13.6.2-centos
 LABEL maintainer="rokickik@janelia.hhmi.org"
@@ -23,6 +27,7 @@ RUN mkdir /app
 COPY --from=builder /tmp/nginx-jwt/nginx-jwt.lua /usr/local/openresty/site/lualib/
 COPY --from=builder /tmp/nginx-jwt/lib/ /usr/local/openresty/site/lualib/
 COPY --from=builder /tmp/jacs-dashboard/build /app/jacs-dashboard
+COPY --from=builder /tmp/lightsheet-pipeline/lightsheetInterface/app/static /app/ipp
 COPY ./conf/nginx/ /usr/local/openresty/nginx/conf/
 COPY ./html/ /usr/local/openresty/nginx/html/
 

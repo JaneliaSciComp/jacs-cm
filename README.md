@@ -113,6 +113,13 @@ Each environment is defined in a compose file with the name `docker-compose.<env
 Container versioning with a file called `VERSION` in each subdirectory. When making changes to a service, make sure to increment the
 variable in the `VERSION` file before building or deploying that container.
 
+## Loading Data into MongoDB
+
+To load data into the lightsheet database:
+```
+sdocker run -v /dump/dir:/dump -it --network=jacs-cm_jacs-net mongo:3.6 /usr/bin/mongorestore --uri "mongodb://lightsheet:password@mongo1:27017,mongo2:27017,mongo3:27017/lightsheet?replicaSet=rsJacs&authSource=admin" -d lightsheet /dump
+```
+
 ## Notes
 
 * For elastic search make sure that the vm.max_map_count is set to at least 262144

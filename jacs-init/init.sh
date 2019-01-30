@@ -45,6 +45,16 @@ db.createUser(
   });
 EOL
 
+cat >/tmp/createUserIPP.js <<EOL
+db.createUser(
+  {
+    user: "${MONGODB_IPP_USERNAME}",
+    pwd: "${MONGODB_IPP_PASSWORD}",
+    roles: [ { role: "readWrite", db: "lightsheet" } ],
+    passwordDigestor : "server"
+  });
+EOL
+
 for filename in /tmp/*.js; do
     mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@mongo1:27017,mongo2:27017,mongo3:27017/${MONGODB_INIT_DATABASE}?replicaSet=rsJacs $filename
     sleep 1
