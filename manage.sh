@@ -11,6 +11,7 @@ DOCKER="docker"
 DOCKER_COMPOSE="docker-compose"
 REGISTRY_SERVER="registry.int.janelia.org"
 NAMESPACE="scsw"
+CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
 
 DIR=$(cd "$(dirname "$0")"; pwd)
 
@@ -29,14 +30,22 @@ if [[ -z "$DOCKER_USER" ]]; then
 fi
 
 if [[ "$1" == "init-filesystem" ]]; then
-    $DIR/setup/init-filesystem.sh $DOCKER_USER
-    echo "Filesystem initialized"
+    echo "Initializing file system..."
+    echo "sudo $DOCKER run --rm --env-file .env -v /opt/config:/opt/config -v /data:/data -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh"
+    sudo $DOCKER run --rm --env-file .env -v /opt/config:/opt/config -v /data:/data -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh
+    echo ""
+    echo "The filesystem is initialized. You should now edit the template files in /opt/config to match your deployment environment."
+    echo ""
     exit 0
 fi
 
 if [[ "$1" == "init-databases" ]]; then
-    sudo $DOCKER run --rm --env-file .env --network jacs-cm_jacs-net $REGISTRY_SERVER/$NAMESPACE/jacs-init:latest
-    echo "Databases initialized"
+    echo "Initializing databases..."
+    echo "sudo $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh"
+    sudo $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh
+    echo ""
+    echo "Databases have been initialized."
+    echo ""
     exit 0
 fi
 
@@ -64,7 +73,7 @@ do
             NAME=${NAME%/}
             if [[ -e $NAME/VERSION ]]; then
                 VERSION=`cat $NAME/VERSION`
-                CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+                CNAME=${CONTAINER_PREFIX}${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
                 APP_TAG="${APP_TAG:-master}"
@@ -86,7 +95,7 @@ do
         NAME=${1%/}
         if [[ -e $NAME/VERSION ]]; then
             VERSION=`cat $NAME/VERSION`
-            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+            CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
             sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME
@@ -99,7 +108,7 @@ do
         NAME=${1%/}
         if [[ -e $NAME/VERSION ]]; then
             VERSION=`cat $NAME/VERSION`
-            CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+            CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "sudo $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
             sudo $DOCKER run -it $VNAME /bin/bash
@@ -109,14 +118,14 @@ do
 
     elif [[ "$COMMAND" == "push" ]]; then
 
-        echo "Will push $@ to $REGISTRY_SERVER"
+        echo "Will push $@ to $CONTAINER_PREFIX"
 
         for NAME in "$@"
         do
             NAME=${NAME%/}
             if [[ -e $NAME/VERSION ]]; then
                 VERSION=`cat $NAME/VERSION`
-                CNAME=${REGISTRY_SERVER}/${NAMESPACE}/${NAME}
+                CNAME=${CONTAINER_PREFIX}${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
                 echo "---------------------------------------------------------------------------------"
