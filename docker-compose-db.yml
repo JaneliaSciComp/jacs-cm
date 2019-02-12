@@ -26,11 +26,6 @@ services:
     depends_on:
       - fluentd
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: rabbitmq
     networks:
       - jacs-net
 
@@ -49,11 +44,6 @@ services:
     restart: always
     depends_on:
       - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: mysql
     networks:
       - jacs-net
 
@@ -72,11 +62,6 @@ services:
       - mongo2
       - mongo3
       - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: mongo1
     networks:
       - jacs-net
 
@@ -89,11 +74,6 @@ services:
     restart: always
     depends_on:
       - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: mongo2
     networks:
       - jacs-net
 
@@ -106,11 +86,6 @@ services:
     restart: always
     depends_on:
       - fluentd
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: mongo3
     networks:
       - jacs-net
 
