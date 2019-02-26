@@ -1,29 +1,30 @@
 #!/bin/bash
 #
-# Management script for Docker containers
+# Management script for JACS containers.
 #
 
 # Exit on error
 set -e
 
-# Constants
-DOCKER="docker"
-DOCKER_COMPOSE="docker-compose"
-REGISTRY_SERVER="registry.int.janelia.org"
-NAMESPACE="scsw"
-CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
-
 DIR=$(cd "$(dirname "$0")"; pwd)
 
-if [[ -z $DIR/.env ]]; then
+if [[ ! -f $DIR/.env ]]; then
     echo "You need to configure your .env file before using this script. Get started by copying the template:"
     echo '  cp .env.template .env'
     exit 1
 fi
 
+# Parse environment
+. .env
+
+# Constants
+CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
+
 if [[ -z "$DOCKER_USER" ]]; then
-    UNAME=jacs
-    GNAME=jacsdata
+    if [[ -z "$UNAME" || -z "$GNAME" ]]; then
+        echo "Your .env file needs to either define the UNAME and GNAME variables, or the DOCKER_USER variable."
+        exit 1
+    fi
     MYUID=$(id -u $UNAME)
     MYGID=`cut -d: -f3 < <(getent group $GNAME)`
     DOCKER_USER=$MYUID:$MYGID
@@ -31,8 +32,8 @@ fi
 
 if [[ "$1" == "init-filesystem" ]]; then
     echo "Initializing file system..."
-    echo "sudo $DOCKER run --rm --env-file .env -v /opt/config:/opt/config -v /data:/data -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh"
-    sudo $DOCKER run --rm --env-file .env -v /opt/config:/opt/config -v /data:/data -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIRg -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh
     echo ""
     echo "The filesystem is initialized. You should now edit the template files in /opt/config to match your deployment environment."
     echo ""
@@ -41,8 +42,8 @@ fi
 
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
-    echo "sudo $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh"
-    sudo $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh
     echo ""
     echo "Databases have been initialized."
     echo ""
@@ -79,12 +80,9 @@ do
                 APP_TAG="${APP_TAG:-master}"
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " sudo $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
+                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER build --no-cache \
-                             --build-arg APP_TAG="$APP_TAG" \
-                             --build-arg API_GATEWAY_EXPOSED_HOST="$(hostname)" \
-                             -t $VNAME -t $LNAME $NAME
+                $SUDO $DOCKER build --no-cache --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
             else
                 echo "No $NAME/VERSION found"
             fi
@@ -97,8 +95,8 @@ do
             VERSION=`cat $NAME/VERSION`
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
-            echo "sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
-            sudo $DOCKER run -it -u $DOCKER_USER --rm $VNAME
+            echo "$SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
+            $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME
         else
             echo "No $NAME/VERSION found"
         fi
@@ -110,8 +108,8 @@ do
             VERSION=`cat $NAME/VERSION`
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
-            echo "sudo $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
-            sudo $DOCKER run -it $VNAME /bin/bash
+            echo "$SUDO $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
+            $SUDO $DOCKER run -it $VNAME /bin/bash
         else
             echo "No $NAME/VERSION found"
         fi
@@ -130,14 +128,14 @@ do
                 LNAME=$CNAME:latest
                 echo "---------------------------------------------------------------------------------"
                 echo " Pushing image for $VNAME"
-                echo " sudo $DOCKER push $VNAME"
+                echo " $SUDO $DOCKER push $VNAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER push $VNAME
+                $SUDO $DOCKER push $VNAME
                 echo "---------------------------------------------------------------------------------"
                 echo " Pushing image for $LNAME"
-                echo " sudo $DOCKER push $LNAME"
+                echo " $SUDO $DOCKER push $LNAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER push $LNAME
+                $SUDO $DOCKER push $LNAME
             else
                 echo "No $NAME/VERSION found"
             fi
@@ -158,20 +156,20 @@ do
         else
             YML="-f docker-compose-db.yml -f docker-compose-app.yml"
             if [ -n "${TIER}" ]; then
-            if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
-            YML="$YML -f docker-compose.${TIER}-db.yml"
-        fi
-            if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
-            YML="$YML -f docker-compose.${TIER}-app.yml"
-        fi
-            if [[ -e "docker-compose.${TIER}.yml" ]]; then
-            YML="$YML -f docker-compose.${TIER}.yml"
-        fi
+                if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
+                    YML="$YML -f docker-compose.${TIER}-db.yml"
+                fi
+                if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
+                    YML="$YML -f docker-compose.${TIER}-app.yml"
+                fi
+                if [[ -e "docker-compose.${TIER}.yml" ]]; then
+                    YML="$YML -f docker-compose.${TIER}.yml"
+                fi
             fi
         fi
         echo "Bringing $COMMAND $TIER tier"
-        echo "sudo DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-        sudo DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
+        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
+        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
 
     fi
 
