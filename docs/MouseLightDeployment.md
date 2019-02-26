@@ -38,11 +38,19 @@ cp .env.template .env
 vi .env
 ```
 
+At the very least, you must set all the unset password variables, and enter the hostname for the exposed hosts.
+
+### Filesystem initialization
+
 Ensure that your /data/db and /opt/config directories are empty and writeable by you, and then initialize them:
 
 ```
 ./manage init-filesystem
 ```
+
+By default, self-signed TLS certificates are generated and placed in $CONFIG_DIR/certs. Overwrite them with your real certificates if possible.
+
+### Database initialization
 
 Next, start up the databases and initialize them:
 ```
@@ -51,7 +59,7 @@ Next, start up the databases and initialize them:
 ./manage.sh down dev --dbonly
 ```
 
-## Start Containers
+## Start containers
 
 Bring up all of the containers like this:
 
