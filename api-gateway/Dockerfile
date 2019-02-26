@@ -12,7 +12,8 @@ WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/jacs-dashboard.git
 COPY ./conf/dashboard/ /tmp/jacs-dashboard/src/
 WORKDIR /tmp/jacs-dashboard
-RUN apk add python make g++ # Necessary for node-gyp
+RUN apk add python nodejs npm make g++ # Necessary for node-gyp
+
 RUN npm install && npm run build
 
 # Checkout IPP
