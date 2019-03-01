@@ -7,8 +7,12 @@ fi
 
 RABBIT_CONF=/app/jacs-messaging/rabbit/rabbit_queues_config.json
 
+echo "Customizing RabbitMQ Environment"
+sed -i -e 's@RABBITMQ_ADMIN_PASSWORD@'"$RABBITMQ_ADMIN_PASSWORD"'@g' $RABBIT_CONF
+sed -i -e 's@RABBITMQ_GUEST_PASSWORD@'"$RABBITMQ_GUEST_PASSWORD"'@g' $RABBIT_CONF
+
 echo "Initializing RabbitMQ Data"
-curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$RABBIT_CONF -X POST http://rabbitmq:15672/api/definitions
+curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$RABBIT_CONF -X POST http://rabbitmq:15682/api/definitions
 
 echo "Starting MongoDB replica set"
 mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@mongo1:27017/${MONGODB_INIT_DATABASE} /app/mongo/replicaSet.js
