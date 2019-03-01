@@ -72,7 +72,10 @@ do
                 echo " Building image for $NAME"
                 echo " sudo $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
                 echo "---------------------------------------------------------------------------------"
-                sudo $DOCKER build --no-cache --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
+                sudo $DOCKER build --no-cache \
+                             --build-arg APP_TAG="$APP_TAG" \
+                             --build-arg API_GATEWAY_EXPOSED_HOST="$(hostname)" \
+                             -t $VNAME -t $LNAME $NAME
             else
                 echo "No $NAME/VERSION found"
             fi

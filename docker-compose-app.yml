@@ -207,6 +207,7 @@ services:
       - /data/www/workstation:/usr/local/openresty/nginx/html/workstation
       - /data/www/updates:/usr/local/openresty/nginx/html/updates
     environment:
+      - API_GATEWAY_EXPOSED_HOST=${API_GATEWAY_EXPOSED_HOST}
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
