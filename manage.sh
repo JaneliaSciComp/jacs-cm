@@ -32,6 +32,10 @@ if [[ -z "$DOCKER_USER" ]]; then
     MYUID=$(id -u $UNAME)
     MYGID=`cut -d: -f3 < <(getent group $GNAME)`
     DOCKER_USER=$MYUID:$MYGID
+else
+    if [[ -z $MYUID || -z $MYGID ]]; then
+        echo "Your .env file needs to either define the MYUID and MYGID variables, if you define the DOCKER_USER variable."
+    fi
 fi
 
 if [[ "$1" == "init-filesystem" ]]; then
