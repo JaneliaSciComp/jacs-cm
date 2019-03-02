@@ -18,6 +18,10 @@ fi
 . .env
 
 # Constants
+CONTAINER_DIRNAME=containers
+DEPLOYMENTS_DIRNAME=deployments
+CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
+DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
 CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
 
 if [[ -z "$DOCKER_USER" ]]; then
@@ -33,9 +37,9 @@ fi
 if [[ "$1" == "init-filesystem" ]]; then
     echo "Initializing file system..."
     echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIRg -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh
+    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/init-filesystem/run.sh
     echo ""
-    echo "The filesystem is initialized. You should now edit the template files in /opt/config to match your deployment environment."
+    echo "The filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
     echo ""
     exit 0
 fi
@@ -71,47 +75,54 @@ do
 
         for NAME in "$@"
         do
+            NAME=${NAME/$CONTAINER_DIRNAME\/}
             NAME=${NAME%/}
-            if [[ -e $NAME/VERSION ]]; then
-                VERSION=`cat $NAME/VERSION`
+            CDIR="$CONTAINER_DIR/$NAME"
+            if [[ -e $CDIR/VERSION ]]; then
+                VERSION=`cat $CDIR/VERSION`
                 CNAME=${CONTAINER_PREFIX}${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
                 APP_TAG="${APP_TAG:-master}"
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $NAME"
+                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg UNAME=$UNAME --build-arg UID=$MYUID \\"
+                echo "  --build-arg GNAME=$GNAME --build-arg GID=$MYGID -t $VNAME -t $LNAME $CDIR"
                 echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER build --no-cache --build-arg APP_TAG="$APP_TAG" -t $VNAME -t $LNAME $NAME
+                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg UNAME=$UNAME --build-arg UID=$MYUID \
+                    --build-arg GNAME=$GNAME --build-arg GID=$MYGID -t $VNAME -t $LNAME $CDIR
             else
-                echo "No $NAME/VERSION found"
+                echo "No $CDIR/VERSION found"
             fi
         done
 
     elif [[ "$COMMAND" == "run" ]]; then
-
-        NAME=${1%/}
-        if [[ -e $NAME/VERSION ]]; then
-            VERSION=`cat $NAME/VERSION`
+        NAME=${1/$CONTAINER_DIRNAME\/}
+        NAME=${NAME%/}
+        CDIR="$CONTAINER_DIR/$NAME"
+        if [[ -e $CDIR/VERSION ]]; then
+            VERSION=`cat $CDIR/VERSION`
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
             $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME
         else
-            echo "No $NAME/VERSION found"
+            echo "No $CDIR/VERSION found"
         fi
 
     elif [[ "$COMMAND" == "shell" ]]; then
 
-        NAME=${1%/}
-        if [[ -e $NAME/VERSION ]]; then
-            VERSION=`cat $NAME/VERSION`
+        NAME=${1/$CONTAINER_DIRNAME\/}
+        NAME=${NAME%/}
+        CDIR="$CONTAINER_DIR/$NAME"
+        if [[ -e $CDIR/VERSION ]]; then
+            VERSION=`cat $CDIR/VERSION`
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
             $SUDO $DOCKER run -it $VNAME /bin/bash
         else
-            echo "No $NAME/VERSION found"
+            echo "No $CDIR/VERSION found"
         fi
 
     elif [[ "$COMMAND" == "push" ]]; then
@@ -120,9 +131,11 @@ do
 
         for NAME in "$@"
         do
+            NAME=${NAME/$CONTAINER_DIRNAME\/}
             NAME=${NAME%/}
-            if [[ -e $NAME/VERSION ]]; then
-                VERSION=`cat $NAME/VERSION`
+            CDIR="$CONTAINER_DIR/$NAME"
+            if [[ -e $CDIR/VERSION ]]; then
+                VERSION=`cat $CDIR/VERSION`
                 CNAME=${CONTAINER_PREFIX}${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
@@ -137,7 +150,7 @@ do
                 echo "---------------------------------------------------------------------------------"
                 $SUDO $DOCKER push $LNAME
             else
-                echo "No $NAME/VERSION found"
+                echo "No $CDIR/VERSION found"
             fi
         done
 
@@ -147,23 +160,23 @@ do
         shift 1 # remove tier
         if [[ $1 == "--dbonly" ]]; then
             shift 1 # remove dbonly flag
-            YML="-f docker-compose-db.yml"
+            YML="-f $DEPLOYMENT_DIR/docker-compose-db.yml"
             if [ -n "${TIER}" ]; then
-            if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
-            YML="$YML -f docker-compose.${TIER}-db.yml"
-        fi
+                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"
+                fi
             fi
         else
-            YML="-f docker-compose-db.yml -f docker-compose-app.yml"
+            YML="-f $DEPLOYMENT_DIR/docker-compose-db.yml -f $DEPLOYMENT_DIR/docker-compose-app.yml"
             if [ -n "${TIER}" ]; then
-                if [[ -e "docker-compose.${TIER}-db.yml" ]]; then
-                    YML="$YML -f docker-compose.${TIER}-db.yml"
+                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"
                 fi
-                if [[ -e "docker-compose.${TIER}-app.yml" ]]; then
-                    YML="$YML -f docker-compose.${TIER}-app.yml"
+                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-app.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-app.yml"
                 fi
-                if [[ -e "docker-compose.${TIER}.yml" ]]; then
-                    YML="$YML -f docker-compose.${TIER}.yml"
+                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}.yml"
                 fi
             fi
         fi
