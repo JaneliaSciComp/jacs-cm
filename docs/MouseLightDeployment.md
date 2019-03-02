@@ -45,7 +45,7 @@ At the very least, you must set all the unset password variables, and enter the 
 Ensure that your /data/db and /opt/config directories are empty and writeable by you, and then initialize them:
 
 ```
-./manage init-filesystem
+./manage.sh init-filesystem
 ```
 
 By default, self-signed TLS certificates are generated and placed in $CONFIG_DIR/certs. Overwrite them with your real certificates if possible.
@@ -56,14 +56,21 @@ Next, start up the databases and initialize them:
 ```
 ./manage.sh up dev --dbonly -d
 ./manage.sh init-databases
-./manage.sh down dev --dbonly
 ```
 
-## Start containers
+It's normal to see the "Unable to reach primary for set rsJacs" error repeated until the Mongo replica set converges on healthiness. After a few seconds, you should see a message "Databases have been initialized" and the process will exit successfully. 
 
-Bring up all of the containers like this:
+You can validate the databases as follows:
+* Connect to Portainer at https://YOUR_HOST:9000 and create an admin user for Portainer. Note: it may take a few minutes for Portainer to populate with data. 
+* Connect to http://YOUR_HOST:15672 and log in with your RABBITMQ_USER/RABBITMQ_PASSWORD
+
+## Start application containers
+
+Now that the databases are running, you can bring up all of the remaining application containers like this:
 
 ```
-./manage.sh up prod -d
+./manage.sh up node1 -d
 ```
+
+
 
