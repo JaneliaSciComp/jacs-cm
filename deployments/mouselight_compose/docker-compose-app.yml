@@ -45,8 +45,8 @@ services:
       - /opt/config/jade:/app/config
       - /data:/data
     environment:
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-master.xml
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
@@ -71,7 +71,7 @@ services:
       - /data:/data
     environment:
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
