@@ -48,13 +48,17 @@ At the very least, you must set all the unset password variables, and enter the 
 
 ### Filesystem initialization
 
-Ensure that your /data/db and /opt/config directories are empty and writeable by you, and then initialize them:
+Ensure that your `$DATA_DIR` (default: /data/db) and `$CONFIG_DIR` (default: /opt/config) directories are empty and writeable by you, and then initialize them:
 
 ```
 ./manage.sh init-filesystem
 ```
 
-By default, self-signed TLS certificates are generated and placed in $CONFIG_DIR/certs. Overwrite them with your real certificates if possible.
+You must now manually edit the files found under $CONFIG_DIR. You can use these configuration files to customize much of the JACS environment, but the following customizations are necessary for MouseLight deployments:
+
+1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
+2. `api-gateway/nginx/nginx.conf` - Customize which services you want to run by removing the blocks you don't need. You can also set up a custom DNS resolver if your environment requires it.
+3. `auth-service/config.json` - If you are using LDAP for authentication, this configuration must point to your OpenLDAP or AD server.
 
 
 ### Database initialization
@@ -70,11 +74,6 @@ It's normal to see the "Unable to reach primary for set rsJacs" error repeated u
 You can validate the databases as follows:
 * Connect to Portainer at https://YOUR_HOST:9000 and create an admin user for Portainer. Note: it may take a few minutes for Portainer to populate with data. 
 * Connect to http://YOUR_HOST:15672 and log in with your RABBITMQ_USER/RABBITMQ_PASSWORD
-
-
-## Authentication 
-
-Currently, only LDAP protocol is implemented.
 
 
 ## Start application containers
@@ -96,5 +95,4 @@ This will return a JWT that can be used on subsequent requests. For example, use
 ```
 curl -k --request GET --url https://e06u18.int.janelia.org/SCSW/JACS2AsyncServices/v2/services/metadata --header 'content-type: application/json' --header 'Authorization: Bearer YOUR_TOKEN'
 ```
-
 

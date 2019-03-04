@@ -10,6 +10,8 @@ services:
   auth-service:
     image: registry.int.janelia.org/scsw/auth-service:latest
     user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/auth-service/config.json:/app/config/config.json:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     expose:

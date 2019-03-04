@@ -150,6 +150,16 @@ if [[ ! -e $apigateway_dir ]]; then
 fi
 
 #
+# LDAP Auth Service
+#
+authservice_dir=$config_dir/auth-service
+if [[ ! -e $authservice_dir ]]; then
+    echo "Initializing LDAP Auth Service Config at $authservice_dir"
+    mkdir -p $authservice_dir
+    cp -r $DIR/auth-service/* $authservice_dir
+fi
+
+#
 # Static Web Content
 #
 if [[ ! -e $www_dir ]]; then

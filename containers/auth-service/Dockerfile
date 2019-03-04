@@ -19,10 +19,9 @@ RUN npm install
 # Build the final container
 FROM node:6.9.2
 LABEL maintainer="rokickik@janelia.hhmi.org"
-LABEL description="JACS Authentication Service"
+LABEL description="LDAP/AD Authentication Service"
 ADD VERSION .
 COPY --from=builder /tmp/ldap-jwt /app
-COPY ./config.json /app/config/config.json
 COPY ./start.sh /app/
 WORKDIR /app
 CMD [ "/bin/bash", "/app/start.sh" ]
