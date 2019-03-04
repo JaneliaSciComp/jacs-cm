@@ -110,11 +110,9 @@ do
                 APP_TAG="${APP_TAG:-master}"
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg UNAME=$UNAME --build-arg UID=$MYUID \\"
-                echo "  --build-arg GNAME=$GNAME --build-arg GID=$MYGID -t $VNAME -t $LNAME $CDIR"
+                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $CDIR"
                 echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg UNAME=$UNAME --build-arg UID=$MYUID \
-                    --build-arg GNAME=$GNAME --build-arg GID=$MYGID -t $VNAME -t $LNAME $CDIR
+                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $CDIR
             else
                 echo "No $CDIR/VERSION found"
             fi
