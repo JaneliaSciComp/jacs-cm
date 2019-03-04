@@ -23,6 +23,8 @@ DEPLOYMENTS_DIRNAME=deployments
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
 DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
 CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
+NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
+MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
 
 if [[ -z "$DOCKER_USER" ]]; then
     if [[ -z "$UNAME" || -z "$GNAME" ]]; then
@@ -48,13 +50,31 @@ if [[ "$1" == "init-filesystem" ]]; then
     exit 0
 fi
 
+
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network jacs-cm_jacs-net ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:latest /app/init-databases/run.sh
     echo ""
     echo "Databases have been initialized."
     echo ""
+    exit 0
+fi
+
+if [[ "$1" == "mongo" ]]; then
+    echo "Opening MongoDB shell..."
+    echo "$SUDO $DOCKER run -it --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}\""
+    $SUDO $DOCKER run -it --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}"
+    exit 0
+fi
+
+if [[ "$1" == "login" ]]; then
+    read -p "Username: " JACS_USERNAME
+    read -s -p "Password: " JACS_PASSWORD
+    echo 
+    echo Response from Authentication Service:
+    curl -k --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate \
+        --header 'content-type: application/json' --data "{\"username\":\"${JACS_USERNAME}\",\"password\":\"${JACS_PASSWORD}\"}"
     exit 0
 fi
 
