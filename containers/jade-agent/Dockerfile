@@ -17,19 +17,10 @@ LABEL description="Jade Storage (Agent)"
 # Install JRE for running
 RUN yum install -y java-1.8.0-openjdk
 
-# Create jacs user (these can be overridden)
-ARG UNAME=jacs
-ARG GNAME=jacsdata
-ARG UID=1047
-ARG GID=1070
-RUN groupadd -g $GID $GNAME && \
-    useradd -m -u $UID -g $GID -s /bin/bash $UNAME
-
 # Install the app
-RUN mkdir /app && chown $UID:$GID /app
+RUN mkdir /app
 
 # Switch to jacs user and configure the app
-USER $UNAME
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jade/jacsstorage-agentweb/build/install/jacsstorage-agentweb .
@@ -44,13 +35,4 @@ ENV JADE_MASTER_URL=
 
 # Command for running the application
 CMD ["sh", "-c", "/app/bin/jacsstorage-agentweb -b 0.0.0.0 -p 8080 -publicPort $JADE_AGENT_EXPOSED_PORT -masterURL $JADE_MASTER_URL -DStorageAgent.StorageHost=${JADE_AGENT_EXPOSED_HOST} -DStorageAgent.InitialPingDelayInSeconds=10 -bootstrapStorageVolumes"]
-#"/app/bin/jacsstorage-agentweb", \
-#"-b", "0.0.0.0", \
-#"-p", "8080", \
-#"-publicPort", "$EXPOSED_PORT", \
-#"-masterURL", "$MASTER_URL", \
-#"-DStorageAgent.StorageHost=${EXPOSED_HOST}", \
-#"-DStorageAgent.InitialPingDelayInSeconds=10", \
-#"-bootstrapStorageVolumes" \
-#]
 

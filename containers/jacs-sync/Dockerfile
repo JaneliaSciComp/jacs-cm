@@ -27,19 +27,8 @@ ENV HOSTNAME=localhost
 # Install JRE for running
 RUN yum install -y java-1.8.0-openjdk-headless
 
-# Create jacs user (these can be overridden)
-ARG UNAME=jacs
-ARG GNAME=jacsdata
-ARG UID=1047
-ARG GID=1070
-RUN groupadd -g $GID $GNAME && \
-    useradd -m -u $UID -g $GID -s /bin/bash $UNAME
-
 # Install the app
-RUN mkdir /app && chown $UID:$GID /app
-
-# Switch to jacs user and configure the app
-USER $UNAME
+RUN mkdir /app
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jacs-compute/jacs2-syncweb/build/install/jacs2-syncweb .

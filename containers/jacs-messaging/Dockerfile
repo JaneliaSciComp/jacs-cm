@@ -28,10 +28,9 @@ LABEL description="JACS Messaging"
 RUN yum install -y java-1.8.0-openjdk-headless
 
 # Install the app
-RUN mkdir /app #&& chown $UID:$GID /app
+RUN mkdir /app
 
-# Switch to jacs user and configure the app
-USER $UNAME
+# Configure the app
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jacs-messaging/build/libs/sharedWorkspaceBroker*.jar /app/sharedWorkspaceBroker.jar
