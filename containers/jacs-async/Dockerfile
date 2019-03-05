@@ -20,7 +20,7 @@ RUN ./gradlew installDist
 
 # Build the final container
 FROM scientificlinux/sl:7
-LABEL maintainer="rokickik@janelia.hhmi.org"
+LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Async Services"
 ENV HOSTNAME=localhost
 
