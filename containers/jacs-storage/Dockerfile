@@ -12,19 +12,29 @@ RUN ./gradlew installDist -x test
 # Build the final container
 FROM scientificlinux/sl:7
 LABEL maintainer="goinac@janelia.hhmi.org"
-LABEL description="Jade Storage (Master)"
+LABEL description="JADE - JACS Storage Engine"
 
 # Install JRE for running
 RUN yum install -y java-1.8.0-openjdk-headless
 
 # Install the app
 RUN mkdir /app
-ENV JAVA_HOME=/usr/lib/jvm/jre
+ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
-COPY --from=builder /tmp/jade/jacsstorage-masterweb/build/install/jacsstorage-masterweb .
+COPY --from=builder /tmp/jade/jacsstorage-masterweb/build/install/jacsstorage-masterweb ./master
+COPY --from=builder /tmp/jade/jacsstorage-agentweb/build/install/jacsstorage-agentweb ./agent
+COPY start.sh /app/
 
 # Expose port
 EXPOSE 8080
 
+# Service mode defaults to master node, but can be set to agent
+ENV SERVICE_MODE=master
+# These variables must be set when running this container in agent mode
+ENV JADE_AGENT_EXPOSED_HOST=
+ENV JADE_AGENT_EXPOSED_PORT=
+ENV JADE_MASTER_URL=
+
 # Command for running the application
-CMD ["/app/bin/jacsstorage-masterweb", "-b", "0.0.0.0", "-p", "8080"]
+CMD ["/bin/sh", "/app/start.sh"]
+

@@ -39,7 +39,7 @@ services:
       - jacs-net
 
   jade-master:
-    image: registry.int.janelia.org/scsw/jade-master:latest
+    image: registry.int.janelia.org/scsw/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - mongo1
@@ -47,6 +47,7 @@ services:
       - /opt/config/jade:/app/config:ro
       - /data:/data
     environment:
+      - SERVICE_MODE=master
       - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
@@ -63,7 +64,7 @@ services:
       - jacs-net
 
   jade-agent:
-    image: registry.int.janelia.org/scsw/jade-agent:latest
+    image: registry.int.janelia.org/scsw/jade-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -72,6 +73,7 @@ services:
       - /opt/config/jade:/app/config:ro
       - /data:/data
     environment:
+      - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
