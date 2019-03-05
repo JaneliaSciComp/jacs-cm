@@ -8,7 +8,7 @@ version: '3'
 services:
 
   auth-service:
-    image: registry.int.janelia.org/scsw/auth-service:latest
+    image: registry.int.janelia.org/jacs/auth-service:latest
     user: ${DOCKER_USER}
     volumes:
       - /opt/config/auth-service/config.json:/app/config/config.json:ro
@@ -21,7 +21,7 @@ services:
       - jacs-net
 
   jacs-messaging:
-    image: registry.int.janelia.org/scsw/jacs-messaging:latest
+    image: registry.int.janelia.org/jacs/jacs-messaging:latest
     user: ${DOCKER_USER}
     depends_on:
       - rabbitmq
@@ -39,7 +39,7 @@ services:
       - jacs-net
 
   jade-master:
-    image: registry.int.janelia.org/scsw/jacs-storage:latest
+    image: registry.int.janelia.org/jacs/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - mongo1
@@ -64,7 +64,7 @@ services:
       - jacs-net
 
   jade-agent:
-    image: registry.int.janelia.org/scsw/jade-storage:latest
+    image: registry.int.janelia.org/jacs/jade-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -93,7 +93,7 @@ services:
       - jacs-net
 
   jacs-sync:
-    image: registry.int.janelia.org/scsw/jacs-sync:latest
+    image: registry.int.janelia.org/jacs/jacs-sync:latest
     user: ${DOCKER_USER}
     volumes:
       - /opt/config/jacs-sync:/app/config
@@ -115,7 +115,7 @@ services:
       - jacs-net
 
   jacs-async:
-    image: registry.int.janelia.org/scsw/jacs-async:latest
+    image: registry.int.janelia.org/jacs/jacs-async:latest
     user: ${DOCKER_USER}
     volumes:
       - /opt/config/jacs-async:/app/config:ro
@@ -139,7 +139,7 @@ services:
 
   api-gateway:
     # This container must run as root in order to bind to port 443
-    image: registry.int.janelia.org/scsw/api-gateway:latest
+    image: registry.int.janelia.org/jacs/api-gateway:latest
     volumes:
       - /opt/config/certs:/app/certs:ro
       - /opt/config/api-gateway/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro

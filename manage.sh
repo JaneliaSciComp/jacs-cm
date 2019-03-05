@@ -107,12 +107,10 @@ do
                 CNAME=${CONTAINER_PREFIX}${NAME}
                 VNAME=$CNAME:${VERSION}
                 LNAME=$CNAME:latest
-                # Convert to uppercase, and dashes to underscores (e.g. jade-agent -> JADE_AGENT)
-                APP_TAG_VAR="\$APP_TAG_"${NAME/-/_}
-                APP_TAG_VAR=${APP_TAG_VAR^^}
-                # Get the app tag, defaulting to master branch
-                APP_TAG=$(eval echo "$APP_TAG_VAR")
-                APP_TAG="${APP_TAG:-master}"
+                APP_TAG=master
+                if [[ -e $CDIR/APP_TAG ]]; then
+                    APP_TAG=$(cat $CDIR/APP_TAG)
+                fi
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
                 echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $CDIR"
