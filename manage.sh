@@ -69,8 +69,15 @@ fi
 
 if [[ "$1" == "mongo" ]]; then
     echo "Opening MongoDB shell..."
-    echo "$SUDO $DOCKER run -it --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}\""
-    $SUDO $DOCKER run -it --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}"
+    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}\""
+    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}"
+    exit 0
+fi
+
+if [[ "$1" == "mysql" ]]; then
+    echo "Opening MySQL shell..."
+    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} -h mysql ${MYSQL_DATABASE}"
+    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} -h mysql ${MYSQL_DATABASE}
     exit 0
 fi
 
