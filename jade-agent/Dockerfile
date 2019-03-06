@@ -7,7 +7,7 @@ RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
 RUN git clone https://github.com/JaneliaSciComp/jacs-storage.git .
 RUN git checkout $APP_TAG
-RUN gradle installDist -x test
+RUN ./gradlew installDist
 
 # Build the final container
 FROM scientificlinux/sl:7
