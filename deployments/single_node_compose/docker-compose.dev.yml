@@ -3,27 +3,17 @@ services:
 
   jade-master:
     volumes:
-      - /data:/data
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData
 
   jade-agent:
     volumes:
-      - /data:/data
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData
       - /nrs/mouselight:/nrs/mouselight
 
   jacs-async:
-    environment:
-      HOSTNAME: c13u09.int.janelia.org
-      jacs_service_queue_id: c13u09
     volumes:
-      - /data:/data
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData
-
-  api-gateway:
-    environment:
-      NGINX_SERVERNAME: c13u09.int.janelia.org
 

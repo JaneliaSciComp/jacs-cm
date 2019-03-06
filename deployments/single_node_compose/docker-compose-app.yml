@@ -8,41 +8,20 @@ version: '3'
 services:
 
   auth-service:
-    image: registry.int.janelia.org/scsw/auth-service:latest
+    image: registry.int.janelia.org/jacs/auth-service:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/auth-service/config.json:/app/config/config.json:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     expose:
       - "3000"
-    depends_on:
-      - fluentd
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: auth-service
-    networks:
-      - jacs-net
-
-  solr-search:
-    image: registry.int.janelia.org/scsw/solr-search:latest
-    volumes:
-      - /opt/data:/data
-    ports:
-      - "8890:8080"
-    depends_on:
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: solr-search
     networks:
       - jacs-net
 
   jacs-messaging:
-    image: registry.int.janelia.org/scsw/jacs-messaging:latest
+    image: registry.int.janelia.org/jacs/jacs-messaging:latest
     user: ${DOCKER_USER}
     depends_on:
       - rabbitmq
@@ -56,76 +35,65 @@ services:
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jacs-messaging
     networks:
       - jacs-net
 
   jade-master:
-    image: registry.int.janelia.org/scsw/jade-master:latest
+    image: registry.int.janelia.org/jacs/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - mongo1
     volumes:
-      - /opt/config/jade:/app/config
+      - /opt/config/jade:/app/config:ro
+      - /data:/data
     environment:
+      - SERVICE_MODE=master
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-master.xml
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
-      - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
-      - jade_MongoDB_Password=${MONGODB_JADE_PASSWORD}
+      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
     expose:
       - '8080'
     ports:
       - '9880:8080'
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jade-master
     networks:
       - jacs-net
 
   jade-agent:
-    image: registry.int.janelia.org/scsw/jade-agent:latest
+    image: registry.int.janelia.org/jacs/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
       - mongo1
     volumes:
-      - /opt/config/jade:/app/config
+      - /opt/config/jade:/app/config:ro
+      - /data:/data
     environment:
+      - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JACSSTORAGE_LOG_CONFIG=/app/config/logback-agent.xml
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
-      - jade_MongoDB_Username=${MONGODB_JADE_USERNAME}
-      - jade_MongoDB_Password=${MONGODB_JADE_PASSWORD}
+      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
     expose:
       - '8080'
     ports:
       - '9881:8080'
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jade-agent
     networks:
       - jacs-net
 
   jacs-sync:
-    image: registry.int.janelia.org/scsw/jacs-sync:latest
+    image: registry.int.janelia.org/jacs/jacs-sync:latest
     user: ${DOCKER_USER}
     volumes:
       - /opt/config/jacs-sync:/app/config
@@ -134,80 +102,50 @@ services:
       - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
-      - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
-      - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
+      - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
       - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
-      - jacs_Solr_ServerURL=http://solr-search:8080/solr/FlyWorkstation
     expose:
       - "8080"
     depends_on:
-      - solr-search
       - mongo1
-      - fluentd
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jacs-sync
     networks:
       - jacs-net
 
   jacs-async:
-    image: registry.int.janelia.org/scsw/jacs-async:latest
+    image: registry.int.janelia.org/jacs/jacs-async:latest
     user: ${DOCKER_USER}
     volumes:
-      - /opt/config/jacs-async:/app/config
+      - /opt/config/jacs-async:/app/config:ro
+      - /data:/data
     environment:
+      - HOSTNAME=jacs-async
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_ASYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
-      - jacs_MongoDB_Username=${MONGODB_JACS_USERNAME}
-      - jacs_MongoDB_Password=${MONGODB_JACS_PASSWORD}
+      - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
+      - jacs_service_queue_id=${JACS_QUEUE_ID}
     expose:
       - "8080"
     depends_on:
-      - solr-search
       - mongo1
-      - fluentd
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: jacs-async
-    networks:
-      - jacs-net
-
-  ipp:
-    image: registry.int.janelia.org/scsw/ipp:latest
-    volumes:
-      - /opt/config/ipp:/app/config
-    environment:
-      - LIGHTSHEET_INTERFACE_SETTINGS=/app/config/env_config.py
-    expose:
-      - "8000"
-    depends_on:
-      - fluentd
-    restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: ipp
     networks:
       - jacs-net
 
   api-gateway:
-    image: registry.int.janelia.org/scsw/api-gateway:latest
+    # Nginx must run as root
+    image: registry.int.janelia.org/jacs/api-gateway:latest
     volumes:
-      - /opt/config/certs:/app/certs
-      - /data/www/workstation:/usr/local/openresty/nginx/html/workstation
-      - /data/www/updates:/usr/local/openresty/nginx/html/updates
+      - /opt/config/certs:/app/certs:ro
+      - /opt/config/api-gateway/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - /data/www/workstation:/usr/local/openresty/nginx/html/workstation:ro
+      - /data/www/updates:/usr/local/openresty/nginx/html/updates:ro
     environment:
-      - API_GATEWAY_EXPOSED_HOST=${API_GATEWAY_EXPOSED_HOST}
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
@@ -217,14 +155,41 @@ services:
       - auth-service
       - jacs-sync
       - jacs-async
-      - ipp
-      - fluentd
+      - jacs-dashboard
     restart: unless-stopped
-    logging:
-      driver: "fluentd"
-      options:
-         fluentd-address: localhost:24224
-         tag: api-gateway
+    networks:
+      - jacs-net
+
+  jacs-dashboard:
+    # Nginx must run as root
+    image: registry.int.janelia.org/jacs/jacs-dashboard:latest
+    expose:
+      - "8080"
+    restart: unless-stopped
+    networks:
+      - jacs-net
+
+  solr-search:
+    image: registry.int.janelia.org/jacs/solr-search:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/data:/data
+    ports:
+      - "8890:8080"
+    restart: unless-stopped
+    networks:
+      - jacs-net
+
+  ipp:
+    image: registry.int.janelia.org/jacs/ipp:latest
+    user: ${DOCKER_USER}
+    volumes:
+      - /opt/config/ipp:/app/config
+    environment:
+      - LIGHTSHEET_INTERFACE_SETTINGS=/app/config/env_config.py
+    expose:
+      - "8000"
+    restart: unless-stopped
     networks:
       - jacs-net
 
