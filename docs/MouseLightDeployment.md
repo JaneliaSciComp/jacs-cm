@@ -47,8 +47,11 @@ cp .env.template .env
 vi .env
 ```
 
-At the very least, you must set all the unset password variables, and configure the hostnames for the exposed host. The client computer must be able to access the exposed host with the provided hostname.
-
+At minimum, you must customize the following:
+1. Set `DEPLOYMENT` to mouselight_compose
+2. Fill in all the unset passwords
+3. Set a 32 byte secret key for JWT authentication
+4. Set API_GATEWAY_EXPOSED_HOST and JADE_AGENT_EXPOSED_HOST to the hostname of the server you are deploying to
 
 ### Filesystem initialization
 
@@ -61,7 +64,7 @@ Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/
 You can now manually edit the files found under `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the following customizations are minimally necessary for MouseLight deployments:
 
 1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
-2. `api-gateway/nginx/nginx.conf` - Customize which services you want to run by removing the blocks you don't need. You can also set up a custom DNS resolver if your environment requires it.
+2. `api-gateway/nginx/nginx.conf` - Remove the 2nd and 3rd server blocks dealing with jacs-dashboard and the ipp. These are not used for the MouseLight configuration and API Gateway will not start correctly until they are removed from nginx.conf.
 3. `auth-service/config.json` - If you are using LDAP for authentication, this configuration must point to your OpenLDAP or AD server.
 
 
