@@ -17,6 +17,12 @@ fi
 # Parse environment
 . .env
 
+if [[ -z "$DEPLOYMENT" ]]; then
+    echo "Your .env file must define a DEPLOYMENT to use"
+fi
+
+echo "Using deployment $DEPLOYMENT"
+
 # Constants
 CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
@@ -113,9 +119,9 @@ do
                 fi
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $CDIR"
+                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST -t $VNAME -t $LNAME $CDIR"
                 echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG -t $VNAME -t $LNAME $CDIR
+                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST -t $VNAME -t $LNAME $CDIR
             else
                 echo "No $CDIR/VERSION found"
             fi

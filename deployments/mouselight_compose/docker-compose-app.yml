@@ -64,7 +64,7 @@ services:
       - jacs-net
 
   jade-agent:
-    image: registry.int.janelia.org/jacs/jade-storage:latest
+    image: registry.int.janelia.org/jacs/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master

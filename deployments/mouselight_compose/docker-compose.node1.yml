@@ -8,22 +8,16 @@ services:
     image: registry.int.janelia.org/jacs/jacs-messaging:1.0.0-extws
 
   jade-master:
-    image: registry.int.janelia.org/jacs/jacs-storage:1.0.0-extws
-    volumes:
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+    image: registry.int.janelia.org/jacs/jacs-storage:1.0.0
 
   jade-agent:
-    image: registry.int.janelia.org/jacs/jacs-storage:1.0.0-extws
-    volumes:
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+    image: registry.int.janelia.org/jacs/jacs-storage:1.0.0
 
   jacs-sync:
-    image: registry.int.janelia.org/jacs/jacs-sync:1.0.0
+    image: registry.int.janelia.org/jacs/jacs-sync:1.0.0-extws
 
   jacs-async:
-    image: registry.int.janelia.org/jacs/jacs-async:1.0.0
-    volumes:
-      - /groups/jacs/jacsHosts:/groups/jacs/jacsHosts
+    image: registry.int.janelia.org/jacs/jacs-async:1.0.0-extws
 
   api-gateway:
     image: registry.int.janelia.org/jacs/api-gateway:1.0.0
