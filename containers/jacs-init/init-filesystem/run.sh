@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Initializes CONFIG_DIR and DATA_DIR with default directory structures and configuration templates.
+#
 
 if [[ -z "$CONFIG_DIR" || -z "$DATA_DIR" ]]; then
     echo "You must specify your file system parameters in the .env file"
@@ -28,21 +31,25 @@ if [[ ! -w $data_dir ]]; then
     exit 1
 fi
 
+#
+# Database Directory
+#
 if [[ ! -e $db_dir ]]; then
     echo "Creating directory: $db_dir"
     mkdir $db_dir
 fi
 
-if [[ ! -e $www_dir ]]; then
-    echo "Creating directory: $www_dir"
-    mkdir $www_dir
-fi
-
+#
+# Portainer Data Directory
+#
 if [[ ! -e $data_dir/portainer ]]; then
     echo "Creating directory: $data_dir/portainer"
     mkdir $data_dir/portainer
 fi
 
+#
+# Mongo Data Directory
+#
 if [[ ! -e $mongo_data_dir ]]; then
     echo "Initializing MongoDB data directories"
     mkdir -p $mongo_data_dir/replica{1..3}

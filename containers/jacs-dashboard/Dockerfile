@@ -1,4 +1,6 @@
 FROM registry.int.janelia.org/scsw/builder as builder
+# Currently, this container must be build with a hardcoded exposed host.
+# In the future this will be externalized as a runtime environment variable.
 ARG API_GATEWAY_EXPOSED_HOST=
 
 WORKDIR /tmp
@@ -18,5 +20,3 @@ LABEL description="JACS Dashboard"
 RUN mkdir /app
 COPY --from=builder /tmp/jacs-dashboard/build /var/www
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-
-#CMD ["/usr/sbin/nginx -g 'daemon off;'"]
