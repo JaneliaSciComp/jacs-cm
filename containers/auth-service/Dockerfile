@@ -7,7 +7,7 @@
 # Builder container
 FROM node:6.9.2 as builder
 ARG TAG_LDAP_JWT=master
-RUN apt-get install git-core
+RUN apt-get -y install --no-install-recommends git-core
 WORKDIR /tmp
 
 # Checkout and build the code
@@ -20,7 +20,7 @@ RUN npm install
 FROM node:6.9.2
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="LDAP/AD Authentication Service"
-ADD VERSION .
+COPY VERSION .
 COPY --from=builder /tmp/ldap-jwt /app
 COPY ./start.sh /app/
 WORKDIR /app

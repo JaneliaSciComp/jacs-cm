@@ -31,9 +31,9 @@ EXPOSE 8080
 # Service mode defaults to master node, but can be set to agent
 ENV SERVICE_MODE=master
 # These variables must be set when running this container in agent mode
-ENV JADE_AGENT_EXPOSED_HOST=
-ENV JADE_AGENT_EXPOSED_PORT=
-ENV JADE_MASTER_URL=
+ENV JADE_AGENT_EXPOSED_HOST=localhost
+ENV JADE_AGENT_EXPOSED_PORT=9880
+ENV JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
 
 # Command for running the application
 CMD ["/bin/sh", "/app/start.sh"]

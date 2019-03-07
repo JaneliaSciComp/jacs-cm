@@ -148,6 +148,24 @@ do
             echo "No $CDIR/VERSION found"
         fi
 
+    elif [[ "$COMMAND" == "lint" ]]; then
+
+        echo "Will lint these images: $@"
+
+        for NAME in "$@"
+        do
+            NAME=${NAME/$CONTAINER_DIRNAME\/}
+            NAME=${NAME%/}
+            CDIR="$CONTAINER_DIR/$NAME"
+
+            echo "---------------------------------------------------------------------------------"
+            echo "Linting $NAME"
+            # hadolint exits with an error code if there are linting issues, but we want to keep going
+            set +e 
+            $SUDO $DOCKER run --rm -i hadolint/hadolint < $CDIR/Dockerfile
+            set -e
+        done
+
     elif [[ "$COMMAND" == "shell" ]]; then
 
         NAME=${1/$CONTAINER_DIRNAME\/}
