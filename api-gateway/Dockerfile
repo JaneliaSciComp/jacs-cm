@@ -1,8 +1,11 @@
 FROM registry.int.janelia.org/scsw/builder as builder
 ARG TAG_NGINX_JWT=master
+ARG API_GATEWAY_EXPOSED_HOST=`hostname`
 
 # Checkout the nginx-gwt module
 WORKDIR /tmp
+COPY ./conf/dashboard/settings.json /tmp/dashboard-settings.json
+
 RUN git clone https://github.com/JaneliaSciComp/nginx-jwt.git
 WORKDIR /tmp/nginx-jwt
 RUN git checkout $TAG_NGINX_JWT && ./build
@@ -10,8 +13,11 @@ RUN git checkout $TAG_NGINX_JWT && ./build
 # Checkout jacs-dashboard
 WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/jacs-dashboard.git
-COPY ./conf/dashboard/ /tmp/jacs-dashboard/src/
+
 WORKDIR /tmp/jacs-dashboard
+RUN sed s/%API%/$API_GATEWAY_EXPOSED_HOST/ /tmp/dashboard-settings.json > /tmp/jacs-dashboard/src/settings.json
+RUN cat /tmp/jacs-dashboard/src/settings.json
+
 RUN apk add python nodejs npm make g++ # Necessary for node-gyp
 
 RUN npm install && npm run build

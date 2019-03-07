@@ -43,8 +43,8 @@ services:
       - /opt/config/mysql/jacs/conf:/etc/mysql/conf.d
       - /opt/config/mysql/jacs/sql:/docker-entrypoint-initdb.d
     environment:
-        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-        - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     user: ${DOCKER_USER}
     restart: always
     depends_on:
