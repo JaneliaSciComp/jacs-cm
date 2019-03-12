@@ -48,6 +48,7 @@ done
 
 echo
 echo "Initializing JACS Default User"
-mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h ${REPLICA_HOSTS} \
+echo "mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h $REPLICA_HOSTS --db jacs --collection subject $DIR/mongo/defaultUser.json"
+mongoimport --authenticationDatabase admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h rsJacs/$REPLICA_HOSTS \
     --db jacs --collection subject $DIR/mongo/defaultUser.json
 
