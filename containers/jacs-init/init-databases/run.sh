@@ -27,7 +27,6 @@ echo "Starting MongoDB replica set"
 mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@mongo1:27017/${MONGODB_INIT_DATABASE} $DIR/mongo/replicaSet.js
 
 echo "Initializing MongoDB Users"
-
 cat >/tmp/createUserJacs.js <<EOL
 db.createUser(
   {
@@ -38,8 +37,13 @@ db.createUser(
   });
 EOL
 
+REPLICA_HOSTS=mongo1:27017,mongo2:27017,mongo3:27017
 for filename in /tmp/*.js; do
-    mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@mongo1:27017,mongo2:27017,mongo3:27017/${MONGODB_INIT_DATABASE}?replicaSet=rsJacs $filename
+    mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@${REPLICA_HOSTS}/${MONGODB_INIT_DATABASE}?replicaSet=rsJacs $filename
     sleep 1
 done
+
+echo "Initializing JACS Default User"
+mongoimport -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h ${REPLICA_HOSTS} --db ${MONGODB_INIT_DATABASE} \
+    --collection subject --authenticationDatabase admin $DIR/mongo/defaultUser.json
 

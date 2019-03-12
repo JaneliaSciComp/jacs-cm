@@ -1,0 +1,19 @@
+{
+    "_id": "1620562904715624624",
+    "class": "org.janelia.model.security.User",
+    "key": "user:root",
+    "name": "root",
+    "fullName": "Default Administrative User",
+    "password": "9hhv2pRVbwkaLuvzHmaTOQ==.YAa9RDzfov494UeAxJuDXAkNSekFrVh7DfBdNL3LPIg=",
+    "email": "",
+    "userGroupRoles": [
+        {
+            "groupKey": "group:admin",
+            "role": "Writer"
+        },
+        {
+            "groupKey": "group:workstation_users",
+            "role": "Reader"
+        }
+    ]
+}
