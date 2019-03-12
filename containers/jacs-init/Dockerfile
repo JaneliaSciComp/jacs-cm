@@ -1,7 +1,7 @@
 FROM registry.int.janelia.org/scsw/builder
 
 # Add Mongo
-RUN apk add --no-cache mongodb python
+RUN apk add --no-cache mongodb mongodb-tools python
 
 # Add init scripts
 RUN mkdir /app
