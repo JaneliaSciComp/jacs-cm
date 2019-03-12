@@ -6,6 +6,6 @@ RUN apk add --no-cache mongodb python
 # Add init scripts
 RUN mkdir /app
 WORKDIR /app
-COPY init-filesystem /app/init-filesystem
-COPY init-databases /app/init-databases
+COPY filesystem /app/filesystem
+COPY databases /app/databases
 

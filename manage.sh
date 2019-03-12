@@ -216,14 +216,23 @@ do
         shift 1 # remove tier
         if [[ $1 == "--dbonly" ]]; then
             shift 1 # remove dbonly flag
-            YML="-f $DEPLOYMENT_DIR/docker-compose-db.yml"
+            YML=""
+            if [[ -e "$DEPLOYMENT_DIR/docker-compose-db.yml" ]]; then
+                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-db.yml"
+            fi
             if [ -n "${TIER}" ]; then
                 if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
                     YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"
                 fi
             fi
         else
-            YML="-f $DEPLOYMENT_DIR/docker-compose-db.yml -f $DEPLOYMENT_DIR/docker-compose-app.yml"
+            YML=""
+            if [[ -e "$DEPLOYMENT_DIR/docker-compose-db.yml" ]]; then
+                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-db.yml"
+            fi
+            if [[ -e "$DEPLOYMENT_DIR/docker-compose-app.yml" ]]; then
+                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-app.yml"
+            fi
             if [ -n "${TIER}" ]; then
                 if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
                     YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"

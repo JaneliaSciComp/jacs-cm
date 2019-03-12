@@ -7,19 +7,6 @@
 version: '3'
 services:
 
-  auth-service:
-    image: registry.int.janelia.org/jacs/auth-service:latest
-    user: ${DOCKER_USER}
-    volumes:
-      - /opt/config/auth-service/config.json:/app/config/config.json:ro
-    environment:
-      - JWT_SECRET=${JWT_SECRET_KEY}
-    expose:
-      - "3000"
-    restart: unless-stopped
-    networks:
-      - jacs-net
-
   jacs-messaging:
     image: registry.int.janelia.org/jacs/jacs-messaging:latest
     user: ${DOCKER_USER}
@@ -100,6 +87,7 @@ services:
     environment:
       - JACS2_CONFIG=/app/config/jacs.properties
       - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
+      - jacs_JWT_SecretKey=${JWT_SECRET_KEY}
       - jacs_MongoDB_ServerName=mongo1:27017,mongo2:27017,mongo3:27017
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
@@ -142,7 +130,7 @@ services:
     image: registry.int.janelia.org/jacs/api-gateway:latest
     volumes:
       - /opt/config/certs:/app/certs:ro
-      - /opt/config/api-gateway/nginx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - /opt/config/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
       - /data/www/workstation:/usr/local/openresty/nginx/html/workstation:ro
       - /data/www/updates:/usr/local/openresty/nginx/html/updates:ro
     environment:

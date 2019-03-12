@@ -1,9 +1,6 @@
 version: '3'
 services:
 
-  auth-service:
-    image: registry.int.janelia.org/jacs/auth-service:1.0.0
-
   jacs-messaging:
     image: registry.int.janelia.org/jacs/jacs-messaging:1.0.0-extws
 

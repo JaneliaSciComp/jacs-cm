@@ -153,7 +153,13 @@ apigateway_dir=$config_dir/api-gateway
 if [[ ! -e $apigateway_dir ]]; then
     echo "Initializing API Gateway Config at $apigateway_dir"
     mkdir -p $apigateway_dir
-    cp -r $DIR/api-gateway/* $apigateway_dir
+    if [[ -e $DIR/api-gateway/deployments/$DEPLOYMENT ]]; then
+        echo "  Using gateway configuration for $DEPLOYMENT deployment"
+        cp -r $DIR/api-gateway/deployments/$DEPLOYMENT/* $apigateway_dir
+    else
+        echo "  Using default gateway configuration"
+        cp -r $DIR/api-gateway/* $apigateway_dir
+    fi
 fi
 
 #
