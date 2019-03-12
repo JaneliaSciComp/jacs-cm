@@ -140,9 +140,9 @@ services:
       - "8080:8080"
       - "8090:8090"
     depends_on:
-      - auth-service
       - jacs-sync
       - jacs-async
+      - jade-master
     restart: unless-stopped
     networks:
       - jacs-net
