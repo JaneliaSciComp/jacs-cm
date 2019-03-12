@@ -5,7 +5,7 @@
 #
 
 # Builder container
-FROM registry.int.janelia.org/scsw/builder as builder
+FROM registry.int.janelia.org/jacs/builder as builder
 ARG APP_TAG=master
 
 # Checkout and build the code
@@ -13,7 +13,7 @@ WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/jacs-messaging.git
 WORKDIR /tmp/jacs-messaging
 RUN git checkout $APP_TAG
-RUN gradle brokerJar
+RUN gradle --no-daemon brokerJar
 
 # Checkout wait-for-it
 WORKDIR /tmp

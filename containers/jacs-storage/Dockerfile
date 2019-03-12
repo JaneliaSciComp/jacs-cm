@@ -1,5 +1,5 @@
 # Build the jade agent container
-FROM registry.int.janelia.org/scsw/builder as builder
+FROM registry.int.janelia.org/jacs/builder as builder
 ARG APP_TAG=master
 
 # Checkout and build the code
@@ -7,7 +7,7 @@ RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
 RUN git clone https://github.com/JaneliaSciComp/jacs-storage.git .
 RUN git checkout $APP_TAG
-RUN ./gradlew installDist -x test
+RUN ./gradlew --no-daemon installDist -x test
 
 # Build the final container
 FROM scientificlinux/sl:7

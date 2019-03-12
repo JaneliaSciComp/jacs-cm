@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/scsw/builder
+FROM registry.int.janelia.org/jacs/builder
 
 # Add Mongo
 RUN apk add --no-cache mongodb mongodb-tools python

@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/scsw/builder as builder
+FROM registry.int.janelia.org/jacs/builder as builder
 ARG TAG_NGINX_JWT=master
 
 # Checkout the nginx-gwt module
