@@ -8,9 +8,9 @@ if [[ -z "$MONGODB_INIT_ROOT_USERNAME" ]]; then
     exit 1
 fi
 
-set -e
 DIR=$(cd "$(dirname "$0")"; pwd)
 
+echo
 echo "Customizing RabbitMQ Environment"
 RABBIT_CONF=$DIR/rabbitmq/rabbit_queues_config.json
 TMP_RABBIT_CONF=/tmp/rabbit_queues_config.json
@@ -19,13 +19,16 @@ RABBITMQ_PASSWORD_HASH=$(python $DIR/rabbitmq/hash.py $RABBITMQ_PASSWORD)
 sed -i -e 's@RABBITMQ_USER@'"$RABBITMQ_USER"'@g' $TMP_RABBIT_CONF
 sed -i -e 's@RABBITMQ_PASSWORD@'"$RABBITMQ_PASSWORD_HASH"'@g' $TMP_RABBIT_CONF
 
+echo
 echo "Initializing RabbitMQ Data"
 curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$TMP_RABBIT_CONF http://rabbitmq:15672/api/definitions
 curl -v -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -X DELETE http://rabbitmq:15672/api/users/guest
 
+echo
 echo "Starting MongoDB replica set"
 mongo mongodb://${MONGODB_INIT_ROOT_USERNAME}:${MONGODB_INIT_ROOT_PASSWORD}@mongo1:27017/${MONGODB_INIT_DATABASE} $DIR/mongo/replicaSet.js
 
+echo
 echo "Initializing MongoDB Users"
 cat >/tmp/createUserJacs.js <<EOL
 db.createUser(
@@ -43,7 +46,8 @@ for filename in /tmp/*.js; do
     sleep 1
 done
 
+echo
 echo "Initializing JACS Default User"
-mongoimport -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h ${REPLICA_HOSTS} --db ${MONGODB_INIT_DATABASE} \
-    --collection subject --authenticationDatabase admin $DIR/mongo/defaultUser.json
+mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h ${REPLICA_HOSTS} \
+    --db jacs --collection subject $DIR/mongo/defaultUser.json
 
