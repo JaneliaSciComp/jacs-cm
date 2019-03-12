@@ -53,35 +53,41 @@ At minimum, you must customize the following:
 3. Set a 32 byte secret key for JWT authentication
 4. Set API_GATEWAY_EXPOSED_HOST and JADE_AGENT_EXPOSED_HOST to the hostname of the server you are deploying to
 
+
 ### Filesystem initialization
 
 Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/config) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them:
 
 ```
+sudo mkdir /opt/config
+sudo chown docker-nobody:docker-nobody /opt/config /data
 ./manage.sh init-filesystem
 ```
 
 You can now manually edit the files found under `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the following customizations are minimally necessary for MouseLight deployments:
 
 1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
-2. `api-gateway/nginx/nginx.conf` - Remove the 2nd and 3rd server blocks dealing with jacs-dashboard and the ipp. These are not used for the MouseLight configuration and API Gateway will not start correctly until they are removed from nginx.conf.
-3. `auth-service/config.json` - If you are using LDAP for authentication, this configuration must point to your OpenLDAP or AD server.
 
 
 ### Database initialization
 
-Next, start up the databases and initialize them:
+Next, start up the databases only:
 ```
-./manage.sh up dev --dbonly -d
+./manage.sh up node1 --dbonly -d
+```
+At this point you should connect to Portainer at https://YOUR_HOST:9000 and create an admin user. Portainer setup has a timeout, so if you can't reach the container try running the up command again to refresh it.
+
+Now you are ready to initalize the databases:
+
+```
 ./manage.sh init-databases
 ```
-
 It's normal to see the "Unable to reach primary for set rsJacs" error repeated until the Mongo replica set converges on healthiness. After a few seconds, you should see a message "Databases have been initialized" and the process will exit successfully.
 
 You can validate the databases as follows:
-* Connect to Portainer at https://YOUR_HOST:9000 and create an admin user for Portainer. Note: it may take a few minutes for Portainer to populate with data.
 * Connect to http://YOUR_HOST:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
-* Verify that you can connect to the Mongo instance using `./manage mongo` and the MySQL instance using `./manage mysql`
+* Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
+
 
 ## Start application containers
 
@@ -97,7 +103,7 @@ You can verify the Authentication Service is working as follows:
 ./manage login
 ```
 
-This will return a JWT that can be used on subsequent requests. For example, use it to verify the JACS services:
+You should be able to log in with the default admin account (root/root). This will return a JWT that can be used on subsequent requests. For example, use it to verify the JACS services:
 
 ```
 export TOKEN=<enter token here>
