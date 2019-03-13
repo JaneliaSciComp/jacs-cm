@@ -100,7 +100,7 @@ Now that the databases are running, you can bring up all of the remaining applic
 You can verify the Authentication Service is working as follows:
 
 ```
-./manage login
+./manage.sh login
 ```
 
 You should be able to log in with the default admin account (root/root). This will return a JWT that can be used on subsequent requests. For example, use it to verify the JACS services:
