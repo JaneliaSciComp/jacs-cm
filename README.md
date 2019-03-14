@@ -76,7 +76,7 @@ The full JACS service stack is comprised of 15+ containers, orchestrated by Dock
 When deploying to a new environment, you need to provision the filesystem and databases before starting the full stack. 
 If you haven't built and deployed them yet, you'll need to build all the containers first:
 ```
-./manage.sh build *
+./manage.sh build containers/*
 ```
 
 Ensure that your /data/db and /opt/config directories are empty and writeable by you, and then execute these commands:

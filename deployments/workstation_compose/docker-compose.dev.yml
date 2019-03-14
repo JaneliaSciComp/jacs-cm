@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  jade-master:
+    volumes:
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+
+  jade-agent:
+    volumes:
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+      - /nrs/mouselight:/nrs/mouselight
+
+  jacs-async:
+    volumes:
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData
+
