@@ -245,10 +245,20 @@ do
                 fi
             fi
         fi
-        echo "Bringing $COMMAND $TIER tier"
-        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
 
+        if [[ $1 == "--swarm" ]]; then
+            shift 1
+            YML="$YML -f $DEPLOYMENT_DIR/docker-compose-stack.yml"
+            echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
+            DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
+            echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME"
+            $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME
+
+        else
+            echo "Bringing $COMMAND $TIER tier"
+            echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
+            $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_cCOMPOSE $YML $COMMAND $@
+        fi
     fi
 
 done

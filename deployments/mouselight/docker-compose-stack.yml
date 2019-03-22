@@ -1,0 +1,292 @@
+version: "3.7"
+
+networks:
+  jacs-net:
+    driver: overlay
+    attachable: true
+
+services:
+
+  portainer:
+    image: portainer/portainer
+    command: -H tcp://tasks.agent:9001 --tlsskipverify --ssl --sslcert=/app/certs/cert.crt --sslkey=/app/certs/cert.key
+    ports:
+      - 9000:9000
+    networks:
+      - jacs-net
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+      resources:
+        limits:
+          cpus: "1"
+          memory: 100M
+        reservations:
+          cpus: "1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  portainer-agent:
+    image: portainer/agent
+    environment:
+      AGENT_CLUSTER_ADDR: tasks.agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/docker/volumes:/var/lib/docker/volumes
+    ports:
+      - target: 9001
+        published: 9001
+        protocol: tcp
+        mode: host
+    networks:
+      - jacs-net
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.platform.os == linux]
+      resources:
+        limits:
+          cpus: "1"
+          memory: 100M
+        reservations:
+          cpus: "1"
+          memory: 20M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  api-gateway:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "2"
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-async:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "8"
+          memory: 20G
+        reservations:
+          cpus: "4"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-messaging:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-sync:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-master:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent1:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent2:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node2]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  mongo1:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "6"
+          memory: 36G
+        reservations:
+          cpus: "4"
+          memory: 24G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  mongo2:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node2]
+      resources:
+        limits:
+          cpus: "6"
+          memory: 36G
+        reservations:
+          cpus: "4"
+          memory: 24G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  mongo3:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node2]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  mysql:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node2]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 12G
+        reservations:
+          cpus: "2"
+          memory: 8G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  rabbitmq:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+        reservations:
+          memory: 4G
+          cpus: "6"
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+

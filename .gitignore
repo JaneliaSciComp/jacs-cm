@@ -4,3 +4,4 @@ docker-compose.local.*yml
 .env
 # local stuff
 local
+.tmp.swarm.yml
