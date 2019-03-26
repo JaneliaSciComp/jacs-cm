@@ -19,6 +19,9 @@ services:
   jacs-async:
     image: registry.int.janelia.org/jacs/jacs-async:1.0.0
 
+  workstation-site:
+    image: registry.int.janelia.org/jacs/workstation-site:1.0.0
+
   api-gateway:
     image: registry.int.janelia.org/jacs/api-gateway:1.0.0
 

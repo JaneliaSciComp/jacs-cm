@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Management script for JACS containers.
+# Management script for JACS containers
 #
 
 # Exit on error
@@ -31,6 +31,51 @@ DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
 CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
+
+# Collect YAML files to compose together
+function getyml() {
+
+    local _tier="$1"
+    local _dbonly="$2"
+    local _swarm="$3"
+    local _result_var="$4"
+
+    YML=""
+
+    if [[ -e "$DEPLOYMENT_DIR/docker-compose-db.yml" ]]; then
+        YML="$YML -f $DEPLOYMENT_DIR/docker-compose-db.yml"
+    fi
+
+    if [ -n "${_tier}" ]; then
+        if [[ -e "$DEPLOYMENT_DIR/docker-compose.${_tier}-db.yml" ]]; then
+            YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${_tier}-db.yml"
+        fi
+    fi
+
+    if [[ "$_swarm" == "swarm" ]]; then
+        YML="$YML -f $DEPLOYMENT_DIR/docker-swarm-db.yml"
+    fi
+
+    if [[ "$_dbonly" != "dbonly" ]]; then
+        if [[ -e "$DEPLOYMENT_DIR/docker-compose-app.yml" ]]; then
+            YML="$YML -f $DEPLOYMENT_DIR/docker-compose-app.yml"
+        fi
+        if [ -n "${_tier}" ]; then
+            if [[ -e "$DEPLOYMENT_DIR/docker-compose.${_tier}-app.yml" ]]; then
+                YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${_tier}-app.yml"
+            fi
+            if [[ -e "$DEPLOYMENT_DIR/docker-compose.${_tier}.yml" ]]; then
+                YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${_tier}.yml"
+            fi
+        fi
+        if [[ "$_swarm" == "swarm" ]]; then
+            YML="$YML -f $DEPLOYMENT_DIR/docker-swarm-app.yml"
+        fi
+    fi
+
+    eval $_result_var="'$YML'"
+}
+
 
 if [[ -z "$DOCKER_USER" ]]; then
     if [[ -z "$UNAME" || -z "$GNAME" ]]; then
@@ -92,9 +137,14 @@ if [[ "$1" == "login" ]]; then
 fi
 
 if [[ "$#" -lt 2 ]]; then
-    echo "Usage: `basename $0` [build|run|shell|push|up|down] [tool1] [tool2] .. [tooln]"
+    echo "Container Management: `basename $0` [build|run|shell|push] [tool1] [tool2] .. [tooln]"
     echo "       You can combine multiple commands with a plus, e.g. build+push"
     echo "       For the up/down commands, the argument must be a tier name like 'dev' or 'prod'"
+    echo 
+    echo "Docker Compose: `basename $0` [up|down|ps|top] [environment] [--dbonly]"
+    echo
+    echo "Swarm Mode: `basename $0` [swarm|rmswarm] [environment] [--dbonly]"
+    echo
     exit 1
 fi
 
@@ -124,11 +174,21 @@ do
                 if [[ -e $CDIR/APP_TAG ]]; then
                     APP_TAG=$(cat $CDIR/APP_TAG)
                 fi
+
+                BUILD_ARGS=""
+                BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
+                BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
+                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST"
+                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_USER=$RABBITMQ_USER"
+                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
+                BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_VERSION=$WORKSTATION_VERSION"
+                BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+
                 echo "---------------------------------------------------------------------------------"
                 echo " Building image for $NAME"
-                echo " $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST -t $VNAME -t $LNAME $CDIR"
+                echo " $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR"
                 echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER build --no-cache --build-arg APP_TAG=$APP_TAG --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST -t $VNAME -t $LNAME $CDIR
+                $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
             else
                 echo "No $CDIR/VERSION found"
             fi
@@ -210,55 +270,42 @@ do
             fi
         done
 
+    elif [[ "$COMMAND" == "swarm" ]]; then
+
+        TIER=$1
+        shift 1 # remove tier
+
+        if [[ $1 == "--dbonly" ]]; then
+            getyml $TIER "dbonly" "swarm" "YML"
+        else
+            getyml $TIER "" "swarm" "YML"
+        fi
+
+        echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
+        DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
+        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME"
+        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME
+
+    elif [[ "$COMMAND" == "rmswarm" ]]; then
+
+        echo "$SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep 5"
+        $SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep 5
+
     else
         # any other command is passed to docker-compose
         TIER=$1
         shift 1 # remove tier
+
         if [[ $1 == "--dbonly" ]]; then
-            shift 1 # remove dbonly flag
-            YML=""
-            if [[ -e "$DEPLOYMENT_DIR/docker-compose-db.yml" ]]; then
-                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-db.yml"
-            fi
-            if [ -n "${TIER}" ]; then
-                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
-                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"
-                fi
-            fi
+            getyml $TIER "dbonly" "" "YML"
         else
-            YML=""
-            if [[ -e "$DEPLOYMENT_DIR/docker-compose-db.yml" ]]; then
-                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-db.yml"
-            fi
-            if [[ -e "$DEPLOYMENT_DIR/docker-compose-app.yml" ]]; then
-                YML="$YML -f $DEPLOYMENT_DIR/docker-compose-app.yml"
-            fi
-            if [ -n "${TIER}" ]; then
-                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml" ]]; then
-                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-db.yml"
-                fi
-                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}-app.yml" ]]; then
-                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}-app.yml"
-                fi
-                if [[ -e "$DEPLOYMENT_DIR/docker-compose.${TIER}.yml" ]]; then
-                    YML="$YML -f $DEPLOYMENT_DIR/docker-compose.${TIER}.yml"
-                fi
-            fi
+            getyml $TIER "" "" "YML"
         fi
 
-        if [[ $1 == "--swarm" ]]; then
-            shift 1
-            YML="$YML -f $DEPLOYMENT_DIR/docker-compose-stack.yml"
-            echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
-            DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-            echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME"
-            $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME
-
-        else
-            echo "Bringing $COMMAND $TIER tier"
-            echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-            $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_cCOMPOSE $YML $COMMAND $@
-        fi
+        echo "Bringing $COMMAND $TIER tier"
+        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
+        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_cCOMPOSE $YML $COMMAND $@
     fi
 
 done
+

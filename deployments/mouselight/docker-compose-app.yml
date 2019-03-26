@@ -158,6 +158,17 @@ services:
     networks:
       - jacs-net
 
+  workstation-site:
+    # Nginx must run as root
+    image: registry.int.janelia.org/jacs/workstation-site:latest
+    expose:
+      - "8080"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    networks:
+      - jacs-net
+
   api-gateway:
     # This container must run as root in order to bind to port 443
     image: registry.int.janelia.org/jacs/api-gateway:latest
@@ -170,12 +181,12 @@ services:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
-      - "8080:8080"
       - "8090:8090"
     depends_on:
       - jacs-sync
       - jacs-async
       - jade-master
+      - workstation-site
     restart: unless-stopped
     networks:
       - jacs-net

@@ -1,0 +1,138 @@
+version: "3.7"
+
+services:
+
+  workstation-site:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  api-gateway:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "2"
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-sync:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-async:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "8"
+          memory: 20G
+        reservations:
+          cpus: "4"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-messaging:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-master:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent1:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent2:
+    deploy:
+      placement:
+        constraints: [node.labels.name==node2]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+

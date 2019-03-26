@@ -84,7 +84,7 @@ StorageVolume.jade.Tags=local,jade2,jade_dev,includesUserFolder
 
 Next, start up the databases on the first node only:
 ```
-./manage.sh up prod --dbonly -d
+./manage.sh swarm prod --dbonly
 ```
 At this point you should connect to Portainer at https://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't reach the container try running the up command again to refresh it.
 
@@ -123,7 +123,7 @@ docker node update --label-add name=node2 $(docker node ls -f "role=worker" --fo
 
 Now you can bring up the full stack running on both machines:
 ```
-./manage.sh up prod --swarm
+./manage.sh swarm prod
 ```
 
 You can verify the Authentication Service is working as follows:
@@ -141,7 +141,6 @@ curl -k --request GET --url https://HOST1/SCSW/JACS2AsyncServices/v2/services/me
 
 To remove all the services:
 ```
-sdocker stack rm jacs-cm ; sleep 5
+./manage.sh rmswarm prod
 ```
-
 
