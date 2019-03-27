@@ -1,3 +1,4 @@
+# Build the Workstation website
 FROM jekyll/jekyll:3.3.1 as jekyll
 WORKDIR /tmp/website
 RUN git clone https://github.com/JaneliaSciComp/workstation-website.git .
@@ -8,7 +9,8 @@ RUN git clone https://github.com/JaneliaSciComp/workstation-website.git .
 # For now we remove the version lock
 RUN rm Gemfile.lock && bundler exec jekyll build
 
-FROM registry.int.janelia.org/jacs/builder as builder
+# Build the Workstation installers and update center
+FROM janeliascicomp/builder:1.0.0 as builder
 ARG APP_TAG
 ARG API_GATEWAY_EXPOSED_HOST
 ARG RABBITMQ_EXPOSED_HOST
@@ -18,11 +20,12 @@ ARG WORKSTATION_DISPLAY_VERSION
 ARG KEYSTORE_PASSWORD
 
 WORKDIR /tmp/workstation
-RUN git clone https://github.com/JaneliaSciComp/workstation.git . && git fetch --tags && git checkout $APP_TAG
-
-RUN mkdir private && \
-    keytool -noprompt -genkey -validity 360 -storepass $KEYSTORE_PASSWORD -keypass $KEYSTORE_PASSWORD -alias janeliaws \
-    -keystore private/keystore -dname "C=US, ST=VA, L=Ashburn, O=Janelia, CN=localhost"
+RUN git clone https://github.com/JaneliaSciComp/workstation.git . \
+    && git fetch --tags \
+    && git checkout $APP_TAG \
+    && mkdir private \
+    && keytool -noprompt -genkey -validity 360 -storepass $KEYSTORE_PASSWORD -keypass $KEYSTORE_PASSWORD -alias janeliaws \
+       -keystore private/keystore -dname "C=US, ST=VA, L=Ashburn, O=Janelia, CN=localhost"
 
 COPY my.properties .
 RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
@@ -30,8 +33,8 @@ RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
     WORKSTATION_DISPLAY_VERSION=$WORKSTATION_DISPLAY_VERSION \
     RABBITMQ_USER=$RABBITMQ_USER \
     RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
-    envsubst < my.properties > ./modules/DataBrowser/src/main/resources/my.properties
-RUN cat ./modules/DataBrowser/src/main/resources/my.properties
+    envsubst < my.properties > ./modules/DataBrowser/src/main/resources/my.properties \
+    && cat ./modules/DataBrowser/src/main/resources/my.properties
 
 RUN echo "org_janelia_it_workstation_nb_action_update_center=https://${API_GATEWAY_EXPOSED_HOST}/updates/updates.xml" \
     >> ./modules/DataBrowser/src/main/resources/org/janelia/it/workstation/gui/browser/Bundle.properties
@@ -40,6 +43,7 @@ RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD 
     && cd modules/application \
     && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD package -P deployment
 
+# Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="Workstation Website and Update Center"

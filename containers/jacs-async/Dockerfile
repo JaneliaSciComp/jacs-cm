@@ -8,15 +8,16 @@
 #
 
 # Builder container
-FROM registry.int.janelia.org/jacs/builder as builder
+
+FROM janeliascicomp/builder:1.0.0 as builder
 ARG APP_TAG=master
 
 # Checkout and build the code
-WORKDIR /tmp
-RUN git clone https://github.com/JaneliaSciComp/jacs-compute.git
 WORKDIR /tmp/jacs-compute
-RUN git checkout $APP_TAG
-RUN ./gradlew --no-daemon installDist -x test
+RUN git clone https://github.com/JaneliaSciComp/jacs-compute.git . \
+    && git fetch --tags \
+    && git checkout $APP_TAG \
+    && ./gradlew --no-daemon installDist -x test
 
 # Build the final container
 FROM scientificlinux/sl:7

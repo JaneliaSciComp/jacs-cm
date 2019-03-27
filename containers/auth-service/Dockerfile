@@ -8,13 +8,13 @@
 FROM node:6.9.2 as builder
 ARG TAG_LDAP_JWT=master
 RUN apt-get -y install --no-install-recommends git-core
-WORKDIR /tmp
 
 # Checkout and build the code
-RUN git clone https://github.com/JaneliaSciComp/ldap-jwt.git
 WORKDIR /tmp/ldap-jwt
-RUN git checkout $TAG_LDAP_JWT
-RUN npm install
+RUN git clone https://github.com/JaneliaSciComp/ldap-jwt.git . \
+    && git fetch --tags \
+    && git checkout $TAG_LDAP_JWT \
+    && npm install
 
 # Build the final container
 FROM node:6.9.2

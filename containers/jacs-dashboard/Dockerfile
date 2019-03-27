@@ -1,4 +1,4 @@
-FROM registry.int.janelia.org/jacs/builder as builder
+FROM janeliascicomp/builder:1.0.0 as builder
 # Currently, this container must be build with a hardcoded exposed host.
 # In the future this will be externalized as a runtime environment variable.
 ARG API_GATEWAY_EXPOSED_HOST=localhost

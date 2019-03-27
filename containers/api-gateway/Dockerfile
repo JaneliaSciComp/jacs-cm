@@ -1,12 +1,12 @@
-FROM registry.int.janelia.org/jacs/builder as builder
+FROM janeliascicomp/builder:1.0.0 as builder
 ARG TAG_NGINX_JWT=master
 
 # Checkout the nginx-gwt module
-WORKDIR /tmp
-
-RUN git clone https://github.com/JaneliaSciComp/nginx-jwt.git
 WORKDIR /tmp/nginx-jwt
-RUN git checkout $TAG_NGINX_JWT && ./build
+RUN git clone https://github.com/JaneliaSciComp/nginx-jwt.git . \
+    && git fetch --tags \
+    && git checkout $TAG_NGINX_JWT \
+    && ./build
 
 # Checkout IPP
 WORKDIR /tmp

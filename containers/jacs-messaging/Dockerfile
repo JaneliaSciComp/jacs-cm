@@ -5,15 +5,15 @@
 #
 
 # Builder container
-FROM registry.int.janelia.org/jacs/builder as builder
+FROM janeliascicomp/builder:1.0.0 as builder
 ARG APP_TAG=master
 
 # Checkout and build the code
-WORKDIR /tmp
-RUN git clone https://github.com/JaneliaSciComp/jacs-messaging.git
 WORKDIR /tmp/jacs-messaging
-RUN git checkout $APP_TAG
-RUN gradle --no-daemon brokerJar
+RUN git clone https://github.com/JaneliaSciComp/jacs-messaging.git . \
+    && git fetch --tags \
+    && git checkout $APP_TAG \
+    && gradle --no-daemon brokerJar
 
 # Checkout wait-for-it
 WORKDIR /tmp
@@ -26,9 +26,6 @@ LABEL description="JACS Messaging"
 
 # Install JRE for running
 RUN yum install -y java-1.8.0-openjdk-headless
-
-# Install the app
-RUN mkdir /app
 
 # Configure the app
 ENV JAVA_HOME /usr/lib/jvm/jre

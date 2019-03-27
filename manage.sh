@@ -155,7 +155,7 @@ if [[ "$1" == "build-workstation" ]]; then
 fi
 
 if [[ "$1" == "build-all" ]]; then
-    #build "builder"
+    build "builder"
     for dir in ./containers/*
     do
         if [[ "$dir" != "builder" ]]; then
@@ -314,7 +314,7 @@ do
             elif [[ "$NAME" == "jacs-dashboard" ]]; then
                 echo "Cannot push locally-configured image $NAME"
             else
-                getcontainer $1 "NAME"
+                getcontainer $NAME "NAME"
                 CDIR="$CONTAINER_DIR/$NAME"
                 if [[ -e $CDIR/VERSION ]]; then
                     VERSION=`cat $CDIR/VERSION`
