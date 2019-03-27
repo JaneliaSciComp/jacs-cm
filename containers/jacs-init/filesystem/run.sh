@@ -40,6 +40,18 @@ if [[ ! -e $db_dir ]]; then
 fi
 
 #
+# Database Backup Directories
+#
+if [[ ! -e $MONGO_BACKUPS_DIR ]]; then
+    echo "Creating directory: $MONGO_BACKUPS_DIR"
+    mkdir -p $MONGO_BACKUPS_DIR
+fi
+if [[ ! -e $MYSQL_BACKUPS_DIR ]]; then
+    echo "Creating directory: $MYSQL_BACKUPS_DIR"
+    mkdir -p $MYSQL_BACKUPS_DIR
+fi
+
+#
 # Portainer Data Directory
 #
 if [[ ! -e $data_dir/portainer ]]; then

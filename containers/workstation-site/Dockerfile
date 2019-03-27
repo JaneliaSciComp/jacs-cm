@@ -14,11 +14,11 @@ ARG API_GATEWAY_EXPOSED_HOST
 ARG RABBITMQ_EXPOSED_HOST
 ARG RABBITMQ_USER
 ARG RABBITMQ_PASSWORD
-ARG WORKSTATION_VERSION
+ARG WORKSTATION_DISPLAY_VERSION
 ARG KEYSTORE_PASSWORD
 
 WORKDIR /tmp/workstation
-RUN git clone https://github.com/JaneliaSciComp/workstation.git . && git checkout $APP_TAG
+RUN git clone https://github.com/JaneliaSciComp/workstation.git . && git fetch --tags && git checkout $APP_TAG
 
 RUN mkdir private && \
     keytool -noprompt -genkey -validity 360 -storepass $KEYSTORE_PASSWORD -keypass $KEYSTORE_PASSWORD -alias janeliaws \
@@ -27,7 +27,7 @@ RUN mkdir private && \
 COPY my.properties .
 RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
     RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST \
-    WORKSTATION_VERSION=$WORKSTATION_VERSION \
+    WORKSTATION_DISPLAY_VERSION=$WORKSTATION_DISPLAY_VERSION \
     RABBITMQ_USER=$RABBITMQ_USER \
     RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
     envsubst < my.properties > ./modules/DataBrowser/src/main/resources/my.properties

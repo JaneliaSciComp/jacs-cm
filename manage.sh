@@ -15,7 +15,7 @@ if [[ ! -f $DIR/.env ]]; then
 fi
 
 # Parse environment
-. .env
+. $DIR/.env
 
 if [[ -z "$DEPLOYMENT" ]]; then
     echo "Your .env file must define a DEPLOYMENT to use"
@@ -28,11 +28,17 @@ CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
 DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
-CONTAINER_PREFIX="$REGISTRY_SERVER/$NAMESPACE/"
+CONTAINER_PREFIX="$NAMESPACE/"
+if [[ ! -z $REGISTRY_SERVER ]]; then
+    CONTAINER_PREFIX="$REGISTRY_SERVER/$CONTAINER_PREFIX"
+fi
+
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
 
-# Collect YAML files to compose together
+#
+# Collect YAML files to compose together for the given tier and deployment method
+#
 function getyml() {
 
     local _tier="$1"
@@ -76,6 +82,57 @@ function getyml() {
     eval $_result_var="'$YML'"
 }
 
+#
+# Takes the container identifier, which might be "builder" or "./containers/builder" or "builder/" 
+# and returns just the container name (e.g. "builder")
+#
+function getcontainer {
+    local _name="$1"
+    local _result_var="$2"
+    NAME=${_name/$CONTAINER_DIRNAME\/}
+    NAME=${NAME%/}
+    NAME=${NAME#./}
+    eval $_result_var="'$NAME'"
+}
+
+#
+# Builds and tags the given container.
+#
+function build {
+    local _name="$1"
+    getcontainer $_name "NAME"
+    CDIR="$CONTAINER_DIR/$NAME"
+    if [[ -e $CDIR/VERSION ]]; then
+        VERSION=`cat $CDIR/VERSION`
+        CNAME=${CONTAINER_PREFIX}${NAME}
+        VNAME=$CNAME:${VERSION}
+        LNAME=$CNAME:latest
+        APP_TAG=master
+        if [[ "$NAME" == "workstation-site" ]]; then
+            APP_TAG=$WORKSTATION_TAG
+        elif [[ -e $CDIR/APP_TAG ]]; then
+            APP_TAG=$(cat $CDIR/APP_TAG)
+        fi
+        BUILD_ARGS=""
+        BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
+        BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
+        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST"
+        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_USER=$RABBITMQ_USER"
+        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
+        BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_DISPLAY_VERSION=$WORKSTATION_DISPLAY_VERSION"
+        BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+
+        echo "---------------------------------------------------------------------------------"
+        echo " Building image for $NAME"
+        echo " $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR"
+        echo "---------------------------------------------------------------------------------"
+        $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
+    else
+        echo "No $CDIR/VERSION found"
+    fi
+
+}
+
 
 if [[ -z "$DOCKER_USER" ]]; then
     if [[ -z "$UNAME" || -z "$GNAME" ]]; then
@@ -89,6 +146,23 @@ else
     if [[ -z $MYUID || -z $MYGID ]]; then
         echo "Your .env file needs to either define the MYUID and MYGID variables, if you define the DOCKER_USER variable."
     fi
+fi
+
+if [[ "$1" == "build-workstation" ]]; then
+    build "builder"
+    build "workstation-site"
+    exit 0
+fi
+
+if [[ "$1" == "build-all" ]]; then
+    #build "builder"
+    for dir in ./containers/*
+    do
+        if [[ "$dir" != "builder" ]]; then
+            build "$dir"
+        fi
+    done
+    exit 0
 fi
 
 if [[ "$1" == "init-filesystem" ]]; then
@@ -121,9 +195,28 @@ fi
 
 if [[ "$1" == "mysql" ]]; then
     echo "Opening MySQL shell..."
-    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} -h mysql ${MYSQL_DATABASE}"
+    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p**** -h mysql ${MYSQL_DATABASE}"
     $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} -h mysql ${MYSQL_DATABASE}
     exit 0
+fi
+
+if [[ "$1" == "backup" ]]; then
+    if [[ "$2" == "mongo" ]]; then
+        FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
+        echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
+        echo "$SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}&readPreference=secondary\" --archive=/backup/$FILENAME"
+        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}&readPreference=secondary" --archive=/backup/$FILENAME
+        exit 0
+    elif [[ "$2" == "mysql" ]]; then
+        FILENAME=flyportal-$(date +%Y%m%d%H%M%S).sql.gz
+        echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
+        echo "$SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p**** --all-databases | gzip >/backup/$FILENAME'"
+        $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} --all-databases | gzip >/backup/$FILENAME'
+        exit 0
+    else
+        echo "Valid choices for backups are mongo and mysql."
+        exit 1
+    fi
 fi
 
 if [[ "$1" == "login" ]]; then
@@ -162,41 +255,11 @@ do
 
         for NAME in "$@"
         do
-            NAME=${NAME/$CONTAINER_DIRNAME\/}
-            NAME=${NAME%/}
-            CDIR="$CONTAINER_DIR/$NAME"
-            if [[ -e $CDIR/VERSION ]]; then
-                VERSION=`cat $CDIR/VERSION`
-                CNAME=${CONTAINER_PREFIX}${NAME}
-                VNAME=$CNAME:${VERSION}
-                LNAME=$CNAME:latest
-                APP_TAG=master
-                if [[ -e $CDIR/APP_TAG ]]; then
-                    APP_TAG=$(cat $CDIR/APP_TAG)
-                fi
-
-                BUILD_ARGS=""
-                BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
-                BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
-                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST"
-                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_USER=$RABBITMQ_USER"
-                BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
-                BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_VERSION=$WORKSTATION_VERSION"
-                BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
-
-                echo "---------------------------------------------------------------------------------"
-                echo " Building image for $NAME"
-                echo " $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR"
-                echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
-            else
-                echo "No $CDIR/VERSION found"
-            fi
+            build $NAME
         done
 
     elif [[ "$COMMAND" == "run" ]]; then
-        NAME=${1/$CONTAINER_DIRNAME\/}
-        NAME=${NAME%/}
+        getcontainer $1 "NAME"
         CDIR="$CONTAINER_DIR/$NAME"
         if [[ -e $CDIR/VERSION ]]; then
             VERSION=`cat $CDIR/VERSION`
@@ -214,8 +277,7 @@ do
 
         for NAME in "$@"
         do
-            NAME=${NAME/$CONTAINER_DIRNAME\/}
-            NAME=${NAME%/}
+            getcontainer $NAME "NAME"
             CDIR="$CONTAINER_DIR/$NAME"
 
             echo "---------------------------------------------------------------------------------"
@@ -228,8 +290,7 @@ do
 
     elif [[ "$COMMAND" == "shell" ]]; then
 
-        NAME=${1/$CONTAINER_DIRNAME\/}
-        NAME=${NAME%/}
+        getcontainer $1 "NAME"
         CDIR="$CONTAINER_DIR/$NAME"
         if [[ -e $CDIR/VERSION ]]; then
             VERSION=`cat $CDIR/VERSION`
@@ -247,26 +308,32 @@ do
 
         for NAME in "$@"
         do
-            NAME=${NAME/$CONTAINER_DIRNAME\/}
-            NAME=${NAME%/}
-            CDIR="$CONTAINER_DIR/$NAME"
-            if [[ -e $CDIR/VERSION ]]; then
-                VERSION=`cat $CDIR/VERSION`
-                CNAME=${CONTAINER_PREFIX}${NAME}
-                VNAME=$CNAME:${VERSION}
-                LNAME=$CNAME:latest
-                echo "---------------------------------------------------------------------------------"
-                echo " Pushing image for $VNAME"
-                echo " $SUDO $DOCKER push $VNAME"
-                echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER push $VNAME
-                echo "---------------------------------------------------------------------------------"
-                echo " Pushing image for $LNAME"
-                echo " $SUDO $DOCKER push $LNAME"
-                echo "---------------------------------------------------------------------------------"
-                $SUDO $DOCKER push $LNAME
+            # TODO: in the future, these images will be externally configured, and these conditionals can be removed
+            if [[ "$NAME" == "workstation-site" ]]; then
+                echo "Cannot push locally-configured image $NAME"
+            elif [[ "$NAME" == "jacs-dashboard" ]]; then
+                echo "Cannot push locally-configured image $NAME"
             else
-                echo "No $CDIR/VERSION found"
+                getcontainer $1 "NAME"
+                CDIR="$CONTAINER_DIR/$NAME"
+                if [[ -e $CDIR/VERSION ]]; then
+                    VERSION=`cat $CDIR/VERSION`
+                    CNAME=${CONTAINER_PREFIX}${NAME}
+                    VNAME=$CNAME:${VERSION}
+                    LNAME=$CNAME:latest
+                    echo "---------------------------------------------------------------------------------"
+                    echo " Pushing image for $VNAME"
+                    echo " $SUDO $DOCKER push $VNAME"
+                    echo "---------------------------------------------------------------------------------"
+                    $SUDO $DOCKER push $VNAME
+                    echo "---------------------------------------------------------------------------------"
+                    echo " Pushing image for $LNAME"
+                    echo " $SUDO $DOCKER push $LNAME"
+                    echo "---------------------------------------------------------------------------------"
+                    $SUDO $DOCKER push $LNAME
+                else
+                    echo "No $CDIR/VERSION found"
+                fi
             fi
         done
 

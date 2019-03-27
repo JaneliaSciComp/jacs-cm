@@ -30,7 +30,8 @@ To install Docker on SL7, follow [these instructions](InstallingDockerSL7.md).
 
 ## Clone the jacs-cm repo
 
-On both of the systems being deployed to, clone this repo into /opt/deploy/jacs-cm:
+Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone it onto NFS, and then create symbolic links to it on both systems. Otherwise they will need to be kept in sync manually. The naive approach clones twice:
+
 ```
 cd /opt
 sudo mkdir deploy
@@ -43,21 +44,29 @@ cd jacs-cm
 
 ## Configuration
 
-Next, create a .env file in the jacs-cm directory. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
+Next, create an indentical .env file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
 cp .env.template .env
 vi .env
 ```
 
 At minimum, you must customize the following:
-1. Set `DEPLOYMENT` to mouselight
-2. Fill in all the unset passwords
-3. Set a 32 byte secret key for JWT authentication
-4. Set API_GATEWAY_EXPOSED_HOST and JADE_AGENT_EXPOSED_HOST to the hostname of the server you are deploying to
+1. Set `DEPLOYMENT` to mouselight.
+2. Fill in all the unset passwords with >8 character passwords.
+3. Set a 32 byte secret key for JWT authentication.
+4. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
+#4. Set `RABBITMQ_EXPOSED_HOST`, `API_GATEWAY_EXPOSED_HOST` and `JADE_AGENT_EXPOSED_HOST` to the hostname of the first server you are deploying to (e.g. **HOST1**)
+#5. Set `JADE_AGENT2_EXPOSED_HOST` to **HOST2**.
+6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy.
+7. Set `WORKSTATION_DISPLAY_VERSION` to a branded version number, such as "8.0-JRC" for deploying at Janelia Research Campus.
 
-You can create this file on HOST1 and copy it to HOST2, then change the host-specific variables.
 
-**Important**: Currently, the JADE_AGENT_EXPOSED_PORT needs to be different on each server.
+## Build
+
+Build the Workstation:
+```
+./manage.sh build_all
+```
 
 
 ### Filesystem initialization
@@ -143,4 +152,15 @@ To remove all the services:
 ```
 ./manage.sh rmswarm prod
 ```
+
+# Backups
+
+You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
+
+```
+0 4 * * * /opt/deploy/jacs-cm/manage.sh backup mongo
+0 5 * * * /opt/deploy/jacs-cm/manage.sh backup mysql
+```
+
+The reason that these should run on **HOST2** is because the MySQL database and a Mongo secondary both run there.
 
