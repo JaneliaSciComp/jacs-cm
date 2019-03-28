@@ -95,15 +95,29 @@ function getcontainer {
     eval $_result_var="'$NAME'"
 }
 
+function getversion {
+    local _name="$1"
+    local _result_var="$2"
+    CDIR="$CONTAINER_DIR/$_name"
+    if [[ -e $CDIR/VERSION ]]; then
+        VERSION=`cat $CDIR/VERSION`
+        if [[ "$VERSION" == "\$WORKSTATION_BUILD_VERSION" ]]; then
+            # Poor man's variable interpolation
+            VERSION=$WORKSTATION_BUILD_VERSION
+        fi
+        eval $_result_var="'$VERSION'"
+    fi
+}
+
 #
 # Builds and tags the given container.
 #
 function build {
     local _name="$1"
     getcontainer $_name "NAME"
+    getversion $NAME "VERSION"
     CDIR="$CONTAINER_DIR/$NAME"
-    if [[ -e $CDIR/VERSION ]]; then
-        VERSION=`cat $CDIR/VERSION`
+    if [[ ! -z $VERSION ]]; then
         CNAME=${CONTAINER_PREFIX}${NAME}
         VNAME=$CNAME:${VERSION}
         LNAME=$CNAME:latest
@@ -119,7 +133,7 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST"
         BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_USER=$RABBITMQ_USER"
         BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
-        BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_DISPLAY_VERSION=$WORKSTATION_DISPLAY_VERSION"
+        BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION"
         BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
 
         echo "---------------------------------------------------------------------------------"
@@ -146,12 +160,6 @@ else
     if [[ -z $MYUID || -z $MYGID ]]; then
         echo "Your .env file needs to either define the MYUID and MYGID variables, if you define the DOCKER_USER variable."
     fi
-fi
-
-if [[ "$1" == "build-workstation" ]]; then
-    build "builder"
-    build "workstation-site"
-    exit 0
 fi
 
 if [[ "$1" == "build-all" ]]; then
@@ -260,9 +268,9 @@ do
 
     elif [[ "$COMMAND" == "run" ]]; then
         getcontainer $1 "NAME"
+        getversion $NAME "VERSION"
         CDIR="$CONTAINER_DIR/$NAME"
-        if [[ -e $CDIR/VERSION ]]; then
-            VERSION=`cat $CDIR/VERSION`
+        if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
@@ -291,9 +299,9 @@ do
     elif [[ "$COMMAND" == "shell" ]]; then
 
         getcontainer $1 "NAME"
+        getversion $NAME "VERSION"
         CDIR="$CONTAINER_DIR/$NAME"
-        if [[ -e $CDIR/VERSION ]]; then
-            VERSION=`cat $CDIR/VERSION`
+        if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
@@ -315,9 +323,9 @@ do
                 echo "Cannot push locally-configured image $NAME"
             else
                 getcontainer $NAME "NAME"
+                getversion $NAME "VERSION"
                 CDIR="$CONTAINER_DIR/$NAME"
-                if [[ -e $CDIR/VERSION ]]; then
-                    VERSION=`cat $CDIR/VERSION`
+                if [[ ! -z $VERSION ]]; then
                     CNAME=${CONTAINER_PREFIX}${NAME}
                     VNAME=$CNAME:${VERSION}
                     LNAME=$CNAME:latest

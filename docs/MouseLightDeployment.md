@@ -1,6 +1,6 @@
 # MouseLight Deployment
 
-This document describes the simplest possible JACS/Workstation deployment for supporting mouse neuron tracing. It uses prebuilt containers available on Janelia's container repository. It's assumed that data will be generated at Janelia and shipped to the remote site for viewing and tracing. 
+This document describes the canonical two-server Workstation deployment for supporting mouse neuron tracing. It uses prebuilt containers available Docker Hub. It's assumed that data will be generated at Janelia and shipped to the remote site for viewing and tracing. 
 
 
 ## Hardware
@@ -51,30 +51,28 @@ vi .env
 ```
 
 At minimum, you must customize the following:
-1. Set `DEPLOYMENT` to mouselight.
-2. Fill in all the unset passwords with >8 character passwords.
-3. Set a 32 byte secret key for JWT authentication.
-4. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
-#4. Set `RABBITMQ_EXPOSED_HOST`, `API_GATEWAY_EXPOSED_HOST` and `JADE_AGENT_EXPOSED_HOST` to the hostname of the first server you are deploying to (e.g. **HOST1**)
-#5. Set `JADE_AGENT2_EXPOSED_HOST` to **HOST2**.
-6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy.
-7. Set `WORKSTATION_DISPLAY_VERSION` to a branded version number, such as "8.0-JRC" for deploying at Janelia Research Campus.
+1. Set `DEPLOYMENT` to **mouselight**.
+2. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
+3. Fill in all the unset passwords with >8 character passwords.
+4. Set a 32 byte secret key for JWT authentication.
+5. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
+6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
 
 
 ## Build
 
-Build the Workstation:
+Only on **HOST1**, build the site-specific Workstation client and the distribution website container:
 ```
-./manage.sh build_all
+./manage.sh build workstation-site
 ```
 
 
-### Filesystem initialization
+## Filesystem Initialization
 
 Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/config) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them:
 
 ```
-sudo mkdir /opt/config
+sudo mkdir -p /opt/config
 sudo chown docker-nobody:docker-nobody /opt/config /data
 ./manage.sh init-filesystem
 ```
@@ -83,15 +81,35 @@ You can now manually edit the files found under `CONFIG_DIR`. You can use these 
 
 1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
 
-On HOST2, edit 
+
+## Swarm Setup
+
+On **HOST1**, bring up swarm as a manager node, and give it a label:
 ```
-StorageVolume.jade.VirtualPath=/jade1
-StorageVolume.jade.Tags=local,jade2,jade_dev,includesUserFolder
+docker swarm init
 ```
 
-### Database initialization
+On **HOST2**, copy and paste the output of the previous command to join the swarm as a worker. 
 
-Next, start up the databases on the first node only:
+```
+docker swarm join --token ...
+```
+
+All further commands should be executed on **HOST1**, i.e. the master node. One final step is to label the nodes:
+```
+docker node update --label-add name=node1 $(docker node ls -f "role=manager" --format "{{.ID}}")
+docker node update --label-add name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
+```
+
+You can run this command to ensure that both nodes are up and in Ready status:
+```
+docker node ls
+```
+
+
+## Database Initialization
+
+Next, start up the databases:
 ```
 ./manage.sh swarm prod --dbonly
 ```
@@ -113,22 +131,6 @@ You can validate the databases as follows:
 
 Now that the databases are running, you can bring up all of the remaining application containers using Docker Swarm.
 
-On node1, bring up swarm as a manager node, and give it a label:
-```
-docker swarm init
-```
-
-On node2, copy and paste the output of the previous command to join the swarm as a worker. 
-
-```
-docker swarm join --token ...
-```
-
-All further commands should be executed on node1, i.e. the master node. First, label the nodes:
-```
-docker node update --label-add name=node1 $(docker node ls -f "role=manager" --format "{{.ID}}")
-docker node update --label-add name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
-```
 
 Now you can bring up the full stack running on both machines:
 ```
