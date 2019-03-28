@@ -20,7 +20,7 @@ services:
     image: janeliascicomp/jacs-async:1.0.0
 
   workstation-site:
-    image: janeliascicomp/workstation-site:1.0.0
+    image: janeliascicomp/workstation-site:latest
 
   api-gateway:
     image: janeliascicomp/api-gateway:1.0.0
