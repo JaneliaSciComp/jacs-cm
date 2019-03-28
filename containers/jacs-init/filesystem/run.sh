@@ -14,7 +14,6 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 project=jacs
 data_dir=$DATA_DIR
 db_dir=$data_dir/db
-www_dir=$data_dir/www
 mongo_data_dir=$db_dir/mongo/$project
 mysql_data_dir=$db_dir/mysql/$project
 rabbitmq_data_dir=$db_dir/rabbitmq/$project
@@ -172,24 +171,5 @@ if [[ ! -e $apigateway_dir ]]; then
         echo "  Using default gateway configuration"
         cp -r $DIR/api-gateway/* $apigateway_dir
     fi
-fi
-
-#
-# LDAP Auth Service
-#
-authservice_dir=$config_dir/auth-service
-if [[ ! -e $authservice_dir ]]; then
-    echo "Initializing LDAP Auth Service Config at $authservice_dir"
-    mkdir -p $authservice_dir
-    cp -r $DIR/auth-service/* $authservice_dir
-fi
-
-#
-# Static Web Content
-#
-if [[ ! -e $www_dir ]]; then
-    echo "Initializing WWW directory at $www_dir"
-    mkdir -p $www_dir/updates
-    mkdir -p $www_dir/workstation
 fi
 
