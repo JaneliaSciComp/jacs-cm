@@ -3,6 +3,8 @@ version: "3.7"
 services:
 
   workstation-site:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -17,6 +19,8 @@ services:
         window: 120s
 
   api-gateway:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -34,6 +38,8 @@ services:
         window: 120s
 
   jacs-sync:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -51,6 +57,8 @@ services:
         window: 120s
 
   jacs-async:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -68,6 +76,8 @@ services:
         window: 120s
 
   jacs-messaging:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -85,6 +95,8 @@ services:
         window: 120s
 
   jade-master:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -102,6 +114,8 @@ services:
         window: 120s
 
   jade-agent1:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -119,6 +133,8 @@ services:
         window: 120s
 
   jade-agent2:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node2]

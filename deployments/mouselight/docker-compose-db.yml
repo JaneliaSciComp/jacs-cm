@@ -8,7 +8,7 @@ services:
 
   portainer:
     # This container must run as root to access /var/run/docker.sock
-    image: portainer/portainer
+    image: portainer/portainer:1.20.2
     ports:
       - "9000:9000"
     command: -H unix:///var/run/docker.sock --ssl --sslcert=/app/certs/cert.crt --sslkey=/app/certs/cert.key

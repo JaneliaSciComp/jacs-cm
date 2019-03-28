@@ -8,10 +8,10 @@ networks:
 services:
 
   portainer:
-    image: portainer/portainer
-    command: -H tcp://tasks.agent:9001 --tlsskipverify --ssl --sslcert=/app/certs/cert.crt --sslkey=/app/certs/cert.key
-    ports:
-      - 9000:9000
+    networks:
+      - jacs-net
+    image: portainer/portainer:1.20.2
+    command: -H tcp://tasks.agent:9001 --tlsskipverify
     deploy:
       replicas: 1
       placement:
@@ -29,8 +29,10 @@ services:
         max_attempts: 3
         window: 120s
 
-  portainer-agent:
-    image: portainer/agent
+  agent:
+    networks:
+      - jacs-net
+    image: portainer/agent:1.2.1
     environment:
       AGENT_CLUSTER_ADDR: tasks.agent
     volumes:
@@ -59,6 +61,8 @@ services:
         window: 120s
 
   mongo1:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
@@ -76,6 +80,8 @@ services:
         window: 120s
 
   mongo2:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node2]
@@ -93,6 +99,8 @@ services:
         window: 120s
 
   mongo3:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node2]
@@ -110,6 +118,8 @@ services:
         window: 120s
 
   mysql:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node2]
@@ -127,6 +137,8 @@ services:
         window: 120s
 
   rabbitmq:
+    networks:
+      - jacs-net
     deploy:
       placement:
         constraints: [node.labels.name==node1]
