@@ -156,6 +156,7 @@ services:
       - jacs-sync
       - jacs-async
       - jacs-dashboard
+      - jade-master
     restart: unless-stopped
     networks:
       - jacs-net
