@@ -175,8 +175,6 @@ services:
     volumes:
       - /opt/config/certs:/app/certs:ro
       - /opt/config/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
-      - /data/www/workstation:/usr/local/openresty/nginx/html/workstation:ro
-      - /data/www/updates:/usr/local/openresty/nginx/html/updates:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:

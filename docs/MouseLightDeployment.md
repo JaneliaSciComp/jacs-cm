@@ -59,14 +59,6 @@ At minimum, you must customize the following:
 6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
 
 
-## Build
-
-Only on **HOST1**, build the site-specific Workstation client and the distribution website container:
-```
-./manage.sh build workstation-site
-```
-
-
 ## Filesystem Initialization
 
 Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/config) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them:
@@ -80,6 +72,23 @@ sudo chown docker-nobody:docker-nobody /opt/config /data
 You can now manually edit the files found under `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the following customizations are minimally necessary for MouseLight deployments:
 
 1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
+
+
+### MongoDB Key Synchronization
+
+The MongoDB key files on both systems need to be identical. Currently this must be done manually, e.g.:
+
+On **HOST1**:
+```
+sudo cp /data/db/mongo/jacs/replica1/mongodb-keyfile /tmp
+sudo chown $USER /tmp/mongodb-keyfile
+scp /tmp/mongodb-keyfile HOST2:/tmp
+```
+
+On **HOST2**:
+```
+echo /data/db/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
+```
 
 
 ## Swarm Setup
@@ -127,15 +136,24 @@ You can validate the databases as follows:
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
 
 
-## Start application containers
+## Build Client Distribution
 
-Now that the databases are running, you can bring up all of the remaining application containers using Docker Swarm.
+Only on **HOST1**, build the site-specific Workstation client and the distribution website container:
+```
+./manage.sh build workstation-site
+```
+
+This container is specific to your deployment site, and contains the **HOST1** hostname in its configuration. Therefore, it cannot be distributed in a Docker registry. Besides the Workstation client, this container also deploys a website for accessing the installers, and other information. The website is made available at https://HOST1.
 
 
-Now you can bring up the full stack running on both machines:
+## Start All Containers
+
+Now you can bring up all of the remaining application containers:
 ```
 ./manage.sh swarm prod
 ```
+
+Next, look in Portainer to make sure all the replicas are operational. If anything failed to come up, it will show up as "0/1" replicas, and it will need to be investigated before moving further. 
 
 You can verify the Authentication Service is working as follows:
 
@@ -150,7 +168,9 @@ export TOKEN=<enter token here>
 curl -k --request GET --url https://HOST1/SCSW/JACS2AsyncServices/v2/services/metadata --header "Content-Type: application/json" --header "Authorization: Bearer $TOKEN"
 ```
 
-To remove all the services:
+## Service Management
+
+If at any point you want to remove all the services from the Swarm and do a clean restart of everything, you can use this command:
 ```
 ./manage.sh rmswarm prod
 ```
@@ -165,4 +185,5 @@ You should create two crontab entries on **HOST2** for backing up Mongo and MySQ
 ```
 
 The reason that these should run on **HOST2** is because the MySQL database and a Mongo secondary both run there.
+
 
