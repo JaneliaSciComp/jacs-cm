@@ -106,6 +106,8 @@ function getversion {
             VERSION=$WORKSTATION_BUILD_VERSION
         fi
         eval $_result_var="'$VERSION'"
+    else
+        echo "No $CDIR/VERSION found"
     fi
 }
 
@@ -141,8 +143,6 @@ function build {
         echo " $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR"
         echo "---------------------------------------------------------------------------------"
         $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
-    else
-        echo "No $CDIR/VERSION found"
     fi
 
 }
@@ -275,8 +275,6 @@ do
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
             $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME
-        else
-            echo "No $CDIR/VERSION found"
         fi
 
     elif [[ "$COMMAND" == "lint" ]]; then
@@ -306,8 +304,6 @@ do
             VNAME=$CNAME:${VERSION}
             echo "$SUDO $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
             $SUDO $DOCKER run -it $VNAME /bin/bash
-        else
-            echo "No $CDIR/VERSION found"
         fi
 
     elif [[ "$COMMAND" == "push" ]]; then
@@ -339,8 +335,6 @@ do
                     echo " $SUDO $DOCKER push $LNAME"
                     echo "---------------------------------------------------------------------------------"
                     $SUDO $DOCKER push $LNAME
-                else
-                    echo "No $CDIR/VERSION found"
                 fi
             fi
         done
