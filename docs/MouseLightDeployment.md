@@ -150,7 +150,7 @@ Only on **HOST1**, build the site-specific Workstation client and the distributi
 ./manage.sh build workstation-site
 ```
 
-This container is specific to your deployment site, and contains the **HOST1** hostname in its configuration. Therefore, it cannot be distributed in a Docker registry. Besides the Workstation client, this container also deploys a website for accessing the installers, and other information. The website is made available at https://HOST1.
+This container is specific to your deployment site, and contains the **HOST1** hostname in its configuration. Therefore, it cannot be distributed in a Docker registry. Besides the Workstation client, this container also deploys a website for accessing the installers, and other information. The website is made available at https://HOST1. Also make sure that the value assigned to WORKSTATION_TAG in the .env file is a tag that exists in the workstation github repo.
 
 
 ## Start All Containers
