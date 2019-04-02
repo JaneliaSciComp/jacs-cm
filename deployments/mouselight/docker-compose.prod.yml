@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   jacs-messaging:
-    image: janeliascicomp/jacs-messaging:1.1.0
+    image: janeliascicomp/jacs-messaging:1.0.0
 
   jade-master:
     image: janeliascicomp/jacs-storage:1.0.0
