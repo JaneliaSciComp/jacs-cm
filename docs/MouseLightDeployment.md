@@ -110,6 +110,13 @@ docker node update --label-add name=node1 $(docker node ls -f "role=manager" --f
 docker node update --label-add name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
 ```
 
+You may have to use sudo to run the commands like below:
+```
+sudo docker node update --label-add name=node1 $(sudo docker node ls -f "role=manager" --format "{{.ID}}")
+sudo docker node update --label-add name=node2 $(sudo docker node ls -f "role=worker" --format "{{.ID}}")
+```
+
+
 You can run this command to ensure that both nodes are up and in Ready status:
 ```
 docker node ls
