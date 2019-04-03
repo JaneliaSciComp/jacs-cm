@@ -50,4 +50,4 @@ echo
 echo "Initializing JACS Default Subjects"
 echo "mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h $REPLICA_HOSTS --db jacs --collection subject $DIR/mongo/defaultSubjects.json"
 mongoimport --authenticationDatabase admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h rsJacs/$REPLICA_HOSTS \
-    --db jacs --collection subject $DIR/mongo/defaultSubjects.json
+            --db jacs --collection subject $DIR/mongo/defaultSubjects.json

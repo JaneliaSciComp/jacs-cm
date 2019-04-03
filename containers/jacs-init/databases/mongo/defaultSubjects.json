@@ -1,37 +1,35 @@
-[
-  {
-    "_id": "1620562904715624624",
-    "class": "org.janelia.model.security.User",
-    "key": "user:root",
-    "name": "root",
-    "fullName": "Default Administrative User",
-    "password": "9hhv2pRVbwkaLuvzHmaTOQ==.YAa9RDzfov494UeAxJuDXAkNSekFrVh7DfBdNL3LPIg=",
-    "email": "",
-    "userGroupRoles": [
-      {
-        "groupKey": "group:admin",
-        "role": "Writer"
-      },
-      {
-        "groupKey": "group:workstation_users",
-        "role": "Reader"
-      }
-    ]
-  },
-  {
-    "_id" : "1834757170227314786",
-    "class" : "org.janelia.model.security.Group",
-    "key" : "group:admin",
-    "name" : "admin",
-    "fullName" : "Administrators",
-    "groups" : [ ]
-  },
-  {
-    "_id" : "2125061715941916770",
-    "class" : "org.janelia.model.security.Group",
-    "key" : "group:workstation_users",
-    "name" : "workstation_users",
-    "fullName" : "Workstation Users",
-    "groups" : [ ]
-  }
-]
+{
+  "_id": "1620562904715624624",
+  "class": "org.janelia.model.security.User",
+  "key": "user:root",
+  "name": "root",
+  "fullName": "Default Administrative User",
+  "password": "9hhv2pRVbwkaLuvzHmaTOQ==.YAa9RDzfov494UeAxJuDXAkNSekFrVh7DfBdNL3LPIg=",
+  "email": "",
+  "userGroupRoles": [
+    {
+      "groupKey": "group:admin",
+      "role": "Writer"
+    },
+    {
+      "groupKey": "group:workstation_users",
+      "role": "Reader"
+    }
+  ]
+}
+{
+  "_id" : "1834757170227314786",
+  "class" : "org.janelia.model.security.Group",
+  "key" : "group:admin",
+  "name" : "admin",
+  "fullName" : "Administrators",
+  "groups" : [ ]
+}
+{
+  "_id" : "2125061715941916770",
+  "class" : "org.janelia.model.security.Group",
+  "key" : "group:workstation_users",
+  "name" : "workstation_users",
+  "fullName" : "Workstation Users",
+  "groups" : [ ]
+}
