@@ -19,21 +19,19 @@
     ]
   },
   {
-    "_id" : NumberLong("1834757170227314786"),
+    "_id" : "1834757170227314786",
     "class" : "org.janelia.model.security.Group",
     "key" : "group:admin",
     "name" : "admin",
     "fullName" : "Administrators",
-    "groups" : [ ],
-    "ldapGroupName" : "scicompsoft"
+    "groups" : [ ]
   },
   {
-    "_id" : NumberLong("2125061715941916770"),
+    "_id" : "2125061715941916770",
     "class" : "org.janelia.model.security.Group",
     "key" : "group:workstation_users",
     "name" : "workstation_users",
     "fullName" : "Workstation Users",
-    "groups" : [ ],
-    "ldapGroupName" : "scicompsoft"
+    "groups" : [ ]
   }
 ]
