@@ -2,6 +2,7 @@
 FROM jekyll/jekyll:3.3.1 as jekyll
 WORKDIR /tmp/website
 RUN git clone https://github.com/JaneliaSciComp/workstation-website.git .
+COPY jekyll_config.yml _config.yml
 
 # This doesn't work, still complains about needing bundler 2.0 or higher
 #RUN gem update --system && gem uninstall bundler && gem install bundler -v 2.0.1
