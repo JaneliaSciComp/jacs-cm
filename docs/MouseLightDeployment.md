@@ -1,6 +1,6 @@
 # MouseLight Deployment
 
-This document describes the canonical two-server Workstation deployment for supporting mouse neuron tracing. It uses prebuilt containers available Docker Hub. It's assumed that data will be generated at Janelia and shipped to the remote site for viewing and tracing. 
+This document describes the canonical two-server Workstation deployment for supporting mouse neuron tracing. It uses prebuilt containers available on Docker Hub. Currently, this deployment does not have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
 
 
 ## Hardware
@@ -20,7 +20,7 @@ The rest of this guide assumes that you have two hosts dedicated to deploying th
 
 ## Install Scientific Linux 7
 
-In theory, the backend software will run on any OS supporting Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. We recommend installing the latest version of Scientific Linux 7.
+In theory, the backend software will run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7.
 
 
 ## Install Docker
@@ -30,7 +30,7 @@ To install Docker on SL7, follow [these instructions](InstallingDockerSL7.md).
 
 ## Clone the jacs-cm repo
 
-Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone it onto NFS, and then create symbolic links to it on both systems. Otherwise they will need to be kept in sync manually. The naive approach clones twice:
+Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone it onto NFS, and then create symbolic links to it on both systems. Otherwise they will need to be kept in sync manually. The naive approach just clones the repo twice:
 
 ```
 cd /opt
