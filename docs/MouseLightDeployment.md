@@ -182,6 +182,11 @@ If at any point you want to remove all the services from the Swarm and do a clea
 ./manage.sh rmswarm prod
 ```
 
+To pull and redeploy the latest image for a single service, e.g. workstation-site:
+```
+docker service update --force jacs-cm-workstation-site
+```
+
 # Backups
 
 You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
