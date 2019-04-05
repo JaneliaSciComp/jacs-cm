@@ -137,6 +137,7 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
         BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION"
         BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+        BUILD_ARGS="$BUILD_ARGS --build-arg MAIL_SERVER=$MAIL_SERVER"
 
         echo "---------------------------------------------------------------------------------"
         echo " Building image for $NAME"
