@@ -33,3 +33,19 @@
   "fullName" : "Workstation Users",
   "groups" : [ ]
 }
+{
+  "_id" : "2146020741865275490",
+  "class" : "org.janelia.model.security.Group",
+  "key" : "group:mouselight",
+  "name" : "mouselight",
+  "fullName" : "MouseLight Users",
+  "groups" : [ ]
+}
+{
+  "_id" : "2634889553067901073",
+  "class" : "org.janelia.model.security.Group",
+  "key" : "group:mouselight_tracers",
+  "name" : "mouselight_tracers",
+  "fullName" : "MouseLight Tracers",
+  "groups" : [ ]
+}
