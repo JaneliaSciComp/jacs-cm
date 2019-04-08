@@ -160,7 +160,28 @@ Now you can bring up all of the remaining application containers:
 ./manage.sh swarm prod
 ```
 
-Next, look in Portainer to make sure all the replicas are operational. If anything failed to come up, it will show up as "0/1" replicas, and it will need to be investigated before moving further. 
+If you see an error like this, just retry the command again:
+```
+failed to create service jacs-cm_portainer: Error response from daemon: network jacs-cm_jacs-net not found
+```
+
+Next, you should make sure that all replicas are operational. You can do this by running:
+```
+docker service ls
+```
+If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name to `service ps`. For example, if jade-agent2 fails to start, you would type:
+```
+docker service ps --no-trunc jacs-cm-test_jade-agent2
+```
+
+Once a service starts, you can tail its logs using the `logs` command:
+```
+docker service logs -f jacs-cm-test_jade-agent2
+```
+
+All of this information is also available in the Portainer web GUI.
+
+## System Verification
 
 You can verify the Authentication Service is working as follows:
 
