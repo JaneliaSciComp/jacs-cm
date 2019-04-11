@@ -90,3 +90,8 @@ sudo systemctl enable docker
 sudo systemctl start docker
 ```
 
+## Installing Docker Compose
+
+Follow the [instructions here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7) to install Docker Compose. The version must be greater than 1.23.2.
+
+
