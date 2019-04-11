@@ -149,6 +149,8 @@ services:
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
+      - jacs_mouselight_db_user=${MYSQL_JACS_USER}
+      - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
       - jacs_service_queue_id=${JACS_QUEUE_ID}
     expose:
       - "8080"
