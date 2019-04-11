@@ -32,6 +32,7 @@ CONTAINER_PREFIX="$NAMESPACE/"
 if [[ ! -z $REGISTRY_SERVER ]]; then
     CONTAINER_PREFIX="$REGISTRY_SERVER/$CONTAINER_PREFIX"
 fi
+JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
 
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
@@ -176,8 +177,8 @@ fi
 
 if [[ "$1" == "init-filesystem" ]]; then
     echo "Initializing file system..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/filesystem/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:latest /app/filesystem/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
     echo ""
     echo "The filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
     echo ""
@@ -187,8 +188,8 @@ fi
 
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:latest /app/databases/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:latest /app/databases/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
     echo ""
     echo "Databases have been initialized."
     echo ""
