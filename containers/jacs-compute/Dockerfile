@@ -31,8 +31,8 @@ RUN yum install -y java-1.8.0-openjdk-headless
 RUN mkdir /app
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
-COPY --from=builder /tmp/jacs-compute/jacs2-asyncweb/build/install/jacs2-asyncweb .
-COPY --from=builder /tmp/jacs-compute/jacs2-syncweb/build/install/jacs2-syncweb .
+COPY --from=builder /tmp/jacs-compute/jacs2-asyncweb/build/install/jacs2-asyncweb ./async
+COPY --from=builder /tmp/jacs-compute/jacs2-syncweb/build/install/jacs2-syncweb ./sync
 COPY start.sh /app/
 
 # Service mode defaults to async node, but can be set to sync
