@@ -16,7 +16,7 @@
     <logger name="org.janelia.jacs2.dataservice.persistence" level="info" />
     <logger name="org.janelia.cluster" level="info" />
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="CONSOLE" />
     </root>
 
