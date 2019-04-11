@@ -14,14 +14,13 @@ services:
     image: janeliascicomp/jacs-storage:1.10.4
 
   jacs-sync:
-    image: janeliascicomp/jacs-sync:8.1.0-RC1
+    image: janeliascicomp/jacs-compute:8.1.0-RC1
 
   jacs-async:
-    image: janeliascicomp/jacs-async:8.1.0-RC1
+    image: janeliascicomp/jacs-compute:8.1.0-RC1
 
   workstation-site:
     image: janeliascicomp/workstation-site:latest
 
   api-gateway:
     image: janeliascicomp/api-gateway:1.0.0
-

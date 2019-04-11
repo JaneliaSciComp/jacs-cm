@@ -18,10 +18,10 @@ services:
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData
 
   jacs-sync:
-    image: registry.int.janelia.org/jacs/jacs-sync:1.0.0
+    image: registry.int.janelia.org/jacs/jacs-compute:1.0.0
 
   jacs-async:
-    image: registry.int.janelia.org/jacs/jacs-async:1.0.0
+    image: registry.int.janelia.org/jacs/jacs-compute:1.0.0
     volumes:
       - /groups/jacs/jacsHosts:/groups/jacs/jacsHosts
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData

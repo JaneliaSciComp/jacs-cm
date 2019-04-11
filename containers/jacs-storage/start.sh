@@ -16,4 +16,3 @@ else
     echo "Unsupported service mode specified (with SERVICE_MODE environment variable): $SERVICE_MODE"
     exit 1
 fi
-

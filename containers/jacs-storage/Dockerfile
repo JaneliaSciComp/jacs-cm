@@ -26,9 +26,6 @@ COPY --from=builder /tmp/jade/jacsstorage-masterweb/build/install/jacsstorage-ma
 COPY --from=builder /tmp/jade/jacsstorage-agentweb/build/install/jacsstorage-agentweb ./agent
 COPY start.sh /app/
 
-# Expose port
-EXPOSE 8080
-
 # Service mode defaults to master node, but can be set to agent
 ENV SERVICE_MODE=master
 # These variables must be set when running this container in agent mode
