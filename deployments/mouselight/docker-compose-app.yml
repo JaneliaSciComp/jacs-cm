@@ -14,7 +14,7 @@ services:
       - rabbitmq
       - jacs-sync
     volumes:
-      - /opt/data/rabbitmq/backup:/app/backup
+      - ${RABBITMQ_BACKUPS_DIR}:/app/backup
     environment:
       - RABBITMQ_HOSTNAME=rabbitmq
       - JACS_URL=http://jacs-sync:8080/api/rest-v2/
@@ -31,8 +31,8 @@ services:
     depends_on:
       - mongo1
     volumes:
-      - /opt/config/jade:/app/config:ro
-      - /data:/data
+      - ${CONFIG_DIR}/jade:/app/config:ro
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=master
       - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
@@ -57,8 +57,8 @@ services:
       - jade-master
       - mongo1
     volumes:
-      - /opt/config/jade:/app/config:ro
-      - /data:/data
+      - ${CONFIG_DIR}/jade:/app/config:ro
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
@@ -87,8 +87,8 @@ services:
       - jade-master
       - mongo1
     volumes:
-      - /opt/config/jade:/app/config:ro
-      - /data:/data
+      - ${CONFIG_DIR}/jade:/app/config:ro
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
@@ -115,7 +115,7 @@ services:
     image: janeliascicomp/jacs-compute:latest
     user: ${DOCKER_USER}
     volumes:
-      - /opt/config/jacs-sync:/app/config
+      - ${CONFIG_DIR}/jacs-sync:/app/config
     environment:
       - SERVICE_MODE=sync
       - HOSTNAME=jacs-sync
@@ -140,8 +140,8 @@ services:
     image: janeliascicomp/jacs-compute:latest
     user: ${DOCKER_USER}
     volumes:
-      - /opt/config/jacs-async:/app/config:ro
-      - /data:/data
+      - ${CONFIG_DIR}/jacs-async:/app/config:ro
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=async
       - HOSTNAME=jacs-async
@@ -178,8 +178,8 @@ services:
     # This container must run as root in order to bind to port 443
     image: janeliascicomp/api-gateway:latest
     volumes:
-      - /opt/config/certs:/app/certs:ro
-      - /opt/config/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ${CONFIG_DIR}/certs:/app/certs:ro
+      - ${CONFIG_DIR}/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:

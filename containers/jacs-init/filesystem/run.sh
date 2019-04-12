@@ -49,6 +49,10 @@ if [[ ! -e $MYSQL_BACKUPS_DIR ]]; then
     echo "Creating directory: $MYSQL_BACKUPS_DIR"
     mkdir -p $MYSQL_BACKUPS_DIR
 fi
+if [[ ! -e $RABBITMQ_BACKUPS_DIR ]]; then
+    echo "Creating directory: $RABBITMQ_BACKUPS_DIR"
+    mkdir -p $RABBITMQ_BACKUPS_DIR
+fi
 
 #
 # Portainer Data Directory

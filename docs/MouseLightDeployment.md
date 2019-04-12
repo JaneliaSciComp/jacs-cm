@@ -57,15 +57,16 @@ At minimum, you must customize the following:
 4. Set a 32 byte secret key for JWT authentication.
 5. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
 6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
-
+7. Set `BACKUPS_DIR` to a different filesystem for data redundancy.
 
 ## Filesystem Initialization
 
 Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/config) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them:
 
 ```
-sudo mkdir -p /opt/config
-sudo chown docker-nobody:docker-nobody /opt/config /data
+. .env
+sudo mkdir -p $CONFIG_DIR
+sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR
 ./manage.sh init-filesystem
 ```
 
@@ -80,14 +81,14 @@ The MongoDB key files on both systems need to be identical. Currently this must 
 
 On **HOST1**:
 ```
-sudo cp /data/db/mongo/jacs/replica1/mongodb-keyfile /tmp
+sudo cp $DATA_DIR/db/mongo/jacs/replica1/mongodb-keyfile /tmp
 sudo chown $USER /tmp/mongodb-keyfile
 scp /tmp/mongodb-keyfile HOST2:/tmp
 ```
 
 On **HOST2**:
 ```
-echo /data/db/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
+echo $DATA_DIR/db/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
 ```
 
 
@@ -98,7 +99,7 @@ On **HOST1**, bring up swarm as a manager node, and give it a label:
 docker swarm init
 ```
 
-On **HOST2**, copy and paste the output of the previous command to join the swarm as a worker. 
+On **HOST2**, copy and paste the output of the previous command to join the swarm as a worker.
 
 ```
 docker swarm join --token ...
@@ -115,7 +116,6 @@ You may have to use sudo to run the commands like below:
 sudo docker node update --label-add name=node1 $(sudo docker node ls -f "role=manager" --format "{{.ID}}")
 sudo docker node update --label-add name=node2 $(sudo docker node ls -f "role=worker" --format "{{.ID}}")
 ```
-
 
 You can run this command to ensure that both nodes are up and in Ready status:
 ```
