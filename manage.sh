@@ -354,8 +354,10 @@ do
 
         echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
         DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME"
-        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME
+        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep 2"
+        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep 2
+        echo "$SUDO $DOCKER service ls"
+        $SUDO $DOCKER service ls
 
     elif [[ "$COMMAND" == "rmswarm" ]]; then
 
