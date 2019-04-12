@@ -53,7 +53,7 @@ vi .env
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
 2. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
-3. Fill in all the unset passwords with >8 character passwords.
+3. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 4. Set a 32 byte secret key for JWT authentication.
 5. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
 6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
