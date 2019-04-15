@@ -14,7 +14,7 @@ services:
     command: -H unix:///var/run/docker.sock --ssl --sslcert=/app/certs/cert.crt --sslkey=/app/certs/cert.key
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${DATA_DIR}/portainer:/data
+      - ${DB_DIR}/portainer:/data
       - ${CONFIG_DIR}/certs:/app/certs:ro
     networks:
       - jacs-net

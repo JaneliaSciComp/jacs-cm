@@ -3,7 +3,7 @@
 # Initializes CONFIG_DIR and DATA_DIR with default directory structures and configuration templates.
 #
 
-if [[ -z "$CONFIG_DIR" || -z "$DATA_DIR" ]]; then
+if [[ -z "$CONFIG_DIR" || -z "$DATA_DIR" || -z "$DB_DIR" || -z "$BACKUPS_DIR" ]]; then
     echo "You must specify your file system parameters in the .env file"
     exit 1
 fi
@@ -12,16 +12,18 @@ set -e
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 project=jacs
-data_dir=$DATA_DIR
-db_dir=$data_dir/db
-mongo_data_dir=$db_dir/mongo/$project
-mysql_data_dir=$db_dir/mysql/$project
-rabbitmq_data_dir=$db_dir/rabbitmq/$project
-elasticsearch_data_dir=$db_dir/elasticsearch/$project
 config_dir=$CONFIG_DIR
+data_dir=$DATA_DIR
+db_dir=$DB_DIR
+backups_dir=$BACKUPS_DIR
 
 if [[ ! -w $config_dir ]]; then
     echo "Before running this script, create your config directory ($config_dir) and ensure your DOCKER_USER has write privileges to it."
+    exit 1
+fi
+
+if [[ ! -w $db_dir ]]; then
+    echo "Before running this script, create your DB directory ($db_dir) and ensure your DOCKER_USER has write privileges to it."
     exit 1
 fi
 
@@ -30,42 +32,25 @@ if [[ ! -w $data_dir ]]; then
     exit 1
 fi
 
-#
-# Database Directory
-#
-if [[ ! -e $db_dir ]]; then
-    echo "Creating directory: $db_dir"
-    mkdir $db_dir
-fi
-
-#
-# Database Backup Directories
-#
-if [[ ! -e $MONGO_BACKUPS_DIR ]]; then
-    echo "Creating directory: $MONGO_BACKUPS_DIR"
-    mkdir -p $MONGO_BACKUPS_DIR
-fi
-if [[ ! -e $MYSQL_BACKUPS_DIR ]]; then
-    echo "Creating directory: $MYSQL_BACKUPS_DIR"
-    mkdir -p $MYSQL_BACKUPS_DIR
-fi
-if [[ ! -e $RABBITMQ_BACKUPS_DIR ]]; then
-    echo "Creating directory: $RABBITMQ_BACKUPS_DIR"
-    mkdir -p $RABBITMQ_BACKUPS_DIR
+if [[ ! -w $backups_dir ]]; then
+    echo "Before running this script, create your backups directory ($backups_dir) and ensure your DOCKER_USER has write privileges to it."
+    exit 1
 fi
 
 #
 # Portainer Data Directory
 #
-if [[ ! -e $data_dir/portainer ]]; then
-    echo "Creating directory: $data_dir/portainer"
-    mkdir $data_dir/portainer
+portainer_data_dir=$db_dir/portainer
+if [[ ! -e "$portainer_data_dir" ]]; then
+    echo "Creating Portainer data directory: $portainer_data_dir"
+    mkdir -p $portainer_data_dir
 fi
 
 #
 # Mongo Data Directory
 #
-if [[ ! -e $mongo_data_dir ]]; then
+mongo_data_dir=$db_dir/mongo/$project
+if [[ ! -e "$mongo_data_dir" ]]; then
     echo "Initializing MongoDB data directories"
     mkdir -p $mongo_data_dir/replica{1..3}
     openssl rand -base64 741 > /tmp/mongodb-keyfile
@@ -77,7 +62,8 @@ fi
 #
 # MySQL Data Directory
 #
-if [[ ! -e $mysql_data_dir ]]; then
+mysql_data_dir=$db_dir/mysql/$project
+if [[ ! -e "$mysql_data_dir" ]]; then
     echo "Initializing MySQL data directory"
     mkdir -p $mysql_data_dir
 fi
@@ -85,9 +71,9 @@ fi
 #
 # MySQL Database Configuration
 #
-if [[ ! -e $config_dir/mysql ]]; then
+mysql_config_dir=$config_dir/mysql
+if [[ ! -e "$mysql_config_dir" ]]; then
     echo "Deploying MySQL configuration"
-    mysql_config_dir=$config_dir/mysql
     mkdir -p $mysql_config_dir/$project
     cp -R $DIR/mysql/conf $mysql_config_dir/$project
     cp -R $DIR/mysql/sql $mysql_config_dir/$project
@@ -96,7 +82,7 @@ fi
 #
 # Image Processing Pipeline
 #
-if [[ ! -e $config_dir/ipp ]]; then
+if [[ ! -e "$config_dir/ipp" ]]; then
     echo "Deploying IPP configuration"
     cp -R $DIR/ipp $config_dir
 fi
@@ -104,7 +90,8 @@ fi
 #
 # RabbitMQ
 #
-if [[ ! -e $rabbitmq_data_dir ]]; then
+rabbitmq_data_dir=$db_dir/rabbitmq/$project
+if [[ ! -e "$rabbitmq_data_dir" ]]; then
     echo "Initializing RabbitMQ data directory"
     mkdir -p $rabbitmq_data_dir
 fi
@@ -112,7 +99,8 @@ fi
 #
 # Elasticsearch
 #
-if [[ ! -e $elasticsearch_data_dir ]]; then
+elasticsearch_data_dir=$db_dir/elasticsearch/$project
+if [[ ! -e "$elasticsearch_data_dir" ]]; then
     echo "Initializing ElasticSearch data directory"
     mkdir -p $elasticsearch_data_dir
 fi
@@ -121,7 +109,7 @@ fi
 # TLS Certificates
 #
 cert_dir=$config_dir/certs
-if [[ ! -e $cert_dir ]]; then
+if [[ ! -e "$cert_dir" ]]; then
     echo "Initializing Certificates at $cert_dir"
     mkdir -p $cert_dir
     chmod 750 $cert_dir
@@ -133,7 +121,7 @@ fi
 # JACS Async Services
 #
 jacs_async_dir=$config_dir/jacs-async
-if [[ ! -e $jacs_async_dir ]]; then
+if [[ ! -e "$jacs_async_dir" ]]; then
     echo "Initializing Async Services Config at $jacs_async_dir"
     mkdir -p $jacs_async_dir
     cp $DIR/jacs/* $jacs_async_dir
@@ -143,7 +131,7 @@ fi
 # JACS Sync Services
 #
 jacs_sync_dir=$config_dir/jacs-sync
-if [[ ! -e $jacs_sync_dir ]]; then
+if [[ ! -e "$jacs_sync_dir" ]]; then
     echo "Initializing Sync Services Config at $jacs_sync_dir"
     mkdir -p $jacs_sync_dir
     cp $DIR/jacs/* $jacs_sync_dir
@@ -152,20 +140,24 @@ fi
 #
 # JADE
 #
-jade_dir=$config_dir/jade
-if [[ ! -e $jade_dir ]]; then
-    echo "Initializing Jade Config at $jade_dir"
-    mkdir -p $jade_dir
-    cp $DIR/jade/* $jade_dir
+jade_config_dir=$config_dir/jade
+if [[ ! -e "$jade_config_dir" ]]; then
+    echo "Initializing Jade Config at $jade_config_dir"
+    mkdir -p $jade_config_dir
+    cp $DIR/jade/* $jade_config_dir
+fi
+jade_data_dir=$data_dir/jacsstorage
+if [[ ! -e "$jade_data_dir" ]]; then
     echo "Initializing Jade storage at $data_dir/jacsstorage"
     mkdir $data_dir/jacsstorage
 fi
+
 
 #
 # API Gateway
 #
 apigateway_dir=$config_dir/api-gateway
-if [[ ! -e $apigateway_dir ]]; then
+if [[ ! -e "$apigateway_dir" ]]; then
     echo "Initializing API Gateway Config at $apigateway_dir"
     mkdir -p $apigateway_dir
     if [[ -e $DIR/api-gateway/deployments/$DEPLOYMENT ]]; then
@@ -175,5 +167,21 @@ if [[ ! -e $apigateway_dir ]]; then
         echo "  Using default gateway configuration"
         cp -r $DIR/api-gateway/* $apigateway_dir
     fi
+fi
+
+#
+# Database Backup Directories
+#
+if [[ ! -e "$MONGO_BACKUPS_DIR" ]]; then
+    echo "Creating directory: $MONGO_BACKUPS_DIR"
+    mkdir -p $MONGO_BACKUPS_DIR
+fi
+if [[ ! -e "$MYSQL_BACKUPS_DIR" ]]; then
+    echo "Creating directory: $MYSQL_BACKUPS_DIR"
+    mkdir -p $MYSQL_BACKUPS_DIR
+fi
+if [[ ! -e "$RABBITMQ_BACKUPS_DIR" ]]; then
+    echo "Creating directory: $RABBITMQ_BACKUPS_DIR"
+    mkdir -p $RABBITMQ_BACKUPS_DIR
 fi
 

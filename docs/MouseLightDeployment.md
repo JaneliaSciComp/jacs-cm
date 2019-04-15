@@ -54,19 +54,19 @@ At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
 2. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
 3. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
-4. Set a 32 byte secret key for JWT authentication.
+4. Set a 32-byte secret key for JWT authentication.
 5. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
 6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
-7. Set `BACKUPS_DIR` to a different filesystem for data redundancy.
+
 
 ## Filesystem Initialization
 
-Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data/db) and `CONFIG_DIR` (default: /opt/config) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them:
+Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them. For example:
 
 ```
 . .env
-sudo mkdir -p $CONFIG_DIR
-sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR
+sudo mkdir -p $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
+sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
 ./manage.sh init-filesystem
 ```
 
