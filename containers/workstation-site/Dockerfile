@@ -36,11 +36,11 @@ RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
     MAIL_SERVER=$MAIL_SERVER \
     RABBITMQ_USER=$RABBITMQ_USER \
     RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
-    envsubst < my.properties > ./modules/DataBrowser/src/main/resources/my.properties \
-    && cat ./modules/DataBrowser/src/main/resources/my.properties
+    envsubst < my.properties > ./modules/Core/src/main/resources/my.properties \
+    && cat ./modules/Core/src/main/resources/my.properties
 
-RUN echo "org_janelia_it_workstation_nb_action_update_center=https://${API_GATEWAY_EXPOSED_HOST}/updates/updates.xml" \
-    >> ./modules/DataBrowser/src/main/resources/org/janelia/it/workstation/gui/browser/Bundle.properties
+RUN echo "org_janelia_workstation_update_center=https://${API_GATEWAY_EXPOSED_HOST}/updates/updates.xml" \
+    >> ./modules/Core/src/main/resources/org/janelia/workstation/core/Bundle.properties
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install \
     && cd modules/application \
