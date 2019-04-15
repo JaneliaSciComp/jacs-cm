@@ -130,7 +130,7 @@ Next, start up the databases:
 ```
 ./manage.sh swarm prod --dbonly
 ```
-At this point you should connect to Portainer at https://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't reach the container try running the up command again to refresh it.
+At this point you should connect to Portainer at http://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't reach the container try running the up command again to refresh it.
 
 Now you are ready to initalize the databases:
 
