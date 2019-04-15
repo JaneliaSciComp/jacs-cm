@@ -14,3 +14,4 @@ RUN apk update && apk upgrade \
     && apk add --no-cache openjdk8 gradle maven \
     # node.js builds
     && apk add --no-cache npm
+COPY ./scripts/ /usr/local/bin
