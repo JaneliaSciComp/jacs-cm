@@ -29,7 +29,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     volumes:
-      - ${DATA_DIR}/db/rabbitmq/jacs:/var/lib/rabbitmq
+      - ${DB_DIR}/rabbitmq/jacs:/var/lib/rabbitmq
     restart: unless-stopped
     networks:
       - jacs-net
@@ -40,7 +40,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ${DATA_DIR}/db/mysql/jacs:/var/lib/mysql
+      - ${DB_DIR}/mysql/jacs:/var/lib/mysql
       - ${CONFIG_DIR}/mysql/jacs/conf:/etc/mysql/conf.d:ro
       - ${CONFIG_DIR}/mysql/jacs/sql:/docker-entrypoint-initdb.d:ro
     environment:
@@ -55,7 +55,7 @@ services:
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
-      - ${DATA_DIR}/db/mongo/jacs/replica1:/data/db
+      - ${DB_DIR}/mongo/jacs/replica1:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_INIT_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_INIT_ROOT_PASSWORD}
@@ -72,7 +72,7 @@ services:
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
-      - ${DATA_DIR}/db/mongo/jacs/replica2:/data/db
+      - ${DB_DIR}/mongo/jacs/replica2:/data/db
     restart: unless-stopped
     networks:
       - jacs-net
@@ -82,7 +82,7 @@ services:
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 1 --quiet
     volumes:
-      - ${DATA_DIR}/db/mongo/jacs/replica3:/data/db
+      - ${DB_DIR}/mongo/jacs/replica3:/data/db
     restart: unless-stopped
     networks:
       - jacs-net

@@ -17,23 +17,31 @@ data_dir=$DATA_DIR
 db_dir=$DB_DIR
 backups_dir=$BACKUPS_DIR
 
-if [[ ! -w $config_dir ]]; then
-    echo "Before running this script, create your config directory ($config_dir) and ensure your DOCKER_USER has write privileges to it."
+if mkdir -p $config_dir; then
+    echo "Verified $config_dir exists"
+else
+    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your config directory ($config_dir)"
     exit 1
 fi
 
-if [[ ! -w $db_dir ]]; then
-    echo "Before running this script, create your DB directory ($db_dir) and ensure your DOCKER_USER has write privileges to it."
+if mkdir -p $db_dir; then
+    echo "Verified $db_dir exists"
+else
+    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your DB directory ($db_dir)"
     exit 1
 fi
 
-if [[ ! -w $data_dir ]]; then
-    echo "Before running this script, create your data directory ($data_dir) and ensure your DOCKER_USER has write privileges to it."
+if mkdir -p $data_dir; then
+    echo "Verified $data_dir exists"
+else
+    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your config directory ($data_dir)"
     exit 1
 fi
 
-if [[ ! -w $backups_dir ]]; then
-    echo "Before running this script, create your backups directory ($backups_dir) and ensure your DOCKER_USER has write privileges to it."
+if mkdir -p $backups_dir; then
+    echo "Verified $backups_dir exists"
+else
+    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your backups directory ($backups_dir)"
     exit 1
 fi
 

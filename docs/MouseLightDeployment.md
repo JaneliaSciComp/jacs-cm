@@ -44,27 +44,28 @@ cd jacs-cm
 
 ## Configuration
 
-Next, create an indentical .env file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
+Next, create an indentical .env.config file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
-cp .env.template .env
-vi .env
+cp .env.template .env.config
+vi .env.config
 ```
 
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
-2. Set `HOSTNAME1` and `HOSTNAME2` to the two servers you want to use (i.e. **HOST1** and **HOST2**).
-3. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
-4. Set a 32-byte secret key for JWT authentication.
-5. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
-6. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
+2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to the mounts you used during the operating system installation. Alternatively, you can make symbolic links.
+3. Set `HOST1` and `HOST2` to the two servers you want to use.
+4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
+5. Set a 32-byte secret key for JWT authentication.
+6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
+7. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
 
 
 ## Filesystem Initialization
 
-Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories are empty and writeable by the user defined by UNAME:GNAME (by default, docker-nobody), and then initialize them. For example:
+Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody), and then initialize them. For example:
 
 ```
-. .env
+. .env.config
 sudo mkdir -p $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
 ./manage.sh init-filesystem
@@ -81,14 +82,14 @@ The MongoDB key files on both systems need to be identical. Currently this must 
 
 On **HOST1**:
 ```
-sudo cp $DATA_DIR/db/mongo/jacs/replica1/mongodb-keyfile /tmp
+sudo cp $DB_DIR/mongo/jacs/replica1/mongodb-keyfile /tmp
 sudo chown $USER /tmp/mongodb-keyfile
 scp /tmp/mongodb-keyfile HOST2:/tmp
 ```
 
 On **HOST2**:
 ```
-echo $DATA_DIR/db/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
+echo $DB_DIR/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
 ```
 
 
@@ -171,12 +172,12 @@ docker service ls
 ```
 If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name to `service ps`. For example, if jade-agent2 fails to start, you would type:
 ```
-docker service ps --no-trunc jacs-cm-test_jade-agent2
+docker service ps --no-trunc jacs-cm-test_mongo1
 ```
 
 Once a service starts, you can tail its logs using the `logs` command:
 ```
-docker service logs -f jacs-cm-test_jade-agent2
+docker service logs -f jacs-cm-test_mongo1
 ```
 
 All of this information is also available in the Portainer web GUI.

@@ -6,34 +6,49 @@
 # Exit on error
 set -e
 
+# Directory containing this script
 DIR=$(cd "$(dirname "$0")"; pwd)
-
-if [[ ! -f $DIR/.env ]]; then
-    echo "You need to configure your .env file before using this script. Get started by copying the template:"
-    echo '  cp .env.template .env'
-    exit 1
-fi
-
-# Parse environment
-. $DIR/.env
-
-if [[ -z "$DEPLOYMENT" ]]; then
-    echo "Your .env file must define a DEPLOYMENT to use"
-fi
-
-echo "Using deployment $DEPLOYMENT"
 
 # Constants
 CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
 DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
+BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
+JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
+
+# Environment file
+ENV_CONFIG=${ENV_CONFIG:-.env.config}
+if [[ ! -f $DIR/$ENV_CONFIG ]]; then
+    echo "You need to configure your $ENV_CONFIG file before using this script. Get started by copying the template:"
+    echo "  cp .env.template $ENV_CONFIG"
+    exit 1
+fi
+
+# Start with uninterpolated environment
+. $DIR/$ENV_CONFIG
+
+if [[ "$@" != "build builder" ]]; then
+
+    # Generate environment
+    echo "Generating .env from .env.config"
+    $SUDO $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  > $DIR/.env
+
+    # Parse environment
+    echo "Parsing .env"
+    . $DIR/.env
+fi
+
+if [[ -z "$DEPLOYMENT" ]]; then
+    echo "Your $ENV_CONFIG file must define a DEPLOYMENT to use"
+fi
+echo "Using deployment $DEPLOYMENT"
+
+# More variables
 CONTAINER_PREFIX="$NAMESPACE/"
 if [[ ! -z $REGISTRY_SERVER ]]; then
     CONTAINER_PREFIX="$REGISTRY_SERVER/$CONTAINER_PREFIX"
 fi
-JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
-
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
 
@@ -177,8 +192,8 @@ fi
 
 if [[ "$1" == "init-filesystem" ]]; then
     echo "Initializing file system..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DATA_DIR:$DATA_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
     echo ""
     echo "The filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
     echo ""
@@ -233,7 +248,7 @@ if [[ "$1" == "login" ]]; then
     read -p "Username: " JACS_USERNAME
     read -s -p "Password: " JACS_PASSWORD
     echo 
-    export TOKEN=$(sudo docker run -it --rm --env-file .env janeliascicomp/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
+    export TOKEN=$(sudo docker run -it --rm --env-file .env $NAMESPACE/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
     echo "Token generated. Export it to your environment like this:"
     echo "export TOKEN=$TOKEN"
     exit 0
@@ -354,10 +369,8 @@ do
 
         echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
         DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep 2"
-        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep 2
-        echo "$SUDO $DOCKER service ls"
-        $SUDO $DOCKER service ls
+        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME"
+        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME
 
     elif [[ "$COMMAND" == "rmswarm" ]]; then
 
