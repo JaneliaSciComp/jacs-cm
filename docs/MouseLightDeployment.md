@@ -1,6 +1,8 @@
 # MouseLight Deployment
 
-This document describes the canonical two-server Workstation deployment for supporting mouse neuron tracing. It uses prebuilt containers available on Docker Hub. Currently, this deployment does not have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
+This document describes the canonical two-server Janelia Workstation deployment for supporting neuron tracing for the [MouseLight project](https://www.janelia.org/project-team/mouselight) at the Janelia Research Campus and other research institutions. This deployment uses Docker Swarm to orchestrate prebuilt containers available on Docker Hub. 
+
+Please note that this deployment does not currently have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
 
 
 ## Hardware
@@ -8,29 +10,38 @@ This document describes the canonical two-server Workstation deployment for supp
 The JACS backend consists of several services which need to be deployed on server hardware. We have tested the following configuration:
 
 * Two Dell PowerEdge R740XD Servers
-    * Each server has 40 cores (Intel Xeon Gold 6148 2.4G)
+    * Each server has 40 cores (e.g. Intel Xeon Gold 6148 2.4G)
     * Each server has 192 GB of memory
     * The hard drives are configured as follows:
         * 2 x 200GB SSD - Operating system (/)
         * 2 x 960GB SSD in RAID1 - Databases, user preferences, etc. (/opt)
         * 12 x 10TB in RAID6 - Image files (/data)
 
-The rest of this guide assumes that you have two hosts dedicated to deploying this system, which are configured as listed above. They will be referred to as **HOST1** and **HOST2**.
+The rest of this guide assumes that you have two server hosts dedicated to deploying this system, which are configured as listed above. They will be referred to as **HOST1** and **HOST2**.
+
+This two-server deployment can support 5-10 concurrent users. We use the following configuration for client machines:
+
+* Dell Precision 5820 Tower
+    * Minimum of 8 cores (e.g. Intel Xeon W-2145 3.7GHz)
+    * 128 GB of memory
+    * Nvidia GTX1080Ti 11GB (reference card, blower fan style)
+        * Other similar cards will work fine: GTX1070, GTX1080, RTX2080
+    * Windows 10
 
 
 ## Install Scientific Linux 7
 
-In theory, the backend software will run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
+The backend software should run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
 
 
 ## Install Docker
 
-To install Docker on SL7, follow [these instructions](InstallingDockerSL7.md).
+To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md).
 
 
 ## Clone the jacs-cm repo
 
-Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone it onto NFS, and then create symbolic links to it on both systems. Otherwise they will need to be kept in sync manually. The naive approach just clones the repo twice:
+Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. The naive approach just clones the repo twice:
 
 ```
 cd /opt
@@ -44,7 +55,7 @@ cd jacs-cm
 
 ## Configuration
 
-Next, create an indentical .env.config file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
+Next, create an identical .env.config file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
 cp .env.template .env.config
 vi .env.config
@@ -182,7 +193,7 @@ docker service logs -f jacs-cm-test_mongo1
 
 All of this information is also available in the Portainer web GUI.
 
-## System Verification
+## Verify that the system is working
 
 You can verify the Authentication Service is working as follows:
 
@@ -209,7 +220,7 @@ To pull and redeploy the latest image for a single service, e.g. workstation-sit
 docker service update --force jacs-cm_workstation-site
 ```
 
-# Backups
+## Backups
 
 You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
 
@@ -238,4 +249,7 @@ In the Workstation, select **File** → **New** → **Tiled Microscope Sample**,
 Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navigate to Home, then "3D RawTile Microscope Samples", and your sample name. Right-click the sample and choose "Open in Large Volume Viewer". The 2D imagery should load into the middle panel. You should be able to right-click anywhere on the image and select "Navigate to This Location in Horta (channel 1)", to load the 3D imagery.
 
 This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
+
+
+
 
