@@ -15,12 +15,12 @@ The JACS backend consists of several services which need to be deployed on serve
         * 2 x 960GB SSD in RAID1 - Databases, user preferences, etc. (/opt)
         * 12 x 10TB in RAID6 - Image files (/data)
 
-The rest of this guide assumes that you have two hosts dedicated to deploying this system. They will be referred to as **HOST1** and **HOST2**.
+The rest of this guide assumes that you have two hosts dedicated to deploying this system, which are configured as listed above. They will be referred to as **HOST1** and **HOST2**.
 
 
 ## Install Scientific Linux 7
 
-In theory, the backend software will run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7.
+In theory, the backend software will run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
 
 
 ## Install Docker
@@ -220,4 +220,22 @@ You should create two crontab entries on **HOST2** for backing up Mongo and MySQ
 
 The reason that these should run on **HOST2** is because the MySQL database and a Mongo secondary both run there.
 
+
+## Client Machine Setup
+
+If you are using the default self-signed certificate, you will need to take some extra steps to [install it on the client](SelfSignedCerts.md).
+
+Navigate to https://HOST1 in a web browser on your client machine, and download the Workstation client for Windows. Follow the installer wizard, using the default options, then launch the Workstation.
+
+If you are using LDAP/AD integration, you should be able to log in with your normal user/password. If you are using the Workstation's internal user management, you must first login as user root (password: root), and then select **Window** → **Core** → **Administrative GUI** from the menus. Click "View Users", then "New User" and create your first user. Add the user to all of the relevant groups, including MouseLight.
+
+## Data Import
+
+The data for MouseLight comes as a directory containing TIFF images organized into octrees. You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the same as `/jade1/<sampleDirectoryName>`.
+
+In the Workstation, select **File** → **New** → **Tiled Microscope Sample**, and then set "Sample Name" to `<sampleDirectoryName>` and "Path to Render Folder" as `/jade1/<sampleDirectoryName>`.
+
+Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navigate to Home, then "3D RawTile Microscope Samples", and your sample name. Right-click the sample and choose "Open in Large Volume Viewer". The 2D imagery should load into the middle panel. You should be able to right-click anywhere on the image and select "Navigate to This Location in Horta (channel 1)", to load the 3D imagery.
+
+This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
 
