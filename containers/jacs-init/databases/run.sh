@@ -46,8 +46,15 @@ for filename in /tmp/*.js; do
     sleep 1
 done
 
-echo
-echo "Initializing JACS Default Subjects"
-echo "mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h $REPLICA_HOSTS --db jacs --collection subject $DIR/mongo/defaultSubjects.json"
-mongoimport --authenticationDatabase admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD -h rsJacs/$REPLICA_HOSTS \
-            --db jacs --collection subject $DIR/mongo/defaultSubjects.json
+for filepath in $DIR/mongo/*.json; do
+    filename=${filepath##*/}
+    collection=${filename%.*}
+    echo
+    echo "Initializing default data from $filepath to $collection collection"
+    echo "mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p *** -h rsJacs/$REPLICA_HOSTS --db jacs --collection $collection $filepath"
+    mongoimport --authenticationDatabase admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD \
+                -h rsJacs/$REPLICA_HOSTS --db jacs --collection $collection $filepath
+
+    sleep 1
+done
+
