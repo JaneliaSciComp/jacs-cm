@@ -13,7 +13,6 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
-DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
 BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
 JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
 SLEEP_TIME=6
@@ -33,7 +32,11 @@ if [[ "$@" != "build builder" ]]; then
 
     # Generate environment
     echo "Generating .env from .env.config"
-    $SUDO $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  > $DIR/.env
+    echo "##################################################################################" > $DIR/.env
+    echo "# This file was automatically generated from $ENV_CONFIG. Edit that instead!" >> $DIR/.env
+    echo "##################################################################################" >> $DIR/.env
+    echo "" >> $DIR/.env
+    $SUDO $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
 
     # Parse environment
     echo "Parsing .env"
@@ -43,7 +46,8 @@ fi
 if [[ -z "$DEPLOYMENT" ]]; then
     echo "Your $ENV_CONFIG file must define a DEPLOYMENT to use"
 fi
-echo "Using deployment $DEPLOYMENT"
+DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
+echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
 
 # More variables
 CONTAINER_PREFIX="$NAMESPACE/"
