@@ -63,17 +63,19 @@ vi .env.config
 
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
-2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to the mounts you used during the operating system installation. Alternatively, you can make symbolic links.
-3. Set `HOST1` and `HOST2` to the two servers you want to use.
+2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to the mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
+3. Set `HOST1` and `HOST2` to the two servers. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 5. Set a 32-byte secret key for JWT authentication.
 6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
-7. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **8.0-JRC** for deploying version 8.0 at Janelia Research Campus.
+7. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **${WORKSTATION_TAG}-JRC** for deploying version 8.0 at Janelia Research Campus.
+
+Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed jacs-cm on an NFS mount.
 
 
 ## Filesystem Initialization
 
-Now you can initialize the filesystem (on both systems). Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody), and then initialize them. For example:
+Now you can initialize the filesystem on both systems. Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody), and then initialize them. For example:
 
 ```
 . .env.config
@@ -82,9 +84,7 @@ sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DI
 ./manage.sh init-filesystem
 ```
 
-You can now manually edit the files found under `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the following customizations are minimally necessary for MouseLight deployments:
-
-1. `certs/*` - By default, self-signed TLS certificates are generated and placed here. You should overwrite them with the real certificates for your host.
+Once this procedure has successfully completed on both of the hosts, you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the only customization that is strongly recommended is to replace the self-signed certificates in `CONFIG_DIR/certs/*` with your own certificates signed by a Certificate Authority.
 
 
 ### MongoDB Key Synchronization
