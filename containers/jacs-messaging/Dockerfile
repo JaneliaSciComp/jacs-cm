@@ -13,7 +13,7 @@ WORKDIR /tmp/jacs-messaging
 RUN git clone https://github.com/JaneliaSciComp/jacs-messaging.git . \
     && git fetch --tags \
     && git checkout $APP_TAG \
-    && gradle --no-daemon brokerJar
+    && ./gradlew --no-daemon brokerJar
 
 # Checkout wait-for-it
 WORKDIR /tmp
