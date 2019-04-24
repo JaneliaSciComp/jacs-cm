@@ -220,6 +220,15 @@ To pull and redeploy the latest image for a single service, e.g. workstation-sit
 docker service update --force jacs-cm_workstation-site
 ```
 
+## Database maintenance
+
+Database maintenance operation is actually an async service invocation that refreshes indexes and updates entities
+permissions. This can be done using:
+```
+./manage.sh dbMaintenance username [-refreshIndexes] [-refreshPermissions]
+```
+where username is the name of a subject that must already exist.
+
 ## Backups
 
 You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
