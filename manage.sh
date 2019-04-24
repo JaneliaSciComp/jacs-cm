@@ -232,7 +232,51 @@ fi
 
 if [[ "$1" == "dbMaintenance" ]]; then
     echo "Perform DB maintenance..."
-    echo "$SUDO $DOCKER run -u $DOCKER_USER --network ${NETWORK_NAME} jacs-compute"
+    shift
+    if [[ $# == 0 ]]; then
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+	exit 1
+    fi
+    userParam=username:"$1"
+    shift
+
+    service_args=()
+
+    while [[ $# > 0 ]]; do
+	key="$1"
+	if [ "$key" == "" ] ; then
+	    break
+	fi
+	shift # past the key
+	case $key in
+	    -refreshIndexes)
+		service_args+=(\"-refreshIndexes\")
+		;;
+	    -refreshPermissions)
+		service_args+=(\"-refreshPermissions\")
+		;;
+	    -h|--help)
+		echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+		exit 0
+		;;
+	    *)
+		# invalid arg
+		echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+		exit 1
+		;;
+	esac
+    done
+
+    if [[ ${#service_args[@]} == 0 ]]; then
+	echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+	exit 1
+    fi
+
+    service_json_args=$(printf ",%s" "${service_args[@]}")
+    service_json_args="{\"args\": [${service_json_args:1}]}"
+
+    echo "$SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d ${service_json_args}"
+    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
     exit 0
 fi
 
