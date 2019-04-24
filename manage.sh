@@ -230,6 +230,12 @@ if [[ "$1" == "mysql" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "dbMaintenance" ]]; then
+    echo "Perform DB maintenance..."
+    echo "$SUDO $DOCKER run -u $DOCKER_USER --network ${NETWORK_NAME} jacs-compute"
+    exit 0
+fi
+
 if [[ "$1" == "backup" ]]; then
     if [[ "$2" == "mongo" ]]; then
         FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
