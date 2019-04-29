@@ -1,0 +1,195 @@
+version: "3.7"
+
+services:
+
+  workstation-site:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node1]
+      resources:
+        limits:
+          cpus: "1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-dashboard:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs==true]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 50M
+        reservations:
+          cpus: "1"
+          memory: 10M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  ipp:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs==true]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 100M
+        reservations:
+          cpus: "1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  api-gateway:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node1]
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "2"
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jacs-sync:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs==true]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+
+  jacs-async:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node1]
+      resources:
+        limits:
+          cpus: "8"
+          memory: 20G
+        reservations:
+          cpus: "4"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+
+  jacs-messaging:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node2]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 10G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-master:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs==true]
+      replicas: 1
+      resources:
+        limits:
+          cpus: "4"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent1:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node1]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent2:
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node3]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+
