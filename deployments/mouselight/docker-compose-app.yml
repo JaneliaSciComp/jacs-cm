@@ -8,17 +8,16 @@ version: '3.7'
 services:
 
   jacs-messaging:
-    image: janeliascicomp/jacs-messaging:latest
+    image: ${NAMESPACE}/jacs-messaging:latest
     user: ${DOCKER_USER}
     depends_on:
       - rabbitmq
       - jacs-sync
     volumes:
-      - ${RABBITMQ_BACKUPS_DIR}:/app/backup
+      - ${BACKUPS_DIR}/messaging:/app/backup
     environment:
       - RABBITMQ_HOSTNAME=rabbitmq
       - JACS_URL=http://jacs-sync:8080/api/rest-v2/
-      - SYSTEM_OWNER=${SYSTEM_OWNER}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     restart: unless-stopped
@@ -26,7 +25,7 @@ services:
       - jacs-net
 
   jade-master:
-    image: janeliascicomp/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - mongo1
@@ -51,7 +50,7 @@ services:
       - jacs-net
 
   jade-agent1:
-    image: janeliascicomp/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -81,7 +80,7 @@ services:
       - jacs-net
 
   jade-agent2:
-    image: janeliascicomp/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -112,7 +111,7 @@ services:
 
 
   jacs-sync:
-    image: janeliascicomp/jacs-compute:latest
+    image: ${NAMESPACE}/jacs-compute:latest
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-sync:/app/config
@@ -137,7 +136,7 @@ services:
       - jacs-net
 
   jacs-async:
-    image: janeliascicomp/jacs-compute:latest
+    image: ${NAMESPACE}/jacs-compute:latest
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-async:/app/config:ro
@@ -165,7 +164,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
-    image: janeliascicomp/workstation-site:latest
+    image: ${NAMESPACE}/workstation-site:latest
     expose:
       - "8080"
     ports:
@@ -176,7 +175,7 @@ services:
 
   api-gateway:
     # This container must run as root in order to bind to port 443
-    image: janeliascicomp/api-gateway:latest
+    image: ${NAMESPACE}/api-gateway:latest
     volumes:
       - ${CONFIG_DIR}/certs:/app/certs:ro
       - ${CONFIG_DIR}/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro

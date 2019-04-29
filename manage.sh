@@ -13,9 +13,18 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
-BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
-JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
 SLEEP_TIME=6
+
+# Container versioning (exported so that they're available for use in docker compose files)
+export API_GATEWAY_VERSION=`cat $CONTAINER_DIR/api-gateway/VERSION`
+export BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
+export JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
+export JACS_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-compute/VERSION`
+export JACS_DASHBOARD_VERSION=`cat $CONTAINER_DIR/jacs-dashboard/VERSION`
+export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
+export JACS_MESSAGING_VERSION=`cat $CONTAINER_DIR/jacs-messaging/VERSION`
+export IPP_VERSION=`cat $CONTAINER_DIR/ipp/VERSION`
+export SOLR_SEARCH_VERSION=`cat $CONTAINER_DIR/solr-search/VERSION`
 
 # Environment file
 ENV_CONFIG=${ENV_CONFIG:-.env.config}
@@ -51,9 +60,6 @@ echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
 
 # More variables
 CONTAINER_PREFIX="$NAMESPACE/"
-if [[ ! -z $REGISTRY_SERVER ]]; then
-    CONTAINER_PREFIX="$REGISTRY_SERVER/$CONTAINER_PREFIX"
-fi
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
 
@@ -159,6 +165,7 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION"
         BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
         BUILD_ARGS="$BUILD_ARGS --build-arg MAIL_SERVER=$MAIL_SERVER"
+        BUILD_ARGS="$BUILD_ARGS --build-arg CERT_PATH=$CONFIG_DIR/certs/cert.crt"
 
         echo "---------------------------------------------------------------------------------"
         echo " Building image for $NAME"
@@ -195,16 +202,32 @@ if [[ "$1" == "build-all" ]]; then
     exit 0
 fi
 
-if [[ "$1" == "init-filesystem" ]]; then
-    echo "Initializing file system..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
-    echo ""
-    echo "The filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
-    echo ""
+
+if [[ "$1" == "init-filesystems" ]]; then
+    STACK_NAME=$COMPOSE_PROJECT_NAME
+    echo "Initializing swarm file systems..."
+    YML="-f $DEPLOYMENT_DIR/swarm-init.yml"
+    echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
+    DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
+    echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $STACK_NAME && sleep 10"
+    $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $STACK_NAME && sleep 10
+    echo "$SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init"
+    $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
+    echo "Filesystem initializing is running. When it's finished, all these tasks should be in Shutdown state:"
+    echo "$SUDO $DOCKER service ps ${STACK_NAME}_jacs-init"
+    $SUDO $DOCKER service ps ${STACK_NAME}_jacs-init
     exit 0
 fi
 
+if [[ "$1" == "init-local-filesystem" ]]; then
+    echo "Initializing local file system..."
+    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
+    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    echo ""
+    echo "The local filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
+    echo ""
+    exit 0
+fi
 
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
@@ -283,12 +306,14 @@ fi
 if [[ "$1" == "backup" ]]; then
     if [[ "$2" == "mongo" ]]; then
         FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
+        MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
         echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
         echo "$SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}&readPreference=secondary\" --archive=/backup/$FILENAME"
         $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}&readPreference=secondary" --archive=/backup/$FILENAME
         exit 0
     elif [[ "$2" == "mysql" ]]; then
         FILENAME=flyportal-$(date +%Y%m%d%H%M%S).sql.gz
+        MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
         echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
         echo "$SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p**** --all-databases | gzip >/backup/$FILENAME'"
         $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} --all-databases | gzip >/backup/$FILENAME'
@@ -424,8 +449,8 @@ do
 
         echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
         DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-        echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
-        $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
+        echo "$SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
+        $SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
 
     elif [[ "$COMMAND" == "rmswarm" ]]; then
 

@@ -39,9 +39,36 @@ The backend software should run on any operating system which supports Docker. H
 To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md).
 
 
+## Swarm Setup
+
+On **HOST1**, bring up swarm as a manager node, and give it a label:
+```
+docker swarm init
+```
+
+On **HOST2**, copy and paste the output of the previous command to join the swarm as a worker.
+
+```
+docker swarm join --token ...
+```
+
+All further commands should be executed on **HOST1**, i.e. the master node. One final step is to label the nodes:
+```
+docker node update --label-add jacs_name=node1 $(docker node ls -f "role=manager" --format "{{.ID}}")
+docker node update --label-add jacs_name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
+docker node update --label-add jacs=true $(docker node ls -f "role=manager" --format "{{.ID}}")
+docker node update --label-add jacs=true $(docker node ls -f "role=worker" --format "{{.ID}}")
+```
+
+You can run this command to ensure that both nodes are up and in Ready status:
+```
+docker node ls
+```
+
+
 ## Clone the jacs-cm repo
 
-Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. The naive approach just clones the repo twice:
+Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. If you don't mind doing manually synchronization, you would just clones the repo twice:
 
 ```
 cd /opt
@@ -64,74 +91,37 @@ vi .env.config
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
 2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to the mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
-3. Set `HOST1` and `HOST2` to the two servers. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use.
+3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the TLS certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
-5. Set a 32-byte secret key for JWT authentication.
+5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
 6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
-7. Set `WORKSTATION_BUILD_VERSION` to a branded version number, e.g. **${WORKSTATION_TAG}-JRC** for deploying version 8.0 at Janelia Research Campus.
+7. Set `WORKSTATION_BUILD_VERSION` to a locally branded version number that will be visible to your users in the application. For example, we use **${WORKSTATION_TAG}-JRC** for deploying version 8.0 at Janelia Research Campus (JRC).
 
-Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed jacs-cm on an NFS mount.
+Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed the jacs-cm directory on an NFS mount.
 
 
 ## Filesystem Initialization
 
-Now you can initialize the filesystem on both systems. Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody), and then initialize them. For example:
+Now you can initialize the filesystem on both systems. Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody). For example:
 
 ```
 . .env.config
 sudo mkdir -p $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
-./manage.sh init-filesystem
 ```
 
-Once this procedure has successfully completed on both of the hosts, you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment, but the only customization that is strongly recommended is to replace the self-signed certificates in `CONFIG_DIR/certs/*` with your own certificates signed by a Certificate Authority.
-
-
-### MongoDB Key Synchronization
-
-The MongoDB key files on both systems need to be identical. Currently this must be done manually, e.g.:
-
-On **HOST1**:
+Once the above setup has successfully completed on both of the hosts, run the Swarm-based initialization procedure:
 ```
-sudo cp $DB_DIR/mongo/jacs/replica1/mongodb-keyfile /tmp
-sudo chown $USER /tmp/mongodb-keyfile
-scp /tmp/mongodb-keyfile HOST2:/tmp
+./manage.sh init-filesystems
 ```
 
-On **HOST2**:
-```
-echo $DB_DIR/mongo/jacs/replica{1,2,3}/mongodb-keyfile | sudo xargs -n 1 cp /tmp/mongodb-keyfile
-```
+Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment. 
 
+**It is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority.
 
-## Swarm Setup
-
-On **HOST1**, bring up swarm as a manager node, and give it a label:
+You must also copy your certificate into the Workstation client build, so that it can be used to sign the plugin modules:
 ```
-docker swarm init
-```
-
-On **HOST2**, copy and paste the output of the previous command to join the swarm as a worker.
-
-```
-docker swarm join --token ...
-```
-
-All further commands should be executed on **HOST1**, i.e. the master node. One final step is to label the nodes:
-```
-docker node update --label-add name=node1 $(docker node ls -f "role=manager" --format "{{.ID}}")
-docker node update --label-add name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
-```
-
-You may have to use sudo to run the commands like below:
-```
-sudo docker node update --label-add name=node1 $(sudo docker node ls -f "role=manager" --format "{{.ID}}")
-sudo docker node update --label-add name=node2 $(sudo docker node ls -f "role=worker" --format "{{.ID}}")
-```
-
-You can run this command to ensure that both nodes are up and in Ready status:
-```
-docker node ls
+cp $CONFIG_DIR/certs/cert.crt containers/workstation-site
 ```
 
 
@@ -151,8 +141,8 @@ Now you are ready to initalize the databases:
 It's normal to see the "Unable to reach primary for set rsJacs" error repeated until the Mongo replica set converges on healthiness. After a few seconds, you should see a message "Databases have been initialized" and the process will exit successfully.
 
 You can validate the databases as follows:
-* Connect to http://YOUR_HOST:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
+* Connect to http://YOUR_HOST:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
 
 
 ## Build Client Distribution
@@ -172,7 +162,7 @@ Now you can bring up all of the remaining application containers:
 ./manage.sh swarm prod
 ```
 
-If you see an error like this, just retry the command again:
+If you see an intermittent error like this, just retry the command again:
 ```
 failed to create service jacs-cm_portainer: Error response from daemon: network jacs-cm_jacs-net not found
 ```
@@ -181,7 +171,7 @@ Next, you should make sure that all replicas are operational. You can do this by
 ```
 docker service ls
 ```
-If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name to `service ps`. For example, if jade-agent2 fails to start, you would type:
+It may take a minute for everything to spin up. If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name to `service ps`. For example, if jade-agent2 fails to start, you would type:
 ```
 docker service ps --no-trunc jacs-cm-test_mongo1
 ```
@@ -258,7 +248,5 @@ In the Workstation, select **File** → **New** → **Tiled Microscope Sample**,
 Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navigate to Home, then "3D RawTile Microscope Samples", and your sample name. Right-click the sample and choose "Open in Large Volume Viewer". The 2D imagery should load into the middle panel. You should be able to right-click anywhere on the image and select "Navigate to This Location in Horta (channel 1)", to load the 3D imagery.
 
 This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
-
-
 
 

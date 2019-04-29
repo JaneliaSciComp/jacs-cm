@@ -35,6 +35,7 @@ COPY --from=builder /tmp/wait-for-it/wait-for-it.sh /app
 COPY log4j2.properties /app
 
 # Command for running the application
+ENV SYSTEM_OWNER=group:workstation-users
 CMD bash /app/wait-for-it.sh $RABBITMQ_HOSTNAME:5672 --timeout=30 --strict -- \
 /usr/bin/java -Dlog4j.configurationFile=file:/app/log4j2.properties \
 -jar /app/sharedWorkspaceBroker.jar \

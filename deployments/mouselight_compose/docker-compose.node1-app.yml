@@ -18,7 +18,6 @@ services:
     environment:
       - RABBITMQ_HOSTNAME=rabbitmq
       - JACS_URL=http://jacs-sync:8080/api/rest-v2/
-      - SYSTEM_OWNER=${SYSTEM_OWNER}
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
     restart: unless-stopped

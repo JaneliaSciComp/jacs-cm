@@ -21,13 +21,20 @@ ARG WORKSTATION_BUILD_VERSION
 ARG KEYSTORE_PASSWORD
 ARG MAIL_SERVER
 
+COPY cert.crt /tmp/cert.crt
+COPY cert.key /tmp/cert.key
+
 WORKDIR /tmp/workstation
 RUN git clone https://github.com/JaneliaSciComp/workstation.git . \
     && git fetch --tags \
     && git checkout $APP_TAG \
     && mkdir private \
-    && keytool -noprompt -genkey -validity 360 -storepass $KEYSTORE_PASSWORD -keypass $KEYSTORE_PASSWORD -alias janeliaws \
-       -keystore private/keystore -dname "C=US, ST=VA, L=Ashburn, O=Janelia, CN=localhost"
+    # Uses the certificate placed in the current folder
+    && openssl pkcs12 -export -in /tmp/cert.crt -inkey /tmp/cert.key -name janeliaws -out cert.p12 -passout pass:$KEYSTORE_PASSWORD \
+    && keytool -noprompt -importkeystore -srcstorepass $KEYSTORE_PASSWORD -deststorepass $KEYSTORE_PASSWORD -destkeystore private/keystore -srckeystore cert.p12 -srcstoretype PKCS12
+    # To generate a self-signed certificate during the build, use this instead:
+    #&& keytool -noprompt -genkey -validity 360 -storepass $KEYSTORE_PASSWORD -keypass $KEYSTORE_PASSWORD -alias janeliaws \
+    #   -keystore private/keystore -dname "C=US, ST=VA, L=Ashburn, O=Janelia, CN=localhost"
 
 COPY my.properties .
 RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \

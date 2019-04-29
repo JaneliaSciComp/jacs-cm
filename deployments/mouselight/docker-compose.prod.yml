@@ -2,25 +2,25 @@ version: '3.7'
 services:
 
   jacs-messaging:
-    image: janeliascicomp/jacs-messaging:1.2.0
+    image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
 
   jade-master:
-    image: janeliascicomp/jacs-storage:1.10.4
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
 
   jade-agent1:
-    image: janeliascicomp/jacs-storage:1.10.4
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
 
   jade-agent2:
-    image: janeliascicomp/jacs-storage:1.10.4
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
 
   jacs-sync:
-    image: janeliascicomp/jacs-compute:8.1.0-RC3
+    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
 
   jacs-async:
-    image: janeliascicomp/jacs-compute:8.1.0-RC3
+    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
 
   workstation-site:
-    image: janeliascicomp/workstation-site:latest
+    image: ${NAMESPACE}/workstation-site:latest
 
   api-gateway:
-    image: janeliascicomp/api-gateway:1.0.0
+    image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
