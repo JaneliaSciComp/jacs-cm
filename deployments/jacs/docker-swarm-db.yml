@@ -7,81 +7,81 @@ networks:
 
 services:
 
-  mongo1:
-    networks:
-      - jacs-net
-    deploy:
-      placement:
-        constraints: [node.labels.jacs_name==node1]
-      resources:
-        limits:
-          cpus: "6"
-          memory: 36G
-        reservations:
-          cpus: "4"
-          memory: 24G
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
-
-  mongo2:
-    networks:
-      - jacs-net
-    deploy:
-      placement:
-        constraints: [node.labels.jacs_name==node2]
-      resources:
-        limits:
-          cpus: "6"
-          memory: 36G
-        reservations:
-          cpus: "4"
-          memory: 24G
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
-
-  mongo3:
-    networks:
-      - jacs-net
-    deploy:
-      placement:
-        constraints: [node.labels.jacs_name==node3]
-      resources:
-        limits:
-          cpus: "2"
-          memory: 2G
-        reservations:
-          cpus: "1"
-          memory: 1G
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
-
-  mysql:
-    networks:
-      - jacs-net
-    deploy:
-      placement:
-        constraints: [node.labels.jacs_name==node3]
-      resources:
-        limits:
-          cpus: "4"
-          memory: 12G
-        reservations:
-          cpus: "2"
-          memory: 8G
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
+#  mongo1:
+#    networks:
+#      - jacs-net
+#    deploy:
+#      placement:
+#        constraints: [node.labels.jacs_name==node1]
+#      resources:
+#        limits:
+#          cpus: "6"
+#          memory: 36G
+#        reservations:
+#          cpus: "4"
+#          memory: 24G
+#      restart_policy:
+#        condition: on-failure
+#        delay: 3s
+#        max_attempts: 3
+#        window: 120s
+#
+#  mongo2:
+#    networks:
+#      - jacs-net
+#    deploy:
+#      placement:
+#        constraints: [node.labels.jacs_name==node2]
+#      resources:
+#        limits:
+#          cpus: "6"
+#          memory: 36G
+#        reservations:
+#          cpus: "4"
+#          memory: 24G
+#      restart_policy:
+#        condition: on-failure
+#        delay: 3s
+#        max_attempts: 3
+#        window: 120s
+#
+#  mongo3:
+#    networks:
+#      - jacs-net
+#    deploy:
+#      placement:
+#        constraints: [node.labels.jacs_name==node3]
+#      resources:
+#        limits:
+#          cpus: "2"
+#          memory: 2G
+#        reservations:
+#          cpus: "1"
+#          memory: 1G
+#      restart_policy:
+#        condition: on-failure
+#        delay: 3s
+#        max_attempts: 3
+#        window: 120s
+#
+#  mysql:
+#    networks:
+#      - jacs-net
+#    deploy:
+#      placement:
+#        constraints: [node.labels.jacs_name==node3]
+#      resources:
+#        limits:
+#          cpus: "4"
+#          memory: 12G
+#        reservations:
+#          cpus: "2"
+#          memory: 8G
+#      restart_policy:
+#        condition: on-failure
+#        delay: 3s
+#        max_attempts: 3
+#        window: 120s
 
   rabbitmq:
     networks:
