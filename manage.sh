@@ -258,7 +258,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     shift
     if [[ $# == 0 ]]; then
         echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-	exit 1
+    exit 1
     fi
     userParam=username:"$1"
     shift
@@ -266,33 +266,33 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_args=()
 
     while [[ $# > 0 ]]; do
-	key="$1"
-	if [ "$key" == "" ] ; then
-	    break
-	fi
-	shift # past the key
-	case $key in
-	    -refreshIndexes)
-		service_args+=(\"-refreshIndexes\")
-		;;
-	    -refreshPermissions)
-		service_args+=(\"-refreshPermissions\")
-		;;
-	    -h|--help)
-		echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-		exit 0
-		;;
-	    *)
-		# invalid arg
-		echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-		exit 1
-		;;
-	esac
+    key="$1"
+    if [ "$key" == "" ] ; then
+        break
+    fi
+    shift # past the key
+    case $key in
+        -refreshIndexes)
+        service_args+=(\"-refreshIndexes\")
+        ;;
+        -refreshPermissions)
+        service_args+=(\"-refreshPermissions\")
+        ;;
+        -h|--help)
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        exit 0
+        ;;
+        *)
+        # invalid arg
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        exit 1
+        ;;
+    esac
     done
 
     if [[ ${#service_args[@]} == 0 ]]; then
-	echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-	exit 1
+    echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+    exit 1
     fi
 
     service_json_args=$(printf ",%s" "${service_args[@]}")
