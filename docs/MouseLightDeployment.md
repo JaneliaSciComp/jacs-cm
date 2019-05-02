@@ -52,7 +52,7 @@ On **HOST2**, copy and paste the output of the previous command to join the swar
 docker swarm join --token ...
 ```
 
-All further commands should be executed on **HOST1**, i.e. the master node. One final step is to label the nodes:
+All further commands should be executed on **HOST1**, i.e. the master node. One final step is to label the nodes. Each node needs the "jacs=true" label, as well as "jacs_name=nodeX".
 ```
 docker node update --label-add jacs_name=node1 $(docker node ls -f "role=manager" --format "{{.ID}}")
 docker node update --label-add jacs_name=node2 $(docker node ls -f "role=worker" --format "{{.ID}}")
@@ -60,7 +60,7 @@ docker node update --label-add jacs=true $(docker node ls -f "role=manager" --fo
 docker node update --label-add jacs=true $(docker node ls -f "role=worker" --format "{{.ID}}")
 ```
 
-You can run this command to ensure that both nodes are up and in Ready status:
+Finally, you can run this command to ensure that both nodes are up and in Ready status:
 ```
 docker node ls
 ```
@@ -115,13 +115,13 @@ Once the above setup has successfully completed on both of the hosts, run the Sw
 ./manage.sh init-filesystems
 ```
 
-Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment. 
+Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment.
 
-**It is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority.
+At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority. 
 
 You must also copy your certificate into the Workstation client build, so that it can be used to sign the plugin modules:
 ```
-cp $CONFIG_DIR/certs/cert.crt containers/workstation-site
+cp $CONFIG_DIR/certs/cert.{crt,key} ./containers/workstation-site
 ```
 
 
@@ -131,7 +131,7 @@ Next, start up the databases:
 ```
 ./manage.sh swarm prod --dbonly
 ```
-At this point you should connect to Portainer at http://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't reach the container try running the up command again to refresh it.
+At this point you should connect to Portainer at http://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't connect to that endpoint, you may need to take everything down (`./manage.sh rmswarm prod`) and try again.
 
 Now you are ready to initalize the databases:
 
