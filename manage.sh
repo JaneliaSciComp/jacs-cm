@@ -60,6 +60,7 @@ echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
 
 # More variables
 CONTAINER_PREFIX="$NAMESPACE/"
+STACK_NAME=${COMPOSE_PROJECT_NAME}
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
 
@@ -203,8 +204,24 @@ if [[ "$1" == "build-all" ]]; then
 fi
 
 
+if [[ "$1" == "debug" ]]; then
+    serviceName=$2
+    if [[ -z "$serviceName" ]]; then
+        echo
+        echo "$SUDO $DOCKER stack services $STACK_NAME"
+        $SUDO $DOCKER service ls
+    else
+        echo
+        echo "$SUDO $DOCKER service ps --no-trunc $serviceName"
+        $SUDO $DOCKER service ps --no-trunc $serviceName
+        echo
+        echo "$SUDO $DOCKER service logs $serviceName"
+        $SUDO $DOCKER service logs $serviceName
+    fi
+    exit 0
+fi
+
 if [[ "$1" == "init-filesystems" ]]; then
-    STACK_NAME=$COMPOSE_PROJECT_NAME
     echo "Initializing swarm file systems..."
     YML="-f $DEPLOYMENT_DIR/swarm-init.yml"
     echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
