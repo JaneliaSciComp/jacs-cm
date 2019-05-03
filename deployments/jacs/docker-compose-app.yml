@@ -74,7 +74,6 @@ services:
       - jade_MongoDB_AuthDatabase=admin
       - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
-      - jade_StorageAgent_BootstrappedVolumes=jade1
     expose:
       - '8080'
     ports:
@@ -174,8 +173,6 @@ services:
     image: ${NAMESPACE}/workstation-site:latest
     expose:
       - "8080"
-    ports:
-      - "8080:8080"
     restart: unless-stopped
     networks:
       - jacs-net
