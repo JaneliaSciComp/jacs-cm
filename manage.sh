@@ -203,6 +203,16 @@ if [[ "$1" == "build-all" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "restart" ]]; then
+    serviceName=$2
+    if [[ -z "$serviceName" ]]; then
+        echo "Specify a service name to restart"
+    else
+        echo "$SUDO $DOCKER service update --force $serviceName"
+        $SUDO $DOCKER service update --force $serviceName
+    fi
+    exit 0
+fi
 
 if [[ "$1" == "debug" ]]; then
     serviceName=$2
