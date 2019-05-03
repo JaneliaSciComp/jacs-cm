@@ -169,19 +169,12 @@ failed to create service jacs-cm_portainer: Error response from daemon: network 
 
 Next, you should make sure that all replicas are operational. You can do this by running:
 ```
-docker service ls
+./manage.sh debug
 ```
-It may take a minute for everything to spin up. If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name to `service ps`. For example, if jade-agent2 fails to start, you would type:
+It may take a minute for everything to spin up. If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name. For example, if jade-agent2 fails to start, you would type:
 ```
-docker service ps --no-trunc jacs-cm-test_mongo1
+./manage.sh debug jacs-cm_jade-agent2
 ```
-
-Once a service starts, you can tail its logs using the `logs` command:
-```
-docker service logs -f jacs-cm-test_mongo1
-```
-
-All of this information is also available in the Portainer web GUI.
 
 ## Verify that the system is working
 
@@ -210,14 +203,15 @@ To pull and redeploy the latest image for a single service, e.g. workstation-sit
 docker service update --force jacs-cm_workstation-site
 ```
 
+
 ## Database maintenance
 
-Database maintenance operation is actually an async service invocation that refreshes indexes and updates entities
-permissions. This can be done using:
+Database maintenance refreshes indexes and updates entities permissions. It can be run using:
 ```
 ./manage.sh dbMaintenance username [-refreshIndexes] [-refreshPermissions]
 ```
 where username is the name of a subject that must already exist.
+
 
 ## Backups
 
