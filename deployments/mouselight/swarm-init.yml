@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+
+  jacs-init:
+    image: ${NAMESPACE}/jacs-init:${JACS_INIT_VERSION}
+    user: ${DOCKER_USER}
+    entrypoint: ["/app/filesystem/run.sh"]
+    volumes:
+      - ${CONFIG_DIR}:${CONFIG_DIR}
+      - ${DATA_DIR}:${DATA_DIR}
+      - ${DB_DIR}:${DB_DIR}
+      - ${BACKUPS_DIR}:${BACKUPS_DIR}
+    environment:
+      - CONFIG_DIR=${CONFIG_DIR}
+      - DATA_DIR=${DATA_DIR}
+      - DB_DIR=${DB_DIR}
+      - BACKUPS_DIR=${BACKUPS_DIR}
+      - CERT_SUBJ=${CERT_SUBJ}
+      - DEPLOYMENT=${DEPLOYMENT}
+      - MONGODB_SECRET_KEY=${MONGODB_SECRET_KEY}
+    deploy:
+      mode: global
+      placement:
+        constraints: [node.labels.jacs==true]
+      restart_policy:
+        # run and exit, don't attempt to restart
+        condition: none
+

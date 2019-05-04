@@ -147,8 +147,8 @@ services:
           cpus: "4"
           memory: 8G
         reservations:
-          memory: 4G
           cpus: "6"
+          memory: 4G
       restart_policy:
         condition: on-failure
         delay: 3s

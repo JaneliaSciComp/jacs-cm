@@ -7,7 +7,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "1"
@@ -23,7 +23,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "2"
@@ -42,7 +42,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "4"
@@ -61,7 +61,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "8"
@@ -80,7 +80,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "4"
@@ -99,7 +99,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "4"
@@ -118,7 +118,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node1]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "4"
@@ -137,7 +137,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.name==node2]
+        constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
           cpus: "4"
