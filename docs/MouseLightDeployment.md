@@ -117,9 +117,13 @@ Once the above setup has successfully completed on both of the hosts, run the Sw
 
 Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment.
 
-At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority. 
+At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
+```
+sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
+sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
+```
 
-You must also copy your certificate into the Workstation client build, so that it can be used to sign the plugin modules:
+You should also copy your certificate into the Workstation client build, so that it can be used to sign the plugin modules:
 ```
 cp $CONFIG_DIR/certs/cert.{crt,key} ./containers/workstation-site
 ```
@@ -188,7 +192,7 @@ You should be able to log in with the default admin account (root/root). This wi
 
 ```
 export TOKEN=<enter token here>
-curl -k --request GET --url https://HOST1/SCSW/JACS2AsyncServices/v2/services/metadata --header "Content-Type: application/json" --header "Authorization: Bearer $TOKEN"
+curl -k --request GET --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/JACS2AsyncServices/v2/services/metadata --header "Content-Type: application/json" --header "Authorization: Bearer $TOKEN"
 ```
 
 ## Service Management
@@ -200,23 +204,24 @@ If at any point you want to remove all the services from the Swarm and do a clea
 
 To pull and redeploy the latest image for a single service, e.g. workstation-site:
 ```
-docker service update --force jacs-cm_workstation-site
+./manage.sh restart jacs-cm_workstation-site
 ```
 
 
-## Database maintenance
+## Database Maintenance
 
 Database maintenance refreshes indexes and updates entities permissions. It can be run using:
 ```
 ./manage.sh dbMaintenance username [-refreshIndexes] [-refreshPermissions]
 ```
-where username is the name of a subject that must already exist.
+where username is the name of a subject that must already exist. You should create a crontab entry on **HOST2** for running this script periodically, e.g.
+```
+0 2 * * * /opt/deploy/jacs-cm/manage.sh dbMaintenance -refreshIndexes -refreshPermissions
+```
 
-
-## Backups
+## Database Backups
 
 You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
-
 ```
 0 4 * * * /opt/deploy/jacs-cm/manage.sh backup mongo
 0 5 * * * /opt/deploy/jacs-cm/manage.sh backup mysql
@@ -233,13 +238,17 @@ Navigate to https://HOST1 in a web browser on your client machine, and download 
 
 If you are using LDAP/AD integration, you should be able to log in with your normal user/password. If you are using the Workstation's internal user management, you must first login as user root (password: root), and then select **Window** → **Core** → **Administrative GUI** from the menus. Click "View Users", then "New User" and create your first user. Add the user to all of the relevant groups, including MouseLight.
 
+
 ## Data Import
 
-The data for MouseLight comes as a directory containing TIFF images organized into octrees. You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the same as `/jade1/<sampleDirectoryName>`.
+The data for MouseLight comes as a directory containing TIFF images organized into octrees. You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the sample as `/jade1/<sampleDirectoryName>`.
 
 In the Workstation, select **File** → **New** → **Tiled Microscope Sample**, and then set "Sample Name" to `<sampleDirectoryName>` and "Path to Render Folder" as `/jade1/<sampleDirectoryName>`.
 
 Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navigate to Home, then "3D RawTile Microscope Samples", and your sample name. Right-click the sample and choose "Open in Large Volume Viewer". The 2D imagery should load into the middle panel. You should be able to right-click anywhere on the image and select "Navigate to This Location in Horta (channel 1)", to load the 3D imagery.
+
+
+## More Information
 
 This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
 
