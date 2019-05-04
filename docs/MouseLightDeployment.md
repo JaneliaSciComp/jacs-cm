@@ -4,6 +4,10 @@ This document describes the canonical two-server Janelia Workstation deployment 
 
 Please note that this deployment does not currently have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
 
+## Deployment Diagram
+
+<div style="text-align:center"><img src="images/TwoServerDeployment.png" alt="Two-server Deployment Diagram" /></div>
+
 
 ## Setup Hardware
 
