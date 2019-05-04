@@ -5,7 +5,7 @@ This document describes the canonical two-server Janelia Workstation deployment 
 Please note that this deployment does not currently have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
 
 
-## Hardware
+## Setup Hardware
 
 The JACS backend consists of several services which need to be deployed on server hardware. We have tested the following configuration:
 
@@ -39,7 +39,7 @@ The backend software should run on any operating system which supports Docker. H
 To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md).
 
 
-## Swarm Setup
+## Setup Docker Swarm
 
 On **HOST1**, bring up swarm as a manager node, and give it a label:
 ```
@@ -66,7 +66,7 @@ docker node ls
 ```
 
 
-## Clone the jacs-cm repo
+## Clone This Repo
 
 Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. If you don't mind doing manually synchronization, you would just clones the repo twice:
 
@@ -80,7 +80,7 @@ cd jacs-cm
 ```
 
 
-## Configuration
+## Configure The System
 
 Next, create an identical .env.config file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
@@ -100,7 +100,7 @@ At minimum, you must customize the following:
 Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed the jacs-cm directory on an NFS mount.
 
 
-## Filesystem Initialization
+## Initialize Filesystems
 
 Now you can initialize the filesystem on both systems. Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user (by default, docker-nobody). For example:
 
@@ -129,7 +129,7 @@ cp $CONFIG_DIR/certs/cert.{crt,key} ./containers/workstation-site
 ```
 
 
-## Database Initialization
+## Initialize Databases
 
 Next, start up the databases:
 ```
@@ -180,7 +180,7 @@ It may take a minute for everything to spin up. If any container failed to start
 ./manage.sh debug jacs-cm_jade-agent2
 ```
 
-## Verify that the system is working
+## Verify Functionality
 
 You can verify the Authentication Service is working as follows:
 
@@ -195,7 +195,10 @@ export TOKEN=<enter token here>
 curl -k --request GET --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/JACS2AsyncServices/v2/services/metadata --header "Content-Type: application/json" --header "Authorization: Bearer $TOKEN"
 ```
 
-## Service Management
+If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
+
+
+## Manage Services
 
 If at any point you want to remove all the services from the Swarm and do a clean restart of everything, you can use this command:
 ```
@@ -208,7 +211,7 @@ To pull and redeploy the latest image for a single service, e.g. workstation-sit
 ```
 
 
-## Database Maintenance
+## Setup Database Maintenance
 
 Database maintenance refreshes indexes and updates entities permissions. It can be run using:
 ```
@@ -219,7 +222,7 @@ where username is the name of a subject that must already exist. You should crea
 0 2 * * * /opt/deploy/jacs-cm/manage.sh dbMaintenance -refreshIndexes -refreshPermissions
 ```
 
-## Database Backups
+## Setup Database Backups
 
 You should create two crontab entries on **HOST2** for backing up Mongo and MySQL, e.g.
 ```
@@ -230,7 +233,7 @@ You should create two crontab entries on **HOST2** for backing up Mongo and MySQ
 The reason that these should run on **HOST2** is because the MySQL database and a Mongo secondary both run there.
 
 
-## Client Machine Setup
+## Install The Workstation Client
 
 If you are using the default self-signed certificate, you will need to take some extra steps to [install it on the client](SelfSignedCerts.md).
 
@@ -239,7 +242,7 @@ Navigate to https://HOST1 in a web browser on your client machine, and download 
 If you are using LDAP/AD integration, you should be able to log in with your normal user/password. If you are using the Workstation's internal user management, you must first login as user root (password: root), and then select **Window** → **Core** → **Administrative GUI** from the menus. Click "View Users", then "New User" and create your first user. Add the user to all of the relevant groups, including MouseLight.
 
 
-## Data Import
+## Import Data
 
 The data for MouseLight comes as a directory containing TIFF images organized into octrees. You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the sample as `/jade1/<sampleDirectoryName>`.
 
@@ -248,7 +251,7 @@ In the Workstation, select **File** → **New** → **Tiled Microscope Sample**,
 Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navigate to Home, then "3D RawTile Microscope Samples", and your sample name. Right-click the sample and choose "Open in Large Volume Viewer". The 2D imagery should load into the middle panel. You should be able to right-click anywhere on the image and select "Navigate to This Location in Horta (channel 1)", to load the 3D imagery.
 
 
-## More Information
+## Find More Information
 
 This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
 
