@@ -72,7 +72,7 @@ docker node ls
 
 ## Clone This Repo
 
-Clone this repo into /opt/deploy/jacs-cm on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. If you don't mind doing manually synchronization, you would just clones the repo twice:
+Clone this repo into `/opt/deploy/jacs-cm` on both of the systems being deployed. If the systems have access to a common NFS path, it is easier to clone onto NFS, and then create symbolic links to it on both systems. Otherwise the clones will need to be kept in sync manually. If you don't mind doing manually synchronization, you can just clone the repo twice:
 
 ```
 cd /opt
@@ -86,7 +86,7 @@ cd jacs-cm
 
 ## Configure The System
 
-Next, create an identical .env.config file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
+Next, create an identical `.env.config` file in both jacs-cm directories. This file defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```
 cp .env.template .env.config
 vi .env.config
@@ -101,7 +101,7 @@ At minimum, you must customize the following:
 6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
 7. Set `WORKSTATION_BUILD_VERSION` to a locally branded version number that will be visible to your users in the application. For example, we use **${WORKSTATION_TAG}-JRC** for deploying version 8.0 at Janelia Research Campus (JRC).
 
-Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed the jacs-cm directory on an NFS mount.
+Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed the jacs-cm directory on a shared NFS mount.
 
 
 ## Initialize Filesystems
