@@ -127,7 +127,7 @@ services:
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
       - jacs_mouselight_db_url=${MYSQL_URL}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
-      - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
+      - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
     expose:
       - "8080"
     depends_on:
@@ -154,7 +154,7 @@ services:
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
        jacs_mouselight_db_url=${MYSQL_URL}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
-      - jacs_mouselight_db_password=${MYSQL_ROOT_PASSWORD}
+      - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
       - jacs_service_queue_id=${JACS_QUEUE_ID}
     expose:
       - "8080"

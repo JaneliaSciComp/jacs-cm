@@ -276,7 +276,7 @@ fi
 if [[ "$1" == "mysql" ]]; then
     echo "Opening MySQL shell..."
     echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p**** -h mysql ${MYSQL_DATABASE}"
-    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} -h mysql ${MYSQL_DATABASE}
+    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql ${MYSQL_DATABASE}
     exit 0
 fi
 
@@ -343,7 +343,7 @@ if [[ "$1" == "backup" ]]; then
         MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
         echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
         echo "$SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p**** --all-databases | gzip >/backup/$FILENAME'"
-        $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_ROOT_PASSWORD} --all-databases | gzip >/backup/$FILENAME'
+        $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} --all-databases | gzip >/backup/$FILENAME'
         exit 0
     else
         echo "Valid choices for backups are mongo and mysql."
