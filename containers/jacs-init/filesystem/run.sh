@@ -224,27 +224,27 @@ fi
 #
 # Database Backup Directories
 #
-MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
-if [[ ! -e "$MONGO_BACKUPS_DIR" ]]; then
-    echo "Creating Mongo backups directory: $MONGO_BACKUPS_DIR"
-    mkdir -p $MONGO_BACKUPS_DIR
+mongo_backups_dir=$BACKUPS_DIR/mongo
+if [[ ! -e "$mongo_backups_dir" ]]; then
+    echo "Creating Mongo backups directory: $mongo_backups_dir"
+    mkdir -p $mongo_backups_dir
 else
-    echo "Verified Mongo backups directory: $MONGO_BACKUPS_DIR"
+    echo "Verified Mongo backups directory: $mongo_backups_dir"
 fi
 
-MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
-if [[ ! -e "$MYSQL_BACKUPS_DIR" ]]; then
-    echo "Creating MySQL backups directory: $MYSQL_BACKUPS_DIR"
-    mkdir -p $MYSQL_BACKUPS_DIR
+mysql_backups_dir=$BACKUPS_DIR/mysql
+if [[ ! -e "$mysql_backups_dir" ]]; then
+    echo "Creating MySQL backups directory: $mysql_backups_dir"
+    mkdir -p $mysql_backups_dir
 else
-    echo "Verified MySQL backups directory: $MYSQL_BACKUPS_DIR"
+    echo "Verified MySQL backups directory: $mysql_backups_dir"
 fi
 
-MESSAGING_BACKUPS_DIR=$BACKUPS_DIR/messaging
-if [[ ! -e "$MESSAGING_BACKUPS_DIR" ]]; then
-    echo "Creating jacs-messaging backups directory: $MESSAGING_BACKUPS_DIR"
-    mkdir -p $MESSAGING_BACKUPS_DIR
+messaging_backups_dir=$BACKUPS_DIR/messaging
+if [[ ! -e "$messaging_backups_dir" ]]; then
+    echo "Creating jacs-messaging backups directory: $messaging_backups_dir"
+    mkdir -p $messaging_backups_dir
 else
-    echo "Verified jacs-messaging backups directory: $MESSAGING_BACKUPS_DIR"
+    echo "Verified jacs-messaging backups directory: $messaging_backups_dir"
 fi
 

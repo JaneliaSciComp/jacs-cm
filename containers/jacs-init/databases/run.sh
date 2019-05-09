@@ -3,11 +3,6 @@
 # Initializes the database content.
 #
 
-if [[ -z "$MONGODB_INIT_ROOT_USERNAME" ]]; then
-    echo "You must specify the env file containing the Mongo initialization parameters"
-    exit 1
-fi
-
 DIR=$(cd "$(dirname "$0")"; pwd)
 
 echo
@@ -23,6 +18,11 @@ echo
 echo "Initializing RabbitMQ Data"
 curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$TMP_RABBIT_CONF http://rabbitmq:15672/api/definitions
 curl -v -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -X DELETE http://rabbitmq:15672/api/users/guest
+
+if [[ -z "$MONGODB_INIT_ROOT_USERNAME" ]]; then
+    echo "No MONGODB_INIT_ROOT_USERNAME is specified. Mongo will not be initialized."
+    exit 1
+fi
 
 echo
 echo "Starting MongoDB replica set"
