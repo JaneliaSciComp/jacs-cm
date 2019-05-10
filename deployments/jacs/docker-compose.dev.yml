@@ -5,4 +5,10 @@ services:
   jade-agent1:
     volumes:
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
+
+  jacs-sync:
+    volumes:
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
 
