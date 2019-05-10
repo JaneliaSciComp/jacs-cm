@@ -12,15 +12,21 @@ services:
 
   jade-agent1:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
+    volumes:
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
 
   jade-agent2:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
+    volumes:
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
 
   jacs-sync:
     image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
-
-  jacs-async:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
+    volumes:
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
 
   workstation-site:
     image: ${NAMESPACE}/workstation-site:latest
@@ -28,7 +34,7 @@ services:
   api-gateway:
     image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
 
-  ipp:
+  jacs-dashboard:
     image: ${NAMESPACE}/jacs-dashboard:${JACS_DASHBOARD_VERSION}
 
   ipp:
