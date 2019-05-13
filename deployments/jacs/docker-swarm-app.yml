@@ -3,6 +3,10 @@ version: "3.7"
 services:
 
   workstation-site:
+    # Nginx must run as root
+    image: ${NAMESPACE}/workstation-site:latest
+    expose:
+      - "8080"
     networks:
       - jacs-net
     deploy:
@@ -59,6 +63,8 @@ services:
   api-gateway:
     networks:
       - jacs-net
+    depends_on:
+      - workstation-site
     deploy:
       placement:
         constraints: [node.labels.jacs_name==node1]
@@ -174,6 +180,32 @@ services:
         window: 120s
 
   jade-agent2:
+    image: ${NAMESPACE}/jacs-storage:latest
+    user: ${DOCKER_USER}
+    depends_on:
+      - jade-master
+#      - mongo1
+    volumes:
+      - ${CONFIG_DIR}/jade:/app/config:ro
+      - ${DATA_DIR}:/data
+    environment:
+      - SERVICE_MODE=agent
+      - JACSSTORAGE_CONFIG=/app/config/config.properties
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
+      - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
+      - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT2_EXPOSED_HOST}
+      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT2_EXPOSED_PORT:-9882}
+      - jade_JWT_SecretKey=${JWT_SECRET_KEY}
+      - jade_MongoDB_ServerName=${MONGODB_SERVER}
+      - jade_MongoDB_ReplicaSet=
+      - jade_MongoDB_Database=jacs_jade_dev
+      - jade_MongoDB_AuthDatabase=admin
+      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
+    expose:
+      - '8080'
+    ports:
+      - '${JADE_AGENT2_EXPOSED_PORT:-9882}:8080'
     networks:
       - jacs-net
     deploy:
