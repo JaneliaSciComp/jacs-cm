@@ -212,10 +212,10 @@ if [[ ! -e "$apigateway_dir" ]]; then
     mkdir -p $apigateway_dir
     if [[ -e $DIR/api-gateway/deployments/$DEPLOYMENT ]]; then
         echo "  Using gateway configuration for $DEPLOYMENT deployment"
-        cp -r $DIR/api-gateway/deployments/$DEPLOYMENT/* $apigateway_dir
+        cp $DIR/api-gateway/deployments/$DEPLOYMENT/* $apigateway_dir
     else
         echo "  Using default gateway configuration"
-        cp -r $DIR/api-gateway/* $apigateway_dir
+        cp $DIR/api-gateway/* $apigateway_dir
     fi
 else
     echo "Verified API Gateway config directory: $apigateway_dir"

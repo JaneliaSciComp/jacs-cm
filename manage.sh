@@ -104,6 +104,16 @@ function getyml() {
         fi
         if [[ "$_swarm" == "swarm" ]]; then
             YML="$YML -f $DEPLOYMENT_DIR/docker-swarm-app.yml"
+
+            if [ -n "${_tier}" ]; then
+                if [[ -e "$DEPLOYMENT_DIR/docker-swarm.${_tier}-app.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-swarm.${_tier}-app.yml"
+                fi
+                if [[ -e "$DEPLOYMENT_DIR/docker-swarm.${_tier}.yml" ]]; then
+                    YML="$YML -f $DEPLOYMENT_DIR/docker-swarm.${_tier}.yml"
+                fi
+            fi
+
         fi
     fi
 
@@ -490,14 +500,16 @@ do
         shift 1 # remove tier
 
         if [[ $1 == "--dbonly" ]]; then
+            shift 1 # remove dbonly flag
             getyml $TIER "dbonly" "" "YML"
         else
             getyml $TIER "" "" "YML"
         fi
 
+        OPTS="$@"
         echo "Bringing $COMMAND $TIER tier"
-        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@"
-        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $@
+        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $OPTS"
+        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $OPTS
     fi
 
 done
