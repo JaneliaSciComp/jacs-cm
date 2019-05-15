@@ -58,6 +58,20 @@
       "durable": true,
       "auto_delete": false,
       "arguments": {}
+    },
+    {
+      "name": "IndexingProcessor",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
+    },
+    {
+      "name": "IndexingRequests",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {}
     }
   ],
   "exchanges": [
@@ -81,6 +95,24 @@
     },
     {
       "name": "ModelUpdates",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "DocIndexRefresh",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "DocIndexUpdates",
       "vhost": "/",
       "type": "topic",
       "durable": true,
@@ -112,6 +144,22 @@
       "destination": "UpdatesProcessor",
       "destination_type": "queue",
       "routing_key": "brokerqueue",
+      "arguments": {}
+    },
+    {
+      "source": "DocIndexRefresh",
+      "vhost": "/",
+      "destination": "IndexingRequests",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+    {
+      "source": "DocIndexUpdates",
+      "vhost": "/",
+      "destination": "IndexingProcessor",
+      "destination_type": "queue",
+      "routing_key": "",
       "arguments": {}
     }
   ]
