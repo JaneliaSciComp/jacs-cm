@@ -210,13 +210,27 @@ apigateway_dir=$config_dir/api-gateway
 if [[ ! -e "$apigateway_dir" ]]; then
     echo "Initializing API Gateway config directory: $apigateway_dir"
     mkdir -p $apigateway_dir
+
     if [[ -e $DIR/api-gateway/deployments/$DEPLOYMENT ]]; then
         echo "  Using gateway configuration for $DEPLOYMENT deployment"
-        cp $DIR/api-gateway/deployments/$DEPLOYMENT/* $apigateway_dir
+        cp $DIR/api-gateway/deployments/$DEPLOYMENT/nginx.conf $apigateway_dir
     else
         echo "  Using default gateway configuration"
-        cp $DIR/api-gateway/* $apigateway_dir
+        cp $DIR/api-gateway/nginx.conf $apigateway_dir
     fi
+
+    content_dir=$apigateway_dir/content
+    mkdir -p $content_dir
+    echo "  Created content directory: $content_dir"
+
+    RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST \
+    WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION \
+    MAIL_SERVER=$MAIL_SERVER \
+    RABBITMQ_USER=$RABBITMQ_USER \
+    RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
+    envsubst < $DIR/api-gateway/client/client.properties > $content_dir/client.properties
+    echo "  Created client properties: $content_dir/client.properties"
+
 else
     echo "Verified API Gateway config directory: $apigateway_dir"
 fi

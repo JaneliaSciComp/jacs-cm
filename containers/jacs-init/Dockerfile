@@ -1,4 +1,4 @@
-FROM janeliascicomp/builder:1.0.0 as builder
+FROM janeliascicomp/builder:1.1.0 as builder
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="One-shot initialization procedures for JACS deployments"
 

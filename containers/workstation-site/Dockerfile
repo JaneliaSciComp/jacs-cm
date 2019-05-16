@@ -13,13 +13,7 @@ RUN rm Gemfile.lock && bundler exec jekyll build
 # Build the Workstation installers and update center
 FROM janeliascicomp/builder:1.0.0 as builder
 ARG APP_TAG
-ARG API_GATEWAY_EXPOSED_HOST
-ARG RABBITMQ_EXPOSED_HOST
-ARG RABBITMQ_USER
-ARG RABBITMQ_PASSWORD
-ARG WORKSTATION_BUILD_VERSION
 ARG KEYSTORE_PASSWORD
-ARG MAIL_SERVER
 
 COPY cert.crt /tmp/cert.crt
 COPY cert.key /tmp/cert.key
@@ -38,16 +32,9 @@ RUN git clone https://github.com/JaneliaSciComp/workstation.git . \
 
 COPY my.properties .
 RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
-    RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST \
     WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION \
-    MAIL_SERVER=$MAIL_SERVER \
-    RABBITMQ_USER=$RABBITMQ_USER \
-    RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
     envsubst < my.properties > ./modules/Core/src/main/resources/my.properties \
     && cat ./modules/Core/src/main/resources/my.properties
-
-RUN echo "org_janelia_workstation_update_center=https://${API_GATEWAY_EXPOSED_HOST}/updates/updates.xml" \
-    >> ./modules/Core/src/main/resources/org/janelia/workstation/core/Bundle.properties
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install \
     && cd modules/application \
