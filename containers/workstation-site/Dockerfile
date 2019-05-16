@@ -14,6 +14,7 @@ RUN rm Gemfile.lock && bundler exec jekyll build
 FROM janeliascicomp/builder:1.0.0 as builder
 ARG APP_TAG
 ARG KEYSTORE_PASSWORD
+ARG WORKSTATION_BUILD_VERSION
 
 COPY cert.crt /tmp/cert.crt
 COPY cert.key /tmp/cert.key

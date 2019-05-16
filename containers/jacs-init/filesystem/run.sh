@@ -224,7 +224,6 @@ if [[ ! -e "$apigateway_dir" ]]; then
     echo "  Created content directory: $content_dir"
 
     RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST \
-    WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION \
     MAIL_SERVER=$MAIL_SERVER \
     RABBITMQ_USER=$RABBITMQ_USER \
     RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
