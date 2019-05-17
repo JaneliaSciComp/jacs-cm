@@ -7,59 +7,6 @@ networks:
 
 services:
 
-  portainer:
-    networks:
-      - jacs-net
-    image: portainer/portainer:1.20.2
-    command: -H tcp://tasks.agent:9001 --tlsskipverify
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
-      resources:
-        limits:
-          cpus: "1"
-          memory: 100M
-        reservations:
-          cpus: "1"
-          memory: 20M
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
-
-  agent:
-    networks:
-      - jacs-net
-    image: portainer/agent:1.2.1
-    environment:
-      AGENT_CLUSTER_ADDR: tasks.agent
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/docker/volumes:/var/lib/docker/volumes
-    ports:
-      - target: 9001
-        published: 9001
-        protocol: tcp
-        mode: host
-    deploy:
-      mode: global
-      placement:
-        constraints: [node.platform.os == linux]
-      resources:
-        limits:
-          cpus: "1"
-          memory: 100M
-        reservations:
-          cpus: "1"
-          memory: 20M
-      restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
-
   mongo1:
     networks:
       - jacs-net

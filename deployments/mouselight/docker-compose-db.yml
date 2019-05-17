@@ -6,19 +6,6 @@ networks:
 
 services:
 
-  portainer:
-    # This container must run as root to access /var/run/docker.sock
-    image: portainer/portainer:1.20.2
-    ports:
-      - "9000:9000"
-    command: -H unix:///var/run/docker.sock --ssl --sslcert=/app/certs/cert.crt --sslkey=/app/certs/cert.key
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${DB_DIR}/portainer:/data
-      - ${CONFIG_DIR}/certs:/app/certs:ro
-    networks:
-      - jacs-net
-
   rabbitmq:
     image: rabbitmq:3.7.8-management
     user: ${DOCKER_USER}
