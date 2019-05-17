@@ -1,6 +1,13 @@
 version: '3.7'
 services:
 
+  jade-master:
+    volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
+
   jade-agent1:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro

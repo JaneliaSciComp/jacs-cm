@@ -4,6 +4,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_TAG}
     expose:
       - "8080"
     networks:
