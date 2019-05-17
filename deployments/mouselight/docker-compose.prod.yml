@@ -1,26 +1,3 @@
 version: '3.7'
 services:
 
-  jacs-messaging:
-    image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
-
-  jade-master:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
-
-  jade-agent1:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
-
-  jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
-
-  jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
-
-  jacs-async:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
-
-  workstation-site:
-    image: ${NAMESPACE}/workstation-site:latest
-
-  api-gateway:
-    image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
