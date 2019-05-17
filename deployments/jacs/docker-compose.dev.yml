@@ -4,12 +4,16 @@ services:
 
   jade-agent1:
     volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro
 
   jacs-sync:
     volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro

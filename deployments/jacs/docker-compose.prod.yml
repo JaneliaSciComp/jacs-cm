@@ -13,18 +13,24 @@ services:
   jade-agent1:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro
 
   jade-agent2:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro
 
   jacs-sync:
     image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
     volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro
 

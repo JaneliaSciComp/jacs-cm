@@ -170,13 +170,8 @@ function build {
         BUILD_ARGS=""
         BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
-        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST"
-        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_USER=$RABBITMQ_USER"
-        BUILD_ARGS="$BUILD_ARGS --build-arg RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD"
         BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION"
         BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
-        BUILD_ARGS="$BUILD_ARGS --build-arg MAIL_SERVER=$MAIL_SERVER"
-        BUILD_ARGS="$BUILD_ARGS --build-arg CERT_PATH=$CONFIG_DIR/certs/cert.crt"
 
         echo "---------------------------------------------------------------------------------"
         echo " Building image for $NAME"
@@ -246,13 +241,14 @@ if [[ "$1" == "init-filesystems" ]]; then
     YML="-f $DEPLOYMENT_DIR/swarm-init.yml"
     echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
     DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-    echo "$SUDO $DOCKER stack deploy -c .tmp.swarm.yml $STACK_NAME && sleep 10"
-    $SUDO $DOCKER stack deploy -c .tmp.swarm.yml $STACK_NAME && sleep 10
+    echo "$SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $STACK_NAME && sleep 10"
+    $SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $STACK_NAME && sleep 10
     echo "$SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
     echo "Filesystem initializing is running. When it's finished, all these tasks should be in Shutdown state:"
     echo "$SUDO $DOCKER service ps ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service ps ${STACK_NAME}_jacs-init
+    echo "To clean up, run this command: docker service rm jacs-dev_jacs-init"
     exit 0
 fi
 
