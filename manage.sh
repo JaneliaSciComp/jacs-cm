@@ -243,8 +243,8 @@ if [[ "$1" == "init-filesystems" ]]; then
     echo "$SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
     echo "Filesystem initializing is running. When it's finished, all these tasks should be in Shutdown state:"
-    echo "$SUDO $DOCKER service ps ${STACK_NAME}_jacs-init"
-    $SUDO $DOCKER service ps ${STACK_NAME}_jacs-init
+    echo "$SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init"
+    $SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init
     echo "To clean up, run this command: docker service rm ${STACK_NAME}_jacs-init"
     exit 0
 fi
