@@ -3,6 +3,7 @@ docker-compose.local.*yml
 # environment
 .env.config
 .env
+*~
 # local stuff
 local
 .tmp.swarm.yml

@@ -32,20 +32,19 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jacs-messaging/build/libs/sharedWorkspaceBroker*.jar /app/sharedWorkspaceBroker.jar
 COPY --from=builder /tmp/wait-for-it/wait-for-it.sh /app
-COPY log4j2.properties /app
+COPY logback.xml /app
 
 # Command for running the application
 ENV SYSTEM_OWNER=group:workstation-users
+
 CMD bash /app/wait-for-it.sh $RABBITMQ_HOSTNAME:5672 --timeout=30 --strict -- \
-/usr/bin/java -Dlog4j.configurationFile=file:/app/log4j2.properties \
+/usr/bin/java -Dlogback.configurationFile=/app/logback.xml \
 -jar /app/sharedWorkspaceBroker.jar \
--rec UpdatesProcessor \
--send ModelRefresh \
--error ModelErrors \
--ms $RABBITMQ_HOSTNAME \
--ps $JACS_URL \
--u $RABBITMQ_USER \
--p $RABBITMQ_PASSWORD \
--systemOwner $SYSTEM_OWNER \
--backupQueue ClientRefresh \
--backupLocation /app/backup/backupQueue
+-ms ${RABBITMQ_HOSTNAME} \
+-u ${RABBITMQ_USER} \
+-p ${RABBITMQ_PASSWORD} \
+-DneuronBroker.persistenceServer=${JACS_URL} \
+-DneuronBroker.sharedSpaceOwner=${SYSTEM_OWNER} \
+-DneuronBroker.backupLocation=/app/backup/neuronBrokerBackupQueue \
+-DindexingBroker.indexingServer=${JACS_URL} \
+-DindexingBroker.backupQueue=/app/backup/indexingBrokerBackupQueue
