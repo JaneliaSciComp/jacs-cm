@@ -443,9 +443,7 @@ do
         for NAME in "$@"
         do
             # TODO: in the future, these images will be externally configured, and these conditionals can be removed
-            if [[ "$NAME" == "workstation-site" ]]; then
-                echo "Cannot push locally-configured image $NAME"
-            elif [[ "$NAME" == "jacs-dashboard" ]]; then
+            if [[ "$NAME" == "jacs-dashboard" ]]; then
                 echo "Cannot push locally-configured image $NAME"
             else
                 getcontainer $NAME "NAME"

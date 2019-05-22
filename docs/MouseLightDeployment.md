@@ -139,7 +139,6 @@ Next, start up the databases:
 ```
 ./manage.sh swarm prod --dbonly
 ```
-At this point you should connect to Portainer at http://HOST1:9000 and create an admin user. Portainer setup has a timeout, so if you can't connect to that endpoint, you may need to take everything down (`./manage.sh rmswarm prod`) and try again.
 
 Now you are ready to initalize the databases:
 
@@ -172,7 +171,7 @@ Now you can bring up all of the remaining application containers:
 
 If you see an intermittent error like this, just retry the command again:
 ```
-failed to create service jacs-cm_portainer: Error response from daemon: network jacs-cm_jacs-net not found
+failed to create service jacs-cm_jacs-sync: Error response from daemon: network jacs-cm_jacs-net not found
 ```
 
 Next, you should make sure that all replicas are operational. You can do this by running:

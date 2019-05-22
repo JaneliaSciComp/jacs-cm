@@ -46,17 +46,6 @@ else
 fi
 
 #
-# Portainer Data Directory
-#
-portainer_data_dir=$db_dir/portainer
-if [[ ! -e "$portainer_data_dir" ]]; then
-    echo "Creating Portainer data directory: $portainer_data_dir"
-    mkdir -p $portainer_data_dir
-else
-    echo "Verified Portainer data directory: $portainer_data_dir"
-fi
-
-#
 # Mongo Data Directory
 #
 mongo_data_dir=$db_dir/mongo/$project

@@ -1,17 +1,14 @@
 version: '3.7'
 services:
 
-  solr:
-    image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
-
-  jacs-messaging:
-    image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
-
   jade-master:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
+    volumes:
+      - /groups/scicomp/reports:/groups/scicomp/reports:ro
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
+      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
+      - /nrs/mouselight:/nrs/mouselight:ro
 
   jade-agent1:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
@@ -19,7 +16,6 @@ services:
       - /nrs/mouselight:/nrs/mouselight:ro
 
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
@@ -27,25 +23,9 @@ services:
       - /nrs/mouselight:/nrs/mouselight:ro
 
   jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro
       - /nrs/mouselight:/nrs/mouselight:ro
-
-  workstation-site:
-    image: ${NAMESPACE}/workstation-site:latest
-
-  api-gateway:
-    image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
-
-  jacs-dashboard:
-    image: ${NAMESPACE}/jacs-dashboard:${JACS_DASHBOARD_VERSION}
-
-  ipp:
-    image: ${NAMESPACE}/ipp:${IPP_VERSION}
-
-
-
 

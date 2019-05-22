@@ -4,7 +4,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
-    image: ${NAMESPACE}/workstation-site:latest
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_TAG}
     expose:
       - "8080"
     networks:
@@ -180,7 +180,7 @@ services:
         window: 120s
 
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master

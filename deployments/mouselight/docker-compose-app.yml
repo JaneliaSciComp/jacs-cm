@@ -8,7 +8,7 @@ version: '3.7'
 services:
 
   jacs-messaging:
-    image: ${NAMESPACE}/jacs-messaging:latest
+    image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - rabbitmq
@@ -25,7 +25,7 @@ services:
       - jacs-net
 
   jade-master:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - mongo1
@@ -50,7 +50,7 @@ services:
       - jacs-net
 
   jade-agent1:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -80,7 +80,7 @@ services:
       - jacs-net
 
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -111,7 +111,7 @@ services:
 
 
   jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:latest
+    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-sync:/app/config
@@ -137,7 +137,7 @@ services:
       - jacs-net
 
   jacs-async:
-    image: ${NAMESPACE}/jacs-compute:latest
+    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-async:/app/config:ro
@@ -166,7 +166,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
-    image: ${NAMESPACE}/workstation-site:latest
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_TAG}
     expose:
       - "8080"
     ports:
@@ -177,10 +177,11 @@ services:
 
   api-gateway:
     # This container must run as root in order to bind to port 443
-    image: ${NAMESPACE}/api-gateway:latest
+    image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
     volumes:
       - ${CONFIG_DIR}/certs:/app/certs:ro
       - ${CONFIG_DIR}/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ${CONFIG_DIR}/api-gateway/content:/usr/local/openresty/nginx/html/external:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
