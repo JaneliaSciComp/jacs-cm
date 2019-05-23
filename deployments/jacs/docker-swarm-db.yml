@@ -88,7 +88,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs_name==node2]
+        constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
           cpus: "4"
@@ -107,7 +107,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs_name==node2]
+        constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
           cpus: "2"

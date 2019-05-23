@@ -11,7 +11,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs_name==node1]
+        constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
           cpus: "1"
@@ -27,7 +27,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs==true]
+        constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
           cpus: "2"
@@ -46,7 +46,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs==true]
+        constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
           cpus: "2"
@@ -86,7 +86,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs==true]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "4"
@@ -126,7 +126,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs_name==node2]
+        constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
           cpus: "4"
@@ -145,7 +145,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs==true]
+        constraints: [node.labels.jacs_name==node1]
       replicas: 1
       resources:
         limits:
@@ -206,6 +206,51 @@ services:
       - '8080'
     ports:
       - '${JADE_AGENT2_EXPOSED_PORT:-9882}:8080'
+    networks:
+      - jacs-net
+    deploy:
+      placement:
+        constraints: [node.labels.jacs_name==node2]
+      resources:
+        limits:
+          cpus: "4"
+          memory: 20G
+        reservations:
+          cpus: "2"
+          memory: 2G
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 3
+        window: 120s
+
+  jade-agent3:
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
+    user: ${DOCKER_USER}
+    depends_on:
+      - jade-master
+#      - mongo1
+    volumes:
+      - ${CONFIG_DIR}/jade:/app/config:ro
+      - ${DATA_DIR}:/data
+    environment:
+      - SERVICE_MODE=agent
+      - JACSSTORAGE_CONFIG=/app/config/config.properties
+      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
+      - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
+      - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT3_EXPOSED_HOST}
+      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT3_EXPOSED_PORT:-9882}
+      - jade_JWT_SecretKey=${JWT_SECRET_KEY}
+      - jade_MongoDB_ServerName=${MONGODB_SERVER}
+      - jade_MongoDB_ReplicaSet=
+      - jade_MongoDB_Database=jacs_jade_dev
+      - jade_MongoDB_AuthDatabase=admin
+      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
+      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
+    expose:
+      - '8080'
+    ports:
+      - '${JADE_AGENT3_EXPOSED_PORT:-9883}:8080'
     networks:
       - jacs-net
     deploy:
