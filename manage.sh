@@ -189,7 +189,11 @@ if [[ -z "$DOCKER_USER" ]]; then
         exit 1
     fi
     MYUID=$(id -u $UNAME)
-    MYGID=`cut -d: -f3 < <(getent group $GNAME)`
+    if [[ `uname` == "Darwin" ]]; then
+        MYGID=`dscl . -read /Groups/$GNAME | awk '($1 == "PrimaryGroupID:") { print $2 }'`
+    else
+        MYGID=`cut -d: -f3 < <(getent group $GNAME)`
+    fi
     DOCKER_USER=$MYUID:$MYGID
 else
     if [[ -z $MYUID || -z $MYGID ]]; then
@@ -503,7 +507,7 @@ do
         OPTS="$@"
         echo "Bringing $COMMAND $TIER tier"
         echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $OPTS"
-        $SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $OPTS
+        $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMMAND $OPTS
     fi
 
 done

@@ -61,14 +61,18 @@ At this point, **it is strongly recommended is to replace the self-signed certif
 sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
 ```
+If you use self-signed certificates, you will need to [set up the trust chain](SelfSignedCerts.md) for them later.
+
 
 ## Initialize Databases
 
-This deployment does not include the main databases (Mongo and MySQL), but this step is necessary to initialize SOLR and RabbitMQ.
+Currently, this deployment does not include the main databases (Mongo and MySQL). It is assumed these are running separately. In the future they will be added to this deployment.
+
+However, the database initialization step is still necessary to configure SOLR and RabbitMQ.
 
 Bring up the databases only:
 ```
-./manage.sh up dev --dbonly -d
+./manage.sh up none --dbonly -d
 ```
 
 Then initialize them:
@@ -81,15 +85,17 @@ Then initialize them:
 
 Now you can bring up all of the latest application containers:
 ```
-./manage.sh up dev -d
+./manage.sh up none -d
 ```
+
+Note that **none* here refers to the target environment. The deployment will read the deployments/jacs/docker-compose.ENV.yml file, so specifying none will not read any of the predefined environments. This is probably for the best, expecially if you are deploying locally, since the environments are Janelia-specific. If you want to add your own environment, create a deployments/jacs/docker-compose.ENV.yml file and then use commands like `./manage.sh up ENV -d`.
 
 
 ## Stop All Containers
 
 To stop all containers, run this command:
 ```
-./manage.sh down dev
+./manage.sh down none
 ```
 
 

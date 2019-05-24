@@ -8,11 +8,8 @@ Each subdirectory in the `containers` directory contains a versioned, containeri
 
 Each subdirectory in the `deployments` directory contains the configuration for a deployment orchestrated by e.g. Docker Compose or Docker Swarm.
 
-## Basic Usage
 
-Read more about the [basic usage](docs/BasicUsage.md) of this repository.
-
-## Deployments
+## Deployment Walkthroughs
 
 Different types of deployments are possible which provide various combinations of services with multiple swarm topologies. 
 
@@ -25,6 +22,11 @@ Different types of deployments are possible which provide various combinations o
 ### MouseLight Tools and Services
 
 1. [Canonical MouseLight deployment](docs/MouseLightDeployment.md)
+
+
+## Development 
+
+You can learn more about the [basic usage](docs/BasicUsage.md) of this repository for development.
 
 
 ## License 
