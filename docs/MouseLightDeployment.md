@@ -98,8 +98,6 @@ At minimum, you must customize the following:
 3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the TLS certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
-6. Set the `WORKSTATION_TAG` to the tag of the Workstation codebase you want to build and deploy, e.g. **8.0**.
-7. Set `WORKSTATION_BUILD_VERSION` to a locally branded version number that will be visible to your users in the application. For example, we use **${WORKSTATION_TAG}-JRC** for deploying version 8.0 at Janelia Research Campus (JRC).
 
 Remember that after customizing the .env.config, it must be synchronized to both servers, unless you have placed the jacs-cm directory on a shared NFS mount.
 
@@ -150,16 +148,6 @@ It's normal to see the "Unable to reach primary for set rsJacs" error repeated u
 You can validate the databases as follows:
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
 * Connect to http://YOUR_HOST:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
-
-
-## Build Client Distribution
-
-Only on **HOST1**, build the site-specific Workstation client and the distribution website container:
-```
-./manage.sh build workstation-site
-```
-
-This container is specific to your deployment site, and contains the **HOST1** hostname in its configuration. Therefore, it cannot be distributed in a Docker registry. Besides the Workstation client, this container also deploys a website for accessing the installers, and other information. The website is made available at https://HOST1. Also make sure that the value assigned to WORKSTATION_TAG in the .env file is a tag that exists in the workstation github repo.
 
 
 ## Start All Containers

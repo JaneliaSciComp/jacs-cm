@@ -40,7 +40,7 @@ services:
       - /nrs/mouselight:/nrs/mouselight:ro
 
   workstation-site:
-    image: ${NAMESPACE}/workstation-site:${WORKSTATION_TAG}
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
 
   api-gateway:
     image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}

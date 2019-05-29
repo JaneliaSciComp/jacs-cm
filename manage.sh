@@ -25,6 +25,7 @@ export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
 export JACS_MESSAGING_VERSION=`cat $CONTAINER_DIR/jacs-messaging/VERSION`
 export IPP_VERSION=`cat $CONTAINER_DIR/ipp/VERSION`
 export SOLR_SEARCH_VERSION=`cat $CONTAINER_DIR/solr-search/VERSION`
+export WORKSTATION_VERSION=`cat $CONTAINER_DIR/workstation-site/VERSION`
 
 # Environment file
 ENV_CONFIG=${ENV_CONFIG:-.env.config}
@@ -139,10 +140,6 @@ function getversion {
     CDIR="$CONTAINER_DIR/$_name"
     if [[ -e $CDIR/VERSION ]]; then
         VERSION=`cat $CDIR/VERSION`
-        if [[ "$VERSION" == "\$WORKSTATION_BUILD_VERSION" ]]; then
-            # Poor man's variable interpolation
-            VERSION=$WORKSTATION_BUILD_VERSION
-        fi
         eval $_result_var="'$VERSION'"
     else
         echo "No $CDIR/VERSION found"
@@ -162,15 +159,12 @@ function build {
         VNAME=$CNAME:${VERSION}
         LNAME=$CNAME:latest
         APP_TAG=master
-        if [[ "$NAME" == "workstation-site" ]]; then
-            APP_TAG=$WORKSTATION_TAG
-        elif [[ -e $CDIR/APP_TAG ]]; then
+        if [[ -e $CDIR/APP_TAG ]]; then
             APP_TAG=$(cat $CDIR/APP_TAG)
         fi
         BUILD_ARGS=""
         BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
-        BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_BUILD_VERSION=$WORKSTATION_BUILD_VERSION"
         BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
 
         echo "---------------------------------------------------------------------------------"
