@@ -12,8 +12,8 @@ RUN rm Gemfile.lock && bundler exec jekyll build
 
 # Build the Workstation installers and update center
 FROM janeliascicomp/builder:1.0.0 as builder
-ARG APP_TAG
-ARG KEYSTORE_PASSWORD
+ARG APP_TAG=master
+ARG KEYSTORE_PASSWORD=password
 
 COPY cert.crt /tmp/cert.crt
 COPY cert.key /tmp/cert.key
@@ -31,8 +31,7 @@ RUN git clone https://github.com/JaneliaSciComp/workstation.git . \
     #   -keystore private/keystore -dname "C=US, ST=VA, L=Ashburn, O=Janelia, CN=localhost"
 
 COPY my.properties .
-RUN API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
-    WORKSTATION_BUILD_VERSION=$APP_TAG \
+RUN WORKSTATION_BUILD_VERSION=$APP_TAG \
     envsubst < my.properties > ./modules/Core/src/main/resources/my.properties \
     && cat ./modules/Core/src/main/resources/my.properties
 
@@ -43,7 +42,7 @@ RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD 
 # Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
 LABEL maintainer="rokickik@janelia.hhmi.org"
-LABEL description="Workstation Website and Update Center"
+LABEL description="Janelia Workstation Website and Update Center"
 
 RUN mkdir -p /var/www/files /var/www/updates
 COPY --from=jekyll /tmp/website/_site/ /var/www/

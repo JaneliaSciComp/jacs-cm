@@ -165,7 +165,6 @@ function build {
         BUILD_ARGS=""
         BUILD_ARGS="$BUILD_ARGS --build-arg APP_TAG=$APP_TAG"
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
-        BUILD_ARGS="$BUILD_ARGS --build-arg KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
 
         echo "---------------------------------------------------------------------------------"
         echo " Building image for $NAME"

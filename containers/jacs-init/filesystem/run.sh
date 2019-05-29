@@ -212,10 +212,11 @@ if [[ ! -e "$apigateway_dir" ]]; then
     mkdir -p $content_dir
     echo "  Created content directory: $content_dir"
 
+    API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST \
     RABBITMQ_EXPOSED_HOST=$RABBITMQ_EXPOSED_HOST \
-    MAIL_SERVER=$MAIL_SERVER \
     RABBITMQ_USER=$RABBITMQ_USER \
     RABBITMQ_PASSWORD=$RABBITMQ_PASSWORD \
+    MAIL_SERVER=$MAIL_SERVER \
     envsubst < $DIR/api-gateway/client/client.properties > $content_dir/client.properties
     echo "  Created client properties: $content_dir/client.properties"
 
