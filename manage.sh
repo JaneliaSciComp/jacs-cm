@@ -252,7 +252,7 @@ if [[ "$1" == "init-filesystems" ]]; then
     echo "Filesystem initializing is running. When it's finished, all these tasks should be in Shutdown state:"
     echo "$SUDO $DOCKER service ps ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service ps ${STACK_NAME}_jacs-init
-    echo "To clean up, run this command: docker service rm jacs-dev_jacs-init"
+    echo "To clean up, run this command: docker service rm ${STACK_NAME}_jacs-init"
     exit 0
 fi
 
