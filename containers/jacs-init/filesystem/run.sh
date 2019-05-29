@@ -92,7 +92,7 @@ fi
 #
 # SOLR Indexes Directory
 #
-solr_data_dir=$db_dir/solr/$project
+solr_data_dir=$db_dir/solr
 if [[ ! -e "$solr_data_dir" ]]; then
     echo "Initializing SOLR indexes directory: $solr_data_dir"
     mkdir -p $solr_data_dir
