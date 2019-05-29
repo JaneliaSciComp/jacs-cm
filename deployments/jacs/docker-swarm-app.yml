@@ -225,7 +225,7 @@ services:
         window: 120s
 
   jade-agent3:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
+    image: ${NAMESPACE}/jacs-storage:latest
     user: ${DOCKER_USER}
     depends_on:
       - jade-master

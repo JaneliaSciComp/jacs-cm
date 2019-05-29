@@ -158,7 +158,7 @@ function build {
         CNAME=${CONTAINER_PREFIX}${NAME}
         VNAME=$CNAME:${VERSION}
         LNAME=$CNAME:latest
-        APP_TAG=master
+        APP_TAG=$VERSION
         if [[ -e $CDIR/APP_TAG ]]; then
             APP_TAG=$(cat $CDIR/APP_TAG)
         fi
