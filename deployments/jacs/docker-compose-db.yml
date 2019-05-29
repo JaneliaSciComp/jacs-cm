@@ -75,7 +75,7 @@ services:
 #      - jacs-net
 
   solr:
-    image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
+    image: ${NAMESPACE}/solr-search:latest
     user: ${DOCKER_USER}
     volumes:
       - ${DB_DIR}/solr:/data
