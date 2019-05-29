@@ -30,7 +30,7 @@ RUN yum install -y java-1.8.0-openjdk-headless
 # Configure the app
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
-COPY --from=builder /tmp/jacs-messaging/build/libs/sharedWorkspaceBroker*.jar /app/sharedWorkspaceBroker.jar
+COPY --from=builder /tmp/jacs-messaging/jacs-messaging-broker/build/libs/sharedWorkspaceBroker*.jar /app/sharedWorkspaceBroker.jar
 COPY --from=builder /tmp/wait-for-it/wait-for-it.sh /app
 COPY logback.xml /app
 
