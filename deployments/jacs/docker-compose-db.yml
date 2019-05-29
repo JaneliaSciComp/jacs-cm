@@ -76,7 +76,6 @@ services:
 
   solr:
     image: ${NAMESPACE}/solr-search:latest
-    user: ${DOCKER_USER}
     volumes:
       - ${DB_DIR}/solr:/data
     ports:
