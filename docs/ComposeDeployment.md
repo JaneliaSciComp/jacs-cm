@@ -72,7 +72,7 @@ However, the database initialization step is still necessary to configure SOLR a
 
 Bring up the databases only:
 ```
-./manage.sh up none --dbonly -d
+./manage.sh up standalone --dbonly -d
 ```
 
 Then initialize them:
@@ -85,17 +85,20 @@ Then initialize them:
 
 Now you can bring up all of the latest application containers:
 ```
-./manage.sh up none -d
+./manage.sh up standalone -d
 ```
 
-Note that **none* here refers to the target environment. The deployment will read the deployments/jacs/docker-compose.ENV.yml file, so specifying none will not read any of the predefined environments. This is probably for the best, expecially if you are deploying locally, since the environments are Janelia-specific. If you want to add your own environment, create a deployments/jacs/docker-compose.ENV.yml file and then use commands like `./manage.sh up ENV -d`.
+
+## Updating Containers
+
+Containers in this deployment are automatically updated by Watchtower whenever a new one is available with the "latest" tag. To update the deployment, simply build and push a new container to the configured registry.
 
 
 ## Stop All Containers
 
 To stop all containers, run this command:
 ```
-./manage.sh down none
+./manage.sh down standalone
 ```
 
 
@@ -103,15 +106,10 @@ To stop all containers, run this command:
 
 Now you can checkout the [Janelia Workstation](https://github.com/JaneliaSciComp/workstation) code base in IntelliJ or NetBeans and run its as per its README.
 
-In order to connect to your dev instance, create a new file at `workstation/modules/Core/src/main/resources/my.properties` with this content (replacing the variables with the values from your .env.config file):
+The client will ask you for the API Gateway URL, which is just `http://$HOST1`. In order to automatically connect to your standalone gateway instance, you can create a new file at `workstation/modules/Core/src/main/resources/my.properties` with this content (replacing the variables with the values from your .env.config file):
 ```
-mainserver.name=$HOST1
-api.gateway=https://{mainserver.name}
-domain.msgserver.url={mainserver.name}
-domain.msgserver.useraccount=$RABBITMQ_USER
-domain.msgserver.password=$RABBITMQ_PASSWORD
+api.gateway=https://$HOST1
 ```
 
 If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
-
 
