@@ -64,28 +64,23 @@ sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
 If you use self-signed certificates, you will need to [set up the trust chain](SelfSignedCerts.md) for them later.
 
 
+## Start All Containers
+
+Now you can bring up all of the latest application containers:
+```
+./manage.sh compose up standalone -d
+```
+
+
 ## Initialize Databases
 
 Currently, this deployment does not include the main databases (Mongo and MySQL). It is assumed these are running separately. In the future they will be added to this deployment.
 
 However, the database initialization step is still necessary to configure SOLR and RabbitMQ.
 
-Bring up the databases only:
-```
-./manage.sh up standalone --dbonly -d
-```
-
 Then initialize them:
 ```
 ./manage.sh init-databases
-```
-
-
-## Start All Containers
-
-Now you can bring up all of the latest application containers:
-```
-./manage.sh up standalone -d
 ```
 
 
@@ -98,7 +93,7 @@ Containers in this deployment are automatically updated by Watchtower whenever a
 
 To stop all containers, run this command:
 ```
-./manage.sh down standalone
+./manage.sh compose down standalone
 ```
 
 

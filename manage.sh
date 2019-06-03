@@ -366,12 +366,11 @@ fi
 
 if [[ "$#" -lt 2 ]]; then
     echo "Container Management: `basename $0` [build|run|shell|push] [tool1] [tool2] .. [tooln]"
-    echo "       You can combine multiple commands with a plus, e.g. build+push"
-    echo "       For the up/down commands, the argument must be a tier name like 'dev' or 'prod'"
+    echo "       You can combine multiple commands with a plus sign, e.g. build+push"
     echo 
-    echo "Docker Compose: `basename $0` [up|down|ps|top] [environment] [--dbonly]"
+    echo "Swarm Deployment: `basename $0` [start|stop|status] [environment]"
     echo
-    echo "Swarm Mode: `basename $0` [swarm|rmswarm] [environment] [--dbonly]"
+    echo "Compose Deployment: `basename $0` compose [up|down|ps|top] [environment]"
     echo
     exit 1
 fi
