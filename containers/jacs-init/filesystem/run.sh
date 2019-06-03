@@ -112,17 +112,6 @@ else
 fi
 
 #
-# Elasticsearch
-#
-elasticsearch_data_dir=$db_dir/elasticsearch/$project
-if [[ ! -e "$elasticsearch_data_dir" ]]; then
-    echo "Initializing ElasticSearch data directory: $elasticsearch_data_dir"
-    mkdir -p $elasticsearch_data_dir
-else
-    echo "Verified ElasticSearch data directory: $elasticsearch_data_dir"
-fi
-
-#
 # TLS Certificates
 #
 cert_dir=$config_dir/certs
