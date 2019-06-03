@@ -464,7 +464,7 @@ do
             fi
         done
 
-    elif [[ "$COMMAND" == "swarm" ]]; then
+    elif [[ "$COMMAND" == "start" ]]; then
 
         TIER=$1
         shift 1 # remove tier
@@ -480,13 +480,18 @@ do
         echo "$SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
         $SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
 
-    elif [[ "$COMMAND" == "rmswarm" ]]; then
+    elif [[ "$COMMAND" == "stop" ]]; then
 
         echo "$SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
         $SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
 
-    else
-        # any other command is passed to docker-compose
+    elif [[ "$COMMAND" == "compose" ]]; then
+
+        shift 1 # remove command
+
+        COMPOSE_COMMAND=$1
+        shift 1 # remove compose command
+
         TIER=$1
         shift 1 # remove tier
 
@@ -499,8 +504,12 @@ do
 
         OPTS="$@"
         echo "Bringing $COMMAND $TIER tier"
-        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMMAND $OPTS"
-        $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMMAND $OPTS
+        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS"
+        $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
+
+    else
+        echo "Unrecognized command: $COMMAND"
+        exit 1
     fi
 
 done

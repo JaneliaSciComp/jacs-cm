@@ -108,10 +108,10 @@ services:
           cpus: "1"
           memory: 4G
       restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
+        condition: any
+        delay: 5s
+        window: 10s
+        max_attempts: 1000
 
   jade-agent1:
     networks:
@@ -127,10 +127,10 @@ services:
           cpus: "2"
           memory: 2G
       restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
+        condition: any
+        delay: 5s
+        window: 10s
+        max_attempts: 1000
 
   jade-agent2:
     networks:
@@ -146,9 +146,9 @@ services:
           cpus: "2"
           memory: 2G
       restart_policy:
-        condition: on-failure
-        delay: 3s
-        max_attempts: 3
-        window: 120s
+        condition: any
+        delay: 5s
+        window: 10s
+        max_attempts: 1000
 
 

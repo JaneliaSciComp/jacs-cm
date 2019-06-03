@@ -1,6 +1,6 @@
 # MouseLight Deployment
 
-This document describes the canonical two-server Janelia Workstation deployment for supporting neuron tracing for the [MouseLight project](https://www.janelia.org/project-team/mouselight) at the Janelia Research Campus and other research institutions. This deployment uses Docker Swarm to orchestrate prebuilt containers available on Docker Hub. 
+This document describes the canonical two-server Janelia Workstation deployment for supporting neuron tracing for the [MouseLight project](https://www.janelia.org/project-team/mouselight) at the Janelia Research Campus and other research institutions. This deployment uses Docker Swarm to orchestrate prebuilt containers available on Docker Hub.
 
 Please note that this deployment does not currently have the capability of preprocessing raw data. Instead, it's assumed that imagery will be generated and preprocessed at Janelia and shipped to the remote site for viewing and tracing. These data preprocessing tools will be added in the future.
 
@@ -94,7 +94,7 @@ vi .env.config
 
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
-2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to the mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
+2. Ensure that `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` point to the disk mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
 3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the TLS certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
@@ -125,18 +125,26 @@ sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
 ```
 
-You should also copy your certificate into the Workstation client build, so that it can be used to sign the plugin modules:
+
+## Start All Containers
+
+Next, start up all of the service containers:
 ```
-cp $CONFIG_DIR/certs/cert.{crt,key} ./containers/workstation-site
+./manage.sh start prod
+```
+
+It may take a minute for everything to spin up. You can monitor the progress with this command:
+```
+./manage.sh status
+```
+
+If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the swarm service name, as reported by the status command. For example, if jade-agent2 fails to start, you would type:
+```
+./manage.sh status jacs_jade-agent2
 ```
 
 
 ## Initialize Databases
-
-Next, start up the databases:
-```
-./manage.sh swarm prod --dbonly
-```
 
 Now you are ready to initalize the databases:
 
@@ -147,29 +155,8 @@ It's normal to see the "Unable to reach primary for set rsJacs" error repeated u
 
 You can validate the databases as follows:
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
-* Connect to http://YOUR_HOST:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
+* Connect to http://**HOST1**:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
 
-
-## Start All Containers
-
-Now you can bring up all of the remaining application containers:
-```
-./manage.sh swarm prod
-```
-
-If you see an intermittent error like this, just retry the command again:
-```
-failed to create service jacs-cm_jacs-sync: Error response from daemon: network jacs-cm_jacs-net not found
-```
-
-Next, you should make sure that all replicas are operational. You can do this by running:
-```
-./manage.sh debug
-```
-It may take a minute for everything to spin up. If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the service name. For example, if jade-agent2 fails to start, you would type:
-```
-./manage.sh debug jacs-cm_jade-agent2
-```
 
 ## Verify Functionality
 
@@ -179,21 +166,18 @@ You can verify the Authentication Service is working as follows:
 ./manage.sh login
 ```
 
-You should be able to log in with the default admin account (root/root). This will return a JWT that can be used on subsequent requests. For example, use it to verify the JACS services:
-
-```
-export TOKEN=<enter token here>
-curl -k --request GET --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/JACS2AsyncServices/v2/services/metadata --header "Content-Type: application/json" --header "Authorization: Bearer $TOKEN"
-```
+You should be able to log in with the default admin account (root/root). This will return a JWT that can be used on subsequent requests. 
 
 If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
 
 
 ## Manage Services
 
+As long as your Docker daemon is configured to restart on boot, all of the Swarm services will also restart automatically.
+
 If at any point you want to remove all the services from the Swarm and do a clean restart of everything, you can use this command:
 ```
-./manage.sh rmswarm prod
+./manage.sh stop prod
 ```
 
 To pull and redeploy the latest image for a single service, e.g. workstation-site:
@@ -244,6 +228,5 @@ Open the Data Explorer (**Window** → **Core** → **Data Explorer**) and navig
 
 ## Find More Information
 
-This concludes the MouseLight Workstation installation. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
-
+This concludes the MouseLight Workstation installation procedure. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).
 
