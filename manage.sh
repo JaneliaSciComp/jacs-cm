@@ -216,7 +216,7 @@ if [[ "$1" == "restart" ]]; then
     exit 0
 fi
 
-if [[ "$1" == "debug" ]]; then
+if [[ "$1" == "debug" || "$1" == "status" ]]; then
     serviceName=$2
     if [[ -z "$serviceName" ]]; then
         echo
