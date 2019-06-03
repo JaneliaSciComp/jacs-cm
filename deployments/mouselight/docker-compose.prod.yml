@@ -1,4 +1,5 @@
 version: '3.7'
+services:
 
   jacs-messaging:
     image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
