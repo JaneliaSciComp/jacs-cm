@@ -10,14 +10,8 @@ ARG APP_TAG=master
 
 # Checkout and build the code
 WORKDIR /tmp/jacs-messaging
-RUN git clone https://github.com/JaneliaSciComp/jacs-messaging.git . \
-    && git fetch --tags \
-    && git checkout $APP_TAG \
+RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs-messaging.git . \
     && ./gradlew --no-daemon brokerJar
-
-# Checkout wait-for-it
-WORKDIR /tmp
-RUN git clone https://github.com/vishnubob/wait-for-it.git
 
 # Build the final container
 FROM scientificlinux/sl:7
@@ -31,14 +25,12 @@ RUN yum install -y java-1.8.0-openjdk-headless
 ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jacs-messaging/jacs-messaging-broker/build/libs/sharedWorkspaceBroker*.jar /app/sharedWorkspaceBroker.jar
-COPY --from=builder /tmp/wait-for-it/wait-for-it.sh /app
 COPY logback.xml /app
 
 # Command for running the application
 ENV SYSTEM_OWNER=group:workstation-users
 
-CMD bash /app/wait-for-it.sh $RABBITMQ_HOSTNAME:5672 --timeout=30 --strict -- \
-/usr/bin/java -Dlogback.configurationFile=/app/logback.xml \
+CMD /usr/bin/java -Dlogback.configurationFile=/app/logback.xml \
 -jar /app/sharedWorkspaceBroker.jar \
 -ms ${RABBITMQ_HOSTNAME} \
 -u ${RABBITMQ_USER} \

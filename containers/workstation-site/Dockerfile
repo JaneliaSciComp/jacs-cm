@@ -11,7 +11,7 @@ COPY jekyll_config.yml _config.yml
 RUN rm Gemfile.lock && bundler exec jekyll build
 
 # Build the Workstation installers and update center
-FROM janeliascicomp/builder:1.0.0 as builder
+FROM janeliascicomp/builder:1.1.0 as builder
 ARG APP_TAG=master
 ARG KEYSTORE_PASSWORD=password
 
@@ -19,9 +19,7 @@ COPY cert.crt /tmp/cert.crt
 COPY cert.key /tmp/cert.key
 
 WORKDIR /tmp/workstation
-RUN git clone https://github.com/JaneliaSciComp/workstation.git . \
-    && git fetch --tags \
-    && git checkout $APP_TAG \
+RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/workstation.git . \
     && mkdir private \
     # Uses the certificate placed in the current folder
     && openssl pkcs12 -export -in /tmp/cert.crt -inkey /tmp/cert.key -name janeliaws -out cert.p12 -passout pass:$KEYSTORE_PASSWORD \

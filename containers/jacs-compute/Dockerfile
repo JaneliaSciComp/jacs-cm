@@ -8,14 +8,12 @@
 #
 
 # Builder container
-FROM janeliascicomp/builder:1.0.0 as builder
+FROM janeliascicomp/builder:1.1.0 as builder
 ARG APP_TAG=master
 
 # Checkout and build the code
 WORKDIR /tmp/jacs-compute
-RUN git clone https://github.com/JaneliaSciComp/jacs-compute.git . \
-    && git fetch --tags \
-    && git checkout $APP_TAG \
+RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs-compute.git . \
     && ./gradlew --no-daemon installDist -x test
 
 # Build the final container
