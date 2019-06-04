@@ -125,6 +125,8 @@ services:
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
+      - jacs_Messaging_User=${RABBITMQ_USER}
+      - jacs_Messaging_Password=${RABBITMQ_PASSWORD}
       - jacs_mouselight_db_url=${MYSQL_URL}
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
       - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
@@ -181,11 +183,11 @@ services:
     volumes:
       - ${CONFIG_DIR}/certs:/app/certs:ro
       - ${CONFIG_DIR}/api-gateway/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      - ${CONFIG_DIR}/api-gateway/content:/usr/local/openresty/nginx/html/external:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
     ports:
       - "443:443"
-      - "8090:8090"
     depends_on:
       - jacs-sync
       - jacs-async
