@@ -85,6 +85,11 @@ At minimum, you must customize the following:
 4. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
 
 
+## Databases
+
+Currently, Janelia runs MongoDB and MySQL outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml files under ./deployments/jacs/ and uncomment the databases.
+
+
 ## Deploy Services
 
 Now you can follow the [Swarm Deployment instructions](SwarmDeployment.md) to actually deploy the software.
