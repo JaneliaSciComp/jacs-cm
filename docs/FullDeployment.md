@@ -4,7 +4,7 @@ This document describes the full three-server Janelia Workstation deployment for
 
 Multiple *environments* are supported with this deployment:
 * **prod** - containers are always pinned to the latest production versions
-* **dev** deployment, containers are deployed with the "latest" tag, and updated automatically using [Shepherd](https://github.com/djmaze/shepherd) whenever a new container is available in the registry. This simplifies development and CI/CD.
+* **dev** - containers are deployed with the "latest" tag, and updated automatically using [Shepherd](https://github.com/djmaze/shepherd) whenever a new container is available in the registry. This simplifies development and CI/CD.
 
 ## Deployment Diagram
 
@@ -56,7 +56,7 @@ docker node update --label-add jacs=true <id of HOST3>
 
 ## Download the installer
 
-[Download the jacs-cm latest installer](https://github.com/JaneliaSciComp/jacs-cm/releases) and extract it onto the master node, as follows. `VERSION` should be set to the latest stable version available on the releases page. 
+Download the installer and extract it onto the master node, as follows. `VERSION` should be set to the [latest stable version](https://github.com/JaneliaSciComp/jacs-cm/releases) available on the releases page.
 
 ```
 export VERSION=<version_number_here>
@@ -79,7 +79,7 @@ vi .env.config
 ```
 
 At minimum, you must customize the following:
-1. Ensure that `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` point to the disk mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
+1. Ensure that `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` point to the disk mounts available on the local systems. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
 2. Set `HOST1`, `HOST2`, and `HOST3` to the servers you are deploying on. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use.
 3. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 4. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.

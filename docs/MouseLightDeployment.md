@@ -71,8 +71,7 @@ docker node ls
 
 ## Download the installer
 
-[Download the jacs-cm latest installer](https://github.com/JaneliaSciComp/jacs-cm/releases) and extract it onto the master node, as follows. `VERSION` should be set to the latest stable version available on the releases page.
-
+Download the installer and extract it onto the master node, as follows. `VERSION` should be set to the [latest stable version](https://github.com/JaneliaSciComp/jacs-cm/releases) available on the releases page.
 ```
 export VERSION=<version_number_here>
 cd /opt

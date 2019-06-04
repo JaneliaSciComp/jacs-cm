@@ -2,7 +2,7 @@
 
 This document describes a Janelia Workstation deployment intended for setting up a personal development environment. Unlike the canonical distributed deployments which use Docker Swarm, this deployment uses Docker Compose to orchestrate the services on a single server.
 
-Note that this deployment does not build and serve the Workstation client installers, although that could certainly be added in cases where those pieces need to be developed and tested. In most cases, however, it is expected that this server-side deployment be paired with a development client built and run from IntelliJ or NetBeans.
+Note that this deployment does not build and serve the Workstation client installers, although that could certainly be added in cases where those pieces need to be developed and tested. In most cases, however, it is expected that this server-side deployment be paired with a development client built and run directly from IntelliJ or NetBeans.
 
 
 ## System Setup
@@ -68,7 +68,7 @@ If you use self-signed certificates, you will need to [set up the trust chain](S
 
 The JACS system has its own self-contained authentication system, and can manage users and passwords internally.
 
-If you'd prefer that users authenticate against your existing LDAP or ActiveDirectory server, edit $CONFIG_DIR/jacs-sync/jacs.properties and add these properties:
+If you'd prefer that users authenticate against your existing LDAP or ActiveDirectory server, edit `$CONFIG_DIR/jacs-sync/jacs.properties` and add these properties:
 ```
 LDAP.URL=
 LDAP.SearchBase=
@@ -101,9 +101,22 @@ Now you are ready to initalize the databases:
 ```
 
 
+## Verify Functionality
+
+You can verify the Authentication Service is working as follows:
+
+```
+./manage.sh login
+```
+
+You should be able to log in with the default admin account (root/root), or any LDAP/AD account if you've configured external authentication. This will return a JWT that can be used on subsequent requests.·
+
+If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
+
+
 ## Updating Containers
 
-Containers in this deployment are automatically updated by Watchtower whenever a new one is available with the "latest" tag. To update the deployment, simply build and push a new container to the configured registry.
+Containers in this deployment are automatically updated by [Watchtower](https://github.com/containrrr/watchtower) whenever a new one is available with the "latest" tag. To update the deployment, simply build and push a new container to the configured registry.
 
 
 ## Stop All Containers

@@ -17,7 +17,7 @@ You can manually edit the files found in `CONFIG_DIR` to further customize the i
 
 ### SSL Certificates
 
-At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
+At this point, **it is strongly recommended is to replace the self-signed certificates** in `$CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
 ```
 sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
@@ -30,7 +30,7 @@ If you continue with the self-signed certificates, you will need to [set up the 
 
 The JACS system has its own self-contained authentication system, and can manage users and passwords internally.
 
-If you'd prefer that users authenticate against your existing LDAP or ActiveDirectory server, edit $CONFIG_DIR/jacs-sync/jacs.properties and add these properties:
+If you'd prefer that users authenticate against your existing LDAP or ActiveDirectory server, edit `$CONFIG_DIR/jacs-sync/jacs.properties` and add these properties:
 ```
 LDAP.URL=
 LDAP.SearchBase=
@@ -39,12 +39,12 @@ LDAP.BindDN=
 LDAP.BindCredentials=
 ```
 
-The URL should point to your authentication server. The SearchBase is part of a distinguished name to search, something like "ou=People,dc=yourorg,dc=org". The SearchFilter is the attribute to search on, something like "(cn={{username}})". BindDN and BindCredentials defines the distinguished name and password for a service user that can access user informationlike full names and emails.
+The URL should point to your authentication server. The SearchBase is part of a distinguished name to search, something like "ou=People,dc=yourorg,dc=org". The SearchFilter is the attribute to search on, something like "(cn={{username}})". BindDN and BindCredentials defines the distinguished name and password for a service user that can access user information like full names and emails.
 
 
 ## Start All Containers
 
-Next, start up all of the service containers. The parameter to the start command specifies the *environment* to use. The **dev** environment uses containers tagged with *latest* and updates them automatically. The **prod** deployment uses a frozen set of versions. When in doubt, use the **prod** deployment:
+Next, start up all of the service containers. The parameter to the start command specifies the environment to use. The **dev** environment uses containers tagged as *latest* and updates them automatically when they change. The **prod** deployment uses a frozen set of production versions. When in doubt, use the **prod** deployment:
 ```
 ./manage.sh start prod
 ```
@@ -54,7 +54,7 @@ It may take a minute for everything to spin up. You can monitor the progress wit
 ./manage.sh status
 ```
 
-If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the swarm service name, as reported by the status command. For example, if jade-agent2 fails to start, you would type:
+If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the swarm service name, as reported by the status command. For example, if jacs_jade-agent2 fails to start, you would type:
 ```
 ./manage.sh status jacs_jade-agent2
 ```
@@ -63,15 +63,15 @@ If any container failed to start up, it will show up with "0/N" replicas, and it
 ## Initialize Databases
 
 Now you are ready to initalize the databases:
-
 ```
 ./manage.sh init-databases
 ```
 It's normal to see the "Unable to reach primary for set rsJacs" error repeated until the Mongo replica set converges on healthiness. After a few seconds, you should see a message "Databases have been initialized" and the process will exit successfully.
 
 You can validate the databases as follows:
-* Verify that you can connect to the Mongo instance using `./manage.sh mongo` and the MySQL instance using `./manage.sh mysql`
-* Connect to http://**HOST1**:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
+* Verify that you can connect to the Mongo instance using `./manage.sh mongo`, and run `show tables`
+* Verify that you can connect to the MySQL instance using `./manage.sh mysql`, and run `show tables`
+* Connect to the RabbitMQ server at http://**HOST1**:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
 
 
 ## Verify Functionality
@@ -82,7 +82,7 @@ You can verify the Authentication Service is working as follows:
 ./manage.sh login
 ```
 
-You should be able to log in with the default admin account (root/root), or any LDAP/AD account if you've configured external authentication. This will return a JWT that can be used on subsequent requests. 
+You should be able to log in with the default admin account (root/root), or any LDAP/AD account if you've configured external authentication. This will return a JWT that can be used on subsequent requests.
 
 If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
 
