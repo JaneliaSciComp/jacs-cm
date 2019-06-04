@@ -7,10 +7,8 @@ services:
     user: ${DOCKER_USER}
     entrypoint: ["/app/filesystem/run.sh"]
     volumes:
-      - ${CONFIG_DIR}:${CONFIG_DIR}
-      - ${DATA_DIR}:${DATA_DIR}
-      - ${DB_DIR}:${DB_DIR}
-      - ${BACKUPS_DIR}:${BACKUPS_DIR}
+      - ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE}
+      - ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE}
     environment:
       - CONFIG_DIR=${CONFIG_DIR}
       - DATA_DIR=${DATA_DIR}
