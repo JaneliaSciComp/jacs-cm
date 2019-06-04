@@ -168,9 +168,10 @@ function build {
 
         echo "---------------------------------------------------------------------------------"
         echo " Building image for $NAME"
-        echo " $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR"
         echo "---------------------------------------------------------------------------------"
+        set -x
         $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
+        set +x
     fi
 
 }
@@ -210,8 +211,9 @@ if [[ "$1" == "restart" ]]; then
     if [[ -z "$serviceName" ]]; then
         echo "Specify a service name to restart"
     else
-        echo "$SUDO $DOCKER service update --force $serviceName"
+        set -x
         $SUDO $DOCKER service update --force $serviceName
+        set +x
     fi
     exit 0
 fi
@@ -219,16 +221,14 @@ fi
 if [[ "$1" == "debug" || "$1" == "status" ]]; then
     serviceName=$2
     if [[ -z "$serviceName" ]]; then
-        echo
-        echo "$SUDO $DOCKER stack services $STACK_NAME"
+        set -x
         $SUDO $DOCKER service ls
+        set +x
     else
-        echo
-        echo "$SUDO $DOCKER service ps --no-trunc $serviceName"
+        set -x
         $SUDO $DOCKER service ps --no-trunc $serviceName
-        echo
-        echo "$SUDO $DOCKER service logs $serviceName"
         $SUDO $DOCKER service logs $serviceName
+        set +x
     fi
     exit 0
 fi
@@ -236,23 +236,22 @@ fi
 if [[ "$1" == "init-filesystems" ]]; then
     echo "Initializing swarm file systems..."
     YML="-f $DEPLOYMENT_DIR/swarm-init.yml"
-    echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
+    set -x
     DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-    echo "$SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $STACK_NAME && sleep 10"
     $SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $STACK_NAME && sleep 10
-    echo "$SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
-    echo "Filesystem initializing is running. When it's finished, all these tasks should be in Shutdown state:"
-    echo "$SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init"
     $SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init
+    set +x
+    echo "Filesystem initializing is running. When it's finished, all the tasks above should be in Shutdown state."
     echo "To clean up, run this command: docker service rm ${STACK_NAME}_jacs-init"
     exit 0
 fi
 
 if [[ "$1" == "init-local-filesystem" ]]; then
     echo "Initializing local file system..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh"
-    $SUDO $DOCKER run --rm --env-file .env -v $CONFIG_DIR:$CONFIG_DIR -v $DB_DIR:$DB_DIR -v $DATA_DIR:$DATA_DIR -v $BACKUPS_DIR:$BACKUPS_DIR -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    set -x
+    $SUDO $DOCKER run --rm --env-file .env -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    set +x
     echo ""
     echo "The local filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
     echo ""
@@ -261,8 +260,9 @@ fi
 
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
-    echo "$SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh"
+    set -x
     $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
+    set +x
     echo ""
     echo "Databases have been initialized."
     echo ""
@@ -271,15 +271,17 @@ fi
 
 if [[ "$1" == "mongo" ]]; then
     echo "Opening MongoDB shell..."
-    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}\""
+    set -x
     $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}"
+    set +x
     exit 0
 fi
 
 if [[ "$1" == "mysql" ]]; then
     echo "Opening MySQL shell..."
-    echo "$SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p**** -h mysql ${MYSQL_DATABASE}"
+    set -x
     $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql ${MYSQL_DATABASE}
+    set +x
     exit 0
 fi
 
@@ -321,43 +323,52 @@ if [[ "$1" == "dbMaintenance" ]]; then
     done
 
     if [[ ${#service_args[@]} == 0 ]]; then
-    echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-    exit 1
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        exit 1
     fi
 
     service_json_args=$(printf ",%s" "${service_args[@]}")
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
-    echo "$SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d ${service_json_args}"
+    set -x
     $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
+    set +x
+
     exit 0
 fi
 
 if [[ "$1" == "backup" ]]; then
+
     if [[ "$2" == "mongo" ]]; then
+
         FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
         MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
         echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
         echo "$SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri \"mongodb://${MONGODB_APP_USERNAME}:****@${MONGO_SERVER}&readPreference=secondary\" --archive=/backup/$FILENAME"
         $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}&readPreference=secondary" --archive=/backup/$FILENAME
         exit 0
+
     elif [[ "$2" == "mysql" ]]; then
+
         FILENAME=flyportal-$(date +%Y%m%d%H%M%S).sql.gz
         MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
         echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
         echo "$SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p**** --all-databases | gzip >/backup/$FILENAME'"
         $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 'bash -c /usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} --all-databases | gzip >/backup/$FILENAME'
         exit 0
+
     else
+
         echo "Valid choices for backups are mongo and mysql."
         exit 1
+
     fi
 fi
 
 if [[ "$1" == "login" ]]; then
     read -p "Username: " JACS_USERNAME
     read -s -p "Password: " JACS_PASSWORD
-    echo 
+    echo
     export TOKEN=$(sudo docker run -it --rm --env-file .env $NAMESPACE/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
     echo "Token generated. Export it to your environment like this:"
     echo "export TOKEN=$TOKEN"
@@ -399,8 +410,9 @@ do
         if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
-            echo "$SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME"
+            set -x
             $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME
+            set +x
         fi
 
     elif [[ "$COMMAND" == "lint" ]]; then
@@ -415,7 +427,7 @@ do
             echo "---------------------------------------------------------------------------------"
             echo "Linting $NAME"
             # hadolint exits with an error code if there are linting issues, but we want to keep going
-            set +e 
+            set +e
             $SUDO $DOCKER run --rm -i hadolint/hadolint < $CDIR/Dockerfile
             set -e
         done
@@ -428,8 +440,9 @@ do
         if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
-            echo "$SUDO $DOCKER run -it -u $DOCKER_USER $VNAME /bin/bash"
+            set -x
             $SUDO $DOCKER run -it $VNAME /bin/bash
+            set +x
         fi
 
     elif [[ "$COMMAND" == "push" ]]; then
@@ -451,14 +464,16 @@ do
                     LNAME=$CNAME:latest
                     echo "---------------------------------------------------------------------------------"
                     echo " Pushing image for $VNAME"
-                    echo " $SUDO $DOCKER push $VNAME"
                     echo "---------------------------------------------------------------------------------"
+                    set -x
                     $SUDO $DOCKER push $VNAME
+                    set +x
                     echo "---------------------------------------------------------------------------------"
                     echo " Pushing image for $LNAME"
-                    echo " $SUDO $DOCKER push $LNAME"
                     echo "---------------------------------------------------------------------------------"
+                    set -x
                     $SUDO $DOCKER push $LNAME
+                    set +x
                 fi
             fi
         done
@@ -474,15 +489,16 @@ do
             getyml $TIER "" "swarm" "YML"
         fi
 
-        echo "DOCKER_USER=\"$DOCKER_USER\" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml"
+        set -x
         DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML config > .tmp.swarm.yml
-        echo "$SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
         $SUDO $DOCKER stack deploy --prune -c .tmp.swarm.yml $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
+        set +x
 
     elif [[ "$COMMAND" == "stop" ]]; then
 
-        echo "$SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME"
+        set -x
         $SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
+        set +x
 
     elif [[ "$COMMAND" == "compose" ]]; then
 
@@ -503,8 +519,9 @@ do
 
         OPTS="$@"
         echo "Bringing $COMMAND $TIER tier"
-        echo "$SUDO DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS"
+        set -x
         $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
+        set +x
 
     else
         echo "Unrecognized command: $COMMAND"
