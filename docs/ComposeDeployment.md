@@ -14,7 +14,7 @@ To install Docker and Docker Compose on Scientific Linux 7, follow [these instru
 
 ## Clone This Repo
 
-Clone this repo somewhere where you can access the target system you are deploying to.
+Begin by cloning this repo:
 
 ```
 git clone https://github.com/JaneliaSciComp/jacs-cm.git
@@ -31,30 +31,30 @@ vi .env.config
 ```
 
 At minimum, you must customize the following:
-1. Set `DEPLOYMENT` to **jacs**.
-2. Configured the `UNAME` and `GNAME` to your liking. Ideally, these should be your username and primary group.
-3. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to point to directories accessible by `UNAME`:`GNAME`.
-4. Set `HOST1` to the hostname you are deploying on. Use fully-qualified hostnames here -- they should match the TLS certificate you intend to use.
-5. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
-6. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
+1. Configured the `UNAME` and `GNAME` to your liking. Ideally, these should be your username and primary group.
+2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to point to directories accessible by `UNAME`:`GNAME`.
+3. Set `HOST1` to the hostname you are deploying on. Use a fully-qualified hostname -- it should match the SSL certificate you intend to use.
+4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
+5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
+
+
+## Enable Databases (optional)
+
+Currently, Janelia runs MongoDB and MySQL outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml f
+iles under ./deployments/jacs/ and uncomment the databases.
 
 
 ## Initialize Filesystems
 
-Ensure that your `DATA_DIR` (default: /data), `DB_DIR` (default: /opt/db), `CONFIG_DIR` (default: /opt/config), and `BACKUPS_DIR` (default: /opt/backups) directories exist and be written to by your UNAME:GNAME user. For example:
-
-```
-. .env.config
-sudo mkdir -p $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
-sudo chown $UNAME:$GNAME $CONFIG_DIR $DATA_DIR $DB_DIR $BACKUPS_DIR
-```
-
-Once the above setup has successfully completed on both of the hosts, run the Docker-based initialization procedure:
+The first step is to initialize the filesystem. Ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). Then, run the initialization procedure:
 ```
 ./manage.sh init-local-filesystem
 ```
 
 Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment.
+
+
+### SSL Certificates
 
 At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
 ```
@@ -64,21 +64,38 @@ sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
 If you use self-signed certificates, you will need to [set up the trust chain](SelfSignedCerts.md) for them later.
 
 
+### External Authentication
+
+The JACS system has its own self-contained authentication system, and can manage users and passwords internally.
+
+If you'd prefer that users authenticate against your existing LDAP or ActiveDirectory server, edit $CONFIG_DIR/jacs-sync/jacs.properties and add these properties:
+```
+LDAP.URL=
+LDAP.SearchBase=
+LDAP.SearchFilter=
+LDAP.BindDN=
+LDAP.BindCredentials=
+```
+
+The URL should point to your authentication server. The SearchBase is part of a distinguished name to search, something like "ou=People,dc=yourorg,dc=org". The SearchFilter is the attribute to search on, something like "(cn={{username}})". BindDN and BindCredentials defines the distinguished name and password for a service user that can access user information like full names and emails.
+
+
 ## Start All Containers
 
-Now you can bring up all of the latest application containers:
+Now you can bring up all of the application containers:
 ```
 ./manage.sh compose up standalone -d
+```
+
+You can monitor the progress with this command:
+```
+./manage.sh compose ps
 ```
 
 
 ## Initialize Databases
 
-Currently, this deployment does not include the main databases (Mongo and MySQL). It is assumed these are running separately. In the future they will be added to this deployment.
-
-However, the database initialization step is still necessary to configure SOLR and RabbitMQ.
-
-Then initialize them:
+Now you are ready to initalize the databases:
 ```
 ./manage.sh init-databases
 ```
@@ -105,6 +122,4 @@ The client will ask you for the API Gateway URL, which is just `http://$HOST1`. 
 ```
 api.gateway=https://$HOST1
 ```
-
-If you run into any problems, these [troubleshooting tips](Troubleshooting.md) may help.
 
