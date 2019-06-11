@@ -337,6 +337,43 @@ if [[ "$1" == "dbMaintenance" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "rebuildSolrIndex" ]]; then
+    echo "Rebuild SOLR index ..."
+    shift
+
+    if [[ $# == 0 ]]; then
+        echo "$0 rebuildSolrIndex APIKEY"
+        exit 1
+    fi
+    apiKey="$1"
+    shift
+
+    while [[ $# > 0 ]]; do
+        key="$1"
+        if [ "$key" == "" ] ; then
+            break
+        fi
+        shift # past the key
+        case $key in
+            -h|--help)
+                echo "$0 rebuildSolrIndex APIKEY"
+                exit 0
+            ;;
+            *)
+                # invalid arg
+                echo "$0 rebuildSolrIndex APIKEY"
+                exit 1
+            ;;
+        esac
+    done
+
+    set -x
+    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY ${apiKEy}"
+    set +x
+
+    exit 0
+fi
+
 if [[ "$1" == "backup" ]]; then
 
     if [[ "$2" == "mongo" ]]; then
