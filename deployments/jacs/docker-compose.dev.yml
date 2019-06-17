@@ -2,17 +2,6 @@ version: '3.7'
 
 services:
 
-  # Updates containers whenever a new "latest" image is available
-  shepherd:
-    image: mazzolino/shepherd
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - SLEEP_TIME=2m
-    deploy:
-      placement:
-        constraints: [node.role==manager]
-
   jade-master:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
