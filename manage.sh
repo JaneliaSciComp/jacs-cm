@@ -368,7 +368,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     done
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY ${apiKEy}"
+    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY ${apiKey}"
     set +x
 
     exit 0
