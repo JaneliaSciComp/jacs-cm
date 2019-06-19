@@ -98,27 +98,33 @@ If you want to remove all the services from the Swarm and do a clean restart of 
 
 To pull and redeploy the latest image for a single service, e.g. workstation-site:
 ```
-./manage.sh restart jacs-cm_workstation-site
+./manage.sh restart jacs_workstation-site
 ```
 
 ## Configure Crontabs
 
-The following crontab entries should be configured in order to perform periodic maintenance automatically.
+The following crontab entries should be configured in order to perform periodic maintenance automatically. It's easiest to install the crontabs on the docker-nobody account:
+
+```
+sudo crontab -u docker-nobody -e
+```
 
 Database maintenance refreshes indexes and updates entities permissions:
 ```
 0 2 * * * /opt/deploy/jacs-cm/manage.sh dbMaintenance -refreshIndexes -refreshPermissions
 ```
 
-Database backups:
+SOLR index refresh (if using SOLR):
+```
+0 3 * * * /opt/deploy/jacs-cm/manage.sh rebuildSolrIndex <JACS.ApiKey>
+```
+For this to work, you should edit `$CONFIG_DIR/jacs-sync/jacs.properties` and set **JACS.ApiKey** to your secret API Key. 
+
+
+Database backups (if using containerized databases):
 ```
 0 4 * * * /opt/deploy/jacs-cm/manage.sh backup mongo
 0 5 * * * /opt/deploy/jacs-cm/manage.sh backup mysql
-```
-
-SOLR index refresh:
-```
-TBD
 ```
 
 

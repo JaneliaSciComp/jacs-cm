@@ -98,6 +98,7 @@ At minimum, you must customize the following:
 3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
+6. If you want to enable automated error reporting from the Workstation client, set `MAIL_SERVER` to an SMTP server and port, e.g. smtp.my.org:25.
 
 
 ## Deploy Services
