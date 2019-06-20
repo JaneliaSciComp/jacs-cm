@@ -63,7 +63,7 @@ echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
 CONTAINER_PREFIX="$NAMESPACE/"
 STACK_NAME=${COMPOSE_PROJECT_NAME}
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
-MONGO_SERVER="mongo1:27017,mongo2:27017,mongo3:27017/jacs?replicaSet=rsJacs&authSource=admin"
+MONGO_URL="${MONGODB_SERVER}/jacs?replicaSet=rsJacs&authSource=admin"
 
 #
 # Collect YAML files to compose together for the given tier and deployment method
@@ -272,7 +272,7 @@ fi
 if [[ "$1" == "mongo" ]]; then
     echo "Opening MongoDB shell..."
     set -x
-    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}"
+    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}"
     set +x
     exit 0
 fi
@@ -356,7 +356,7 @@ if [[ "$1" == "backup" ]]; then
         MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
         echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
         set -x
-        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_SERVER}&readPreference=secondary" --archive=/backup/$FILENAME
+        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
         set +x
         exit 0
 
@@ -389,12 +389,31 @@ if [[ "$1" == "login" ]]; then
 fi
 
 if [[ "$#" -lt 2 ]]; then
-    echo "Container Management: `basename $0` [build|run|shell|push] [tool1] [tool2] .. [tooln]"
-    echo "       You can combine multiple commands with a plus sign, e.g. build+push"
-    echo 
-    echo "Swarm Deployment: `basename $0` [start|stop|status] [environment]"
     echo
-    echo "Compose Deployment: `basename $0` compose [up|down|ps|top] [environment]"
+    echo "This script simplifies deployment and management of the JACS system. Usage details:"
+    echo
+    echo "Container Management: [build|run|shell|push] [tool1] [tool2] .. [tooln]"
+    echo "       You can combine multiple commands with a plus sign, e.g. build+push"
+    echo
+    echo "Installation: "
+    echo "  init-local-filesystem - Initialize the local filesystem on the current host"
+    echo "  init-filesystems - Initalize all filesystems in the Swarm"
+    echo "  init-databases - Initialize the databases"
+    echo
+    echo "Swarm Deployment: [start|stop|status] [environment]"
+    echo
+    echo "Compose Deployment: compose [up|down|ps|top] [environment]"
+    echo
+    echo "Service Management:"
+    echo "  status - Print the status of all services"
+    echo "  status [service] - Print the status of the specified service"
+    echo "  restart [service] - Fetch the latest container for the service and redeploy it"
+    echo "  mongo - Open shell into the Mongo database"
+    echo "  mysql - Open shell into the MySQL database"
+    echo "  dbMaintenance - Ensure that all databases indexes and denormalizations are up-to-date"
+    echo "  rebuildSolrIndex - Rebuild the SOLR index from scratch"
+    echo "  backup [mongo|mysql] - Generate a database backup into $BACKUPS_DIR"
+    echo "  login - Log into the system and generate a JWS token"
     echo
     exit 1
 fi
