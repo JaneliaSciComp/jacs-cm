@@ -36,6 +36,7 @@ services:
       - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
+      - jade_StorageService_ApiKey=${JADE_API_KEY}
       - jade_MongoDB_ServerName=${MONGODB_SERVER}
       - jade_MongoDB_ReplicaSet=
       - jade_MongoDB_Database=jacs_jade_dev
@@ -66,6 +67,7 @@ services:
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
+      - jade_StorageService_ApiKey=${JADE_API_KEY}
       - jade_MongoDB_ServerName=${MONGODB_SERVER}
       - jade_MongoDB_ReplicaSet=
       - jade_MongoDB_Database=jacs_jade_dev
@@ -102,6 +104,7 @@ services:
       - jacs_mouselight_db_user=${MYSQL_JACS_USER}
       - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
       - jacs_StorageService_URL=http://jade-master:8080/jacsstorage/master_api/v1
+      - jacs_StorageService_ApiKey=${JADE_API_KEY}
       - jacs_Solr_ServerURL=http://jacs-solr:8080/solr/
     expose:
       - "8080"
