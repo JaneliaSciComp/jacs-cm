@@ -116,9 +116,8 @@ Database maintenance refreshes indexes and updates entities permissions:
 
 SOLR index refresh (if using SOLR):
 ```
-0 3 * * * /opt/deploy/jacs-cm/manage.sh rebuildSolrIndex <JACS.ApiKey>
+0 3 * * * /opt/deploy/jacs-cm/manage.sh rebuildSolrIndex
 ```
-For this to work, you should edit `$CONFIG_DIR/jacs-sync/jacs.properties` and set **JACS.ApiKey** to your secret API Key. 
 
 
 Database backups (if using containerized databases):

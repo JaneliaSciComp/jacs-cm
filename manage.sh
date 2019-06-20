@@ -222,7 +222,7 @@ if [[ "$1" == "debug" || "$1" == "status" ]]; then
     serviceName=$2
     if [[ -z "$serviceName" ]]; then
         set -x
-        $SUDO $DOCKER service ls
+        $SUDO $DOCKER service ls -f "name=$STACK_NAME"
         set +x
     else
         set -x
@@ -338,37 +338,11 @@ if [[ "$1" == "dbMaintenance" ]]; then
 fi
 
 if [[ "$1" == "rebuildSolrIndex" ]]; then
-    echo "Rebuild SOLR index ..."
+    echo "Rebuilding SOLR index ..."
     shift
-
-    if [[ $# == 0 ]]; then
-        echo "$0 rebuildSolrIndex APIKEY"
-        exit 1
-    fi
-    apiKey="$1"
-    shift
-
-    while [[ $# > 0 ]]; do
-        key="$1"
-        if [ "$key" == "" ] ; then
-            break
-        fi
-        shift # past the key
-        case $key in
-            -h|--help)
-                echo "$0 rebuildSolrIndex APIKEY"
-                exit 0
-            ;;
-            *)
-                # invalid arg
-                echo "$0 rebuildSolrIndex APIKEY"
-                exit 1
-            ;;
-        esac
-    done
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY ${apiKey}"
+    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
