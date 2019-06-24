@@ -170,7 +170,7 @@ function build {
         echo " Building image for $NAME"
         echo "---------------------------------------------------------------------------------"
         set -x
-        $SUDO $DOCKER build --no-cache $BUILD_ARGS -t $VNAME -t $LNAME $CDIR
+        $SUDO $DOCKER build --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
         set +x
     fi
 
