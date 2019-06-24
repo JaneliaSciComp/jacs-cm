@@ -206,6 +206,22 @@ if [[ "$1" == "build-all" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "versions" ]]; then
+    echo
+    echo "builder: $BUILDER_VERSION"
+    echo "workstation: $WORKSTATION_VERSION"
+    echo "api-gateway: $API_GATEWAY_VERSION"
+    echo "jacs-init: $JACS_INIT_VERSION"
+    echo "jacs-compute: $JACS_COMPUTE_VERSION"
+    echo "jacs-dashboard: $JACS_DASHBOARD_VERSION"
+    echo "jacs-storage: $JACS_STORAGE_VERSION"
+    echo "jacs-messaging: $JACS_MESSAGING_VERSION"
+    echo "solr-search: $SOLR_SEARCH_VERSION"
+    echo "ipp: $IPP_VERSION"
+    echo
+    exit 0
+fi
+
 if [[ "$1" == "restart" ]]; then
     serviceName=$2
     if [[ -z "$serviceName" ]]; then
@@ -392,8 +408,12 @@ if [[ "$#" -lt 2 ]]; then
     echo
     echo "This script simplifies deployment and management of the JACS system. Usage details:"
     echo
-    echo "Container Management: [build|run|shell|push] [tool1] [tool2] .. [tooln]"
-    echo "       You can combine multiple commands with a plus sign, e.g. build+push"
+    echo "Container Management:"
+    echo "  versions - Print all the container versions that will be built and deployed"
+    echo "  build [containerName] - Build the given container, found under ./containers/"
+    echo "  run [containerName] - Run the given container"
+    echo "  shell [containerName] - Shell into the given container"
+    echo "  push [containerName] - Push the built container to a remote repository defined by the NAMESPACE variable in the .env.config file"
     echo
     echo "Installation: "
     echo "  init-local-filesystem - Initialize the local filesystem on the current host"
