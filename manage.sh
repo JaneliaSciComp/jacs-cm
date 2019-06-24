@@ -40,13 +40,28 @@ fi
 
 if [[ "$@" != "build builder" ]]; then
 
-    # Generate environment
-    echo "Generating .env from .env.config"
-    echo "##################################################################################" > $DIR/.env
-    echo "# This file was automatically generated from $ENV_CONFIG. Edit that instead!" >> $DIR/.env
-    echo "##################################################################################" >> $DIR/.env
-    echo "" >> $DIR/.env
-    $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
+    # Check to see if .env needs to be regenerated
+    regen=false
+    if [[ -e .env ]]; then
+        set +e
+        cat .env | sed 's|# ||' | sed -n 4p | sha1sum --status -c - > /dev/null
+        res=$?
+        if [[ $res -eq "1" ]]; then
+            regen=true
+        fi
+        set -e
+    fi
+
+    if ($regen); then
+        # Generate environment
+        echo "Generating .env from .env.config"
+        echo "##################################################################################" > $DIR/.env
+        echo "# This file was automatically generated from $ENV_CONFIG. Edit that instead!" >> $DIR/.env
+        echo "##################################################################################" >> $DIR/.env
+        echo "# "`sha1sum .env.config` >> $DIR/.env
+        echo "" >> $DIR/.env
+        $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
+    fi
 
     # Parse environment
     echo "Parsing .env"
