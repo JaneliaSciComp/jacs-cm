@@ -46,7 +46,7 @@ if [[ "$@" != "build builder" ]]; then
     echo "# This file was automatically generated from $ENV_CONFIG. Edit that instead!" >> $DIR/.env
     echo "##################################################################################" >> $DIR/.env
     echo "" >> $DIR/.env
-    $SUDO $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
+    $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
 
     # Parse environment
     echo "Parsing .env"
@@ -331,7 +331,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
+    $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
     set +x
 
     exit 0
@@ -342,7 +342,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     shift
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
@@ -356,7 +356,7 @@ if [[ "$1" == "backup" ]]; then
         MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
         echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
         set -x
-        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
+        $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:3.6 /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
         set +x
         exit 0
 
@@ -366,7 +366,7 @@ if [[ "$1" == "backup" ]]; then
         MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
         echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
         set -x
-        $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 bash -c "/usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql --all-databases | gzip >/backup/$FILENAME"
+        $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 bash -c "/usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql --all-databases | gzip >/backup/$FILENAME"
         set +x
         exit 0
 
