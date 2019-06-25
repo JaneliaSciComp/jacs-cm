@@ -281,7 +281,7 @@ fi
 if [[ "$1" == "init-local-filesystem" ]]; then
     echo "Initializing local file system..."
     set -x
-    $SUDO $DOCKER run --rm --env-file .env -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    $SUDO $DOCKER run --rm --env-file $DIR/.env -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
     set +x
     echo ""
     echo "The local filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
@@ -292,7 +292,7 @@ fi
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
     set -x
-    $SUDO $DOCKER run --rm --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
+    $SUDO $DOCKER run --rm --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
     set +x
     echo ""
     echo "Databases have been initialized."
@@ -362,7 +362,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
+    $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
     set +x
 
     exit 0
@@ -373,7 +373,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     shift
 
     set -x
-    $SUDO $DOCKER run --env-file .env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
@@ -413,7 +413,7 @@ if [[ "$1" == "login" ]]; then
     read -p "Username: " JACS_USERNAME
     read -s -p "Password: " JACS_PASSWORD
     echo
-    export TOKEN=$(sudo docker run -it --rm --env-file .env $NAMESPACE/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
+    export TOKEN=$(sudo docker run -it --rm --env-file $DIR/.env $NAMESPACE/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
     echo "Token generated. Export it to your environment like this:"
     echo "export TOKEN=$TOKEN"
     exit 0
