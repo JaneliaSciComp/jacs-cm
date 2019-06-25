@@ -1,5 +1,5 @@
 {
-  "_id": "1620562904715624624",
+  "_id": { "$numberLong": "1620562904715624624" },
   "class": "org.janelia.model.security.User",
   "key": "user:root",
   "name": "root",
@@ -18,7 +18,7 @@
   ]
 }
 {
-  "_id" : "1834757170227314786",
+  "_id" : { "$numberLong": "1834757170227314786" },
   "class" : "org.janelia.model.security.Group",
   "key" : "group:admin",
   "name" : "admin",
@@ -26,7 +26,7 @@
   "groups" : [ ]
 }
 {
-  "_id" : "2125061715941916770",
+  "_id" : { "$numberLong": "2125061715941916770" },
   "class" : "org.janelia.model.security.Group",
   "key" : "group:workstation_users",
   "name" : "workstation_users",
@@ -34,7 +34,7 @@
   "groups" : [ ]
 }
 {
-  "_id" : "2146020741865275490",
+  "_id" : { "$numberLong": "2146020741865275490" },
   "class" : "org.janelia.model.security.Group",
   "key" : "group:mouselight",
   "name" : "mouselight",
@@ -42,7 +42,7 @@
   "groups" : [ ]
 }
 {
-  "_id" : "2634889553067901073",
+  "_id" : { "$numberLong": "2634889553067901073" },
   "class" : "org.janelia.model.security.Group",
   "key" : "group:mouselight_tracers",
   "name" : "mouselight_tracers",
