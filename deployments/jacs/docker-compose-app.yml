@@ -105,6 +105,7 @@ services:
       - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
       - jacs_StorageService_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - jacs_StorageService_ApiKey=${JADE_API_KEY}
+      - jacs_JACS_ApiKey=${JACS_API_KEY}
       - jacs_Solr_ServerURL=http://solr:8080/solr/
     expose:
       - "8080"
