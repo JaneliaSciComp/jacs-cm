@@ -50,6 +50,8 @@ if [[ "$@" != "build builder" ]]; then
             regen=true
         fi
         set -e
+    else 
+        regen=true
     fi
 
     if ($regen); then
