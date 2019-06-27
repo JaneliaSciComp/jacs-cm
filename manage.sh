@@ -328,7 +328,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
 
     service_args=()
 
-    while [[ $# > 0 ]]; do
+    while [[ $# -gt 0 ]]; do
     key="$1"
     if [ "$key" == "" ] ; then
         break
@@ -585,7 +585,7 @@ do
         OPTS="$@"
         echo "Bringing $COMPOSE_COMMAND $TIER tier"
         set -x
-        $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
+        DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
         set +x
 
     else
