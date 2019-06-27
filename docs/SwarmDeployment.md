@@ -111,7 +111,7 @@ sudo crontab -u docker-nobody -e
 
 Database maintenance refreshes indexes and updates entities permissions:
 ```
-0 2 * * * /opt/deploy/jacs-cm/manage.sh dbMaintenance -refreshIndexes -refreshPermissions
+0 2 * * * /opt/deploy/jacs-cm/manage.sh dbMaintenance group:admin -refreshIndexes -refreshPermissions
 ```
 
 SOLR index refresh (if using SOLR):
