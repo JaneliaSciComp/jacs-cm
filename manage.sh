@@ -569,8 +569,6 @@ do
 
     elif [[ "$COMMAND" == "compose" ]]; then
 
-        shift 1 # remove command
-
         COMPOSE_COMMAND=$1
         shift 1 # remove compose command
 
@@ -585,7 +583,7 @@ do
         fi
 
         OPTS="$@"
-        echo "Bringing $COMMAND $TIER tier"
+        echo "Bringing $COMPOSE_COMMAND $TIER tier"
         set -x
         $SUDO DOCKER_USER="$DOCKER_USER" -E $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
         set +x
