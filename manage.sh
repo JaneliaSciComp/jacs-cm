@@ -38,19 +38,23 @@ fi
 # Start with uninterpolated environment
 . $DIR/$ENV_CONFIG
 
+# Chicken/egg: there's no .env parsing for building the builder because the builder is necessary for .env parsing
 if [[ "$@" != "build builder" ]]; then
 
     # Check to see if .env needs to be regenerated
     regen=false
     if [[ -e .env ]]; then
         set +e
+        # parse the previous SHA1 sum out of the file and check it against the current sum
         cat .env | sed 's|# ||' | sed -n 4p | sha1sum --status -c - > /dev/null
         res=$?
         if [[ $res -eq "1" ]]; then
+            # Sum doesn't match, regenerate the .env file
             regen=true
         fi
         set -e
-    else 
+    else
+        # Generate the .env file if it doesn't exist
         regen=true
     fi
 
@@ -151,6 +155,9 @@ function getcontainer {
     eval $_result_var="'$NAME'"
 }
 
+#
+# Find the contents of the VERSION file for the given container name (as returned by getcontainer)
+#
 function getversion {
     local _name="$1"
     local _result_var="$2"
@@ -193,7 +200,7 @@ function build {
 
 }
 
-
+# What user to run containers with
 if [[ -z "$DOCKER_USER" ]]; then
     if [[ -z "$UNAME" || -z "$GNAME" ]]; then
         echo "Your .env file needs to either define the UNAME and GNAME variables, or the DOCKER_USER variable."
@@ -201,8 +208,10 @@ if [[ -z "$DOCKER_USER" ]]; then
     fi
     MYUID=$(id -u $UNAME)
     if [[ `uname` == "Darwin" ]]; then
+        # Macs don't have getent
         MYGID=`dscl . -read /Groups/$GNAME | awk '($1 == "PrimaryGroupID:") { print $2 }'`
     else
+        # Find the group id for the given group name
         MYGID=`cut -d: -f3 < <(getent group $GNAME)`
     fi
     DOCKER_USER=$MYUID:$MYGID
