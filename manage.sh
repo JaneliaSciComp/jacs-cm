@@ -185,7 +185,7 @@ function build {
         echo " Building image for $NAME"
         echo "---------------------------------------------------------------------------------"
         set -x
-        $SUDO $DOCKER build --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
+        sudo $DOCKER build --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
         set +x
     fi
 
@@ -321,7 +321,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     shift
     if [[ $# == 0 ]]; then
         echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
-    exit 1
+        exit 1
     fi
     userParam=username:"$1"
     shift
@@ -362,7 +362,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
     set -x
-    $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
+        $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
     set +x
 
     exit 0
