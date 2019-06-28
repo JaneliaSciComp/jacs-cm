@@ -169,6 +169,17 @@ else
     echo "Verified Jade storage: $jade_data_dir"
 fi
 
+# Messaging
+#
+messaging_config_dir=$config_dir/messaging
+if [[ ! -e "$messaging_config_dir" ]]; then
+    echo "Initializing jacs-messaging config directory: $messaging_config_dir"
+    mkdir -p $messaging_config_dir
+    cp $DIR/messaging/* $messaging_config_dir
+else
+    echo "Verified jacs-messaging config directory: $messaging_config_dir"
+fi
+
 #
 # Image Processing Pipeline
 #

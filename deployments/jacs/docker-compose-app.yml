@@ -15,12 +15,14 @@ services:
       - jacs-sync
     volumes:
       - ${BACKUPS_DIR}/messaging:/app/backup
+      - ${CONFIG_DIR}/messaging:/app/config:ro
     environment:
       - SYSTEM_OWNER=group:mouselight
       - RABBITMQ_HOSTNAME=rabbitmq
       - JACS_URL=http://jacs-sync:8080/api/rest-v2/
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - JACSBROKER_CONFIG=/app/config/jacsbroker.properties
     restart: unless-stopped
     networks:
       - jacs-net
