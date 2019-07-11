@@ -9,43 +9,48 @@ services:
 
   jade-master:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
-    volumes:
-      - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
 
   jade-agent1:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
+      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
 
   jade-agent2:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
+      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
 
   jade-agent3:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
+      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
 
   jacs-sync:
     image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
 
   workstation-site:
     image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
