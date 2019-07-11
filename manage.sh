@@ -235,7 +235,7 @@ fi
 if [[ "$1" == "versions" ]]; then
     echo
     echo "builder: $BUILDER_VERSION"
-    echo "workstation: $WORKSTATION_VERSION"
+    echo "workstation-site: $WORKSTATION_VERSION"
     echo "api-gateway: $API_GATEWAY_VERSION"
     echo "jacs-init: $JACS_INIT_VERSION"
     echo "jacs-compute: $JACS_COMPUTE_VERSION"
