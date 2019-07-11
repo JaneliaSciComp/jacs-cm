@@ -27,7 +27,7 @@ services:
       - jacs-net
     deploy:
       placement:
-        constraints: [node.labels.jacs_name==node2]
+        constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
           cpus: "2"
