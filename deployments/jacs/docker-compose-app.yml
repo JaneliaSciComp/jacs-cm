@@ -39,12 +39,6 @@ services:
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
-      - jade_MongoDB_ServerName=${MONGODB_SERVER}
-      - jade_MongoDB_ReplicaSet=
-      - jade_MongoDB_Database=jacs_jade_dev
-      - jade_MongoDB_AuthDatabase=admin
-      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
-      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
     expose:
       - '8080'
     ports:
@@ -70,12 +64,6 @@ services:
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
-      - jade_MongoDB_ServerName=${MONGODB_SERVER}
-      - jade_MongoDB_ReplicaSet=
-      - jade_MongoDB_Database=jacs_jade_dev
-      - jade_MongoDB_AuthDatabase=admin
-      - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
-      - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
     expose:
       - '8080'
     ports:
