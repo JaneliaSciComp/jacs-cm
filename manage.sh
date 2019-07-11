@@ -82,6 +82,7 @@ echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
 
 # More variables
 CONTAINER_PREFIX="$NAMESPACE/"
+PUBLISHING_PREFIX="$PUBLISHING_NAMESPACE/"
 STACK_NAME=${COMPOSE_PROJECT_NAME}
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
 MONGO_URL="${MONGODB_SERVER}/jacs?replicaSet=rsJacs&authSource=admin"
@@ -199,6 +200,35 @@ function build {
     fi
 
 }
+
+#
+# Publish existing containers to another registry.
+#
+function publish {
+    local _name="$1"
+    getcontainer $_name "NAME"
+    getversion $NAME "VERSION"
+    CDIR="$CONTAINER_DIR/$NAME"
+    if [[ ! -z $VERSION ]]; then
+        CNAME=${CONTAINER_PREFIX}${NAME}
+        PNAME=${PUBLISHING_PREFIX}${NAME}
+        LNAME=$CNAME:latest
+        PLNAME=$PNAME:latest
+        PVNAME=$PNAME:${VERSION}
+
+        echo "---------------------------------------------------------------------------------"
+        echo " Publishing image $LNAME"
+        echo "---------------------------------------------------------------------------------"
+        set -x
+        $SUDO $DOCKER tag $LNAME $PLNAME
+        $SUDO $DOCKER tag $LNAME $PVNAME
+        $SUDO $DOCKER push $PLNAME
+        $SUDO $DOCKER push $PVNAME
+        set +x
+    fi
+
+}
+
 
 # What user to run containers with
 if [[ -z "$DOCKER_USER" ]]; then
@@ -479,6 +509,15 @@ do
         for NAME in "$@"
         do
             build $NAME
+        done
+
+    elif [[ "$COMMAND" == "publish" ]]; then
+
+        echo "Will publish these images: $@"
+
+        for NAME in "$@"
+        do
+            publish $NAME
         done
 
     elif [[ "$COMMAND" == "run" ]]; then
