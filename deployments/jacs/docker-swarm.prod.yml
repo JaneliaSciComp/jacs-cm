@@ -1,16 +1,7 @@
 version: '3.7'
 services:
 
-  solr:
-    image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
-
-  jacs-messaging:
-    image: ${NAMESPACE}/jacs-messaging:${JACS_MESSAGING_VERSION}
-
-  jade-master:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
-
-  jade-agent1:
+  jade-agent2:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
@@ -22,24 +13,15 @@ services:
       - /groups/lightsheet:/groups/lightsheet:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
 
-  jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
+  jade-agent3:
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
-
-  workstation-site:
-    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
-
-  api-gateway:
-    image: ${NAMESPACE}/api-gateway:${API_GATEWAY_VERSION}
-
-  jacs-dashboard:
-    image: ${NAMESPACE}/jacs-dashboard:${JACS_DASHBOARD_VERSION}
-
-  ipp:
-    image: ${NAMESPACE}/ipp:${IPP_VERSION}
-
-
-
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
+      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
 
