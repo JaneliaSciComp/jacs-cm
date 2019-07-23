@@ -192,7 +192,7 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
 
         if [[ $NAME == "workstation-site" ]]; then
-            if [[ ! -e $CDIR/cert.wtf || ! -e $CDIR/cert.key ]]; then
+            if [[ ! -e $CDIR/cert.crt || ! -e $CDIR/cert.key ]]; then
                 echo
                 echo "Building workstation-site requires cert.crt and cert.key to exist in $CDIR"
                 echo "You should copy your certs there manually before building. They will be ignored by Git."
