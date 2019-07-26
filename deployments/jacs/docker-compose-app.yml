@@ -23,6 +23,7 @@ services:
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - JACSBROKER_CONFIG=/app/config/jacsbroker.properties
+      - jacsbroker_jacs_api_key=${JACS_API_KEY}
     restart: unless-stopped
     networks:
       - jacs-net
