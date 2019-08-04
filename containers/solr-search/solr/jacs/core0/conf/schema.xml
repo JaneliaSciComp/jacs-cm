@@ -574,6 +574,9 @@
 
     <dynamicField name="random_*" type="random" />
 
+    <dynamicField name="*_sm"  type="string"  indexed="true"  stored="true" multiValued="true"/>
+    <dynamicField name="*_tm"  type="text_general"  indexed="true"  stored="true" multiValued="true"/>
+
    <!-- uncomment the following to ignore any fields that don't already match an existing
         field name or dynamic field, rather than reporting them as an error.
         alternately, change the type="ignored" to some other type e.g. "text" if you want
