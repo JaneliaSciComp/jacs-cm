@@ -371,7 +371,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     echo "Perform DB maintenance..."
     shift
     if [[ $# == 0 ]]; then
-        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions] [-refreshTmSampleSync]"
         exit 1
     fi
     userParam=username:"$1"
@@ -392,13 +392,16 @@ if [[ "$1" == "dbMaintenance" ]]; then
         -refreshPermissions)
         service_args+=(\"-refreshPermissions\")
         ;;
+        -refreshTmSampleSync)
+        service_args+=(\"-refreshTmSampleSync\")
+        ;;
         -h|--help)
-        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions] [-refreshTmSampleSync]"
         exit 0
         ;;
         *)
         # invalid arg
-        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions]"
+        echo "$0 dbMaintenance <username> [-refreshIndexes] [-refreshPermissions] [-refreshTmSampleSync]"
         exit 1
         ;;
     esac
