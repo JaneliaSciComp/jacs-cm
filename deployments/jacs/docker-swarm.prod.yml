@@ -14,6 +14,7 @@ services:
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/mouselight-v:/nrs/mouselight-v:ro,shared
 
   jade-agent3:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
@@ -28,4 +29,5 @@ services:
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/mouselight-v:/nrs/mouselight-v:ro,shared
 
