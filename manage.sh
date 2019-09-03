@@ -416,7 +416,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
     set -x
-        $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl http://jacs-async:8080/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}"
+        $SUDO $DOCKER run --env-file $DIR/.env -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl ${JACS_ASYNC_SERVER}/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}" -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
