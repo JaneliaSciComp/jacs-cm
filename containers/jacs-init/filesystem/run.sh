@@ -150,6 +150,18 @@ else
 fi
 
 #
+# JACS Dashboard
+#
+jacs_dashboard_dir=$config_dir/jacs-dashboard
+if [[ ! -e "$jacs_dashboard_dir" ]]; then
+    echo "Initializing JACS Dashboard config directory: $jacs_dashboard_dir"
+    mkdir -p $jacs_dashboard_dir
+    cp $DIR/jacs-dashboard/* $jacs_dashboard_dir
+else
+    echo "Verified JACS Dashboard config directory: $jacs_dashboard_dir"
+fi
+
+#
 # JADE
 #
 jade_config_dir=$config_dir/jade

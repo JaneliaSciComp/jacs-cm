@@ -10,4 +10,3 @@ RUN mkdir /app
 WORKDIR /app
 COPY filesystem /app/filesystem
 COPY databases /app/databases
-
