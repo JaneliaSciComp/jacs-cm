@@ -1,0 +1,6 @@
+API_GATEWAY_HOST=api-gatway
+REACT_APP_AUTH_URL = https://${API_GATEWAY_HOST}/SCSW/AuthenticationService/v1/authenticate
+REACT_APP_JACS_ASYNC_URL = https://${API_GATEWAY_HOST}/SCSW/JACS2AsyncServices/v2
+REACT_APP_JACS_SYNC_URL =https://${API_GATEWAY_HOST}/SCSW/JACS2SyncServices/v2
+REACT_APP_AVATAR_URL = http://wiki.int.janelia.org/wiki/plugins/servlet/ldappicture
+REACT_APP_STORAGE_URL = https://${API_GATEWAY_HOST}/SCSW/JADEServices/v1
