@@ -37,9 +37,9 @@ urls:
         linux: "/files/JaneliaWorkstation-linux.tgz"
 
     jdk:
-        mac: "/files/java/jdk-8u181-macosx-x64.dmg"
-        windows: "/files/java/jdk-8u181-windows-x64.exe"
-        linux: "/files/java/jdk-8u181-linux-x64.tar.gz"
+        mac: "https://cdn.azul.com/zulu/bin/zulu8.40.0.25_1-ca-jdk8.0.222-macosx_x64.dmg"
+        windows: "https://cdn.azul.com/zulu/bin/zulu8.40.0.25-ca-jdk8.0.222-win_x64.msi"
+        linux: "https://cdn.azul.com/zulu/bin/zulu8.40.0.25-ca-jdk8.0.222-linux_x64.tar.gz"
 
 # Build settings
 markdown: kramdown
