@@ -156,7 +156,7 @@ jacs_dashboard_dir=$config_dir/jacs-dashboard
 if [[ ! -e "$jacs_dashboard_dir" ]]; then
     echo "Initializing JACS Dashboard config directory: $jacs_dashboard_dir"
     mkdir -p $jacs_dashboard_dir
-    cp $DIR/jacs-dashboard/* $jacs_dashboard_dir
+    sed s/%API%/$API_GATEWAY_EXPOSED_HOST/ $DIR/jacs-dashboard/conf.json > $jacs_dashboard_dir/conf.json
 else
     echo "Verified JACS Dashboard config directory: $jacs_dashboard_dir"
 fi
