@@ -582,29 +582,25 @@ do
         for NAME in "$@"
         do
             # TODO: in the future, these images will be externally configured, and these conditionals can be removed
-            if [[ "$NAME" == "jacs-dashboard" ]]; then
-                echo "Cannot push locally-configured image $NAME"
-            else
-                getcontainer $NAME "NAME"
-                getversion $NAME "VERSION"
-                CDIR="$CONTAINER_DIR/$NAME"
-                if [[ ! -z $VERSION ]]; then
-                    CNAME=${CONTAINER_PREFIX}${NAME}
-                    VNAME=$CNAME:${VERSION}
-                    LNAME=$CNAME:latest
-                    echo "---------------------------------------------------------------------------------"
-                    echo " Pushing image for $VNAME"
-                    echo "---------------------------------------------------------------------------------"
-                    set -x
-                    $SUDO $DOCKER push $VNAME
-                    set +x
-                    echo "---------------------------------------------------------------------------------"
-                    echo " Pushing image for $LNAME"
-                    echo "---------------------------------------------------------------------------------"
-                    set -x
-                    $SUDO $DOCKER push $LNAME
-                    set +x
-                fi
+            getcontainer $NAME "NAME"
+            getversion $NAME "VERSION"
+            CDIR="$CONTAINER_DIR/$NAME"
+            if [[ ! -z $VERSION ]]; then
+                CNAME=${CONTAINER_PREFIX}${NAME}
+                VNAME=$CNAME:${VERSION}
+                LNAME=$CNAME:latest
+                echo "---------------------------------------------------------------------------------"
+                echo " Pushing image for $VNAME"
+                echo "---------------------------------------------------------------------------------"
+                set -x
+                $SUDO $DOCKER push $VNAME
+                set +x
+                echo "---------------------------------------------------------------------------------"
+                echo " Pushing image for $LNAME"
+                echo "---------------------------------------------------------------------------------"
+                set -x
+                $SUDO $DOCKER push $LNAME
+                set +x
             fi
         done
 

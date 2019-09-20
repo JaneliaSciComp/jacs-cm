@@ -17,6 +17,5 @@ FROM nginx:stable
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Dashboard"
 
-RUN mkdir /app
 COPY --from=builder /tmp/jacs-dashboard/build /var/www
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf

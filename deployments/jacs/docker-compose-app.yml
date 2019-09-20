@@ -108,7 +108,7 @@ services:
     # Nginx must run as root
     image: ${NAMESPACE}/jacs-dashboard:latest
     volumes:
-      - ${CONFIG_DIR}/jacs-dashboard/env-config:/var/www/.env:ro
+      - ${CONFIG_DIR}/jacs-dashboard/conf.json:/var/www/conf.json:shared,ro
     environment:
       - API_GATEWAY_HOST=api-gateway
     expose:
