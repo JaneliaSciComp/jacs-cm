@@ -1,9 +1,9 @@
 {
-    "REACT_APP_AUTH_URL": "https://api-gateway/SCSW/AuthenticationService/v1/authenticate",
-    "REACT_APP_JACS_ASYNC_URL": "https://api-gateway/SCSW/JACS2AsyncServices/v2",
-    "REACT_APP_JACS_SYNC_URL": "https://api-gateway/SCSW/JACS2SyncServices/v2",
+    "REACT_APP_AUTH_URL": "https://%API%/SCSW/AuthenticationService/v1/authenticate",
+    "REACT_APP_JACS_ASYNC_URL": "https://%API%/SCSW/JACS2AsyncServices/v2",
+    "REACT_APP_JACS_SYNC_URL": "https://%API%/SCSW/JACS2SyncServices/v2",
     "REACT_APP_AVATAR_URL": "http://wiki.int.janelia.org/wiki/plugins/servlet/ldappicture",
-    "REACT_APP_STORAGE_URL": "https://api-gateway/SCSW/JADEServices/v1",
-    "REACT_APP_JACS_OPEN_ASYNC_URL": "http://api-gateway/SCSW/JACS2OpenAsyncServices/v2"
+    "REACT_APP_STORAGE_URL": "https://%API%/SCSW/JADEServices/v1",
+    "REACT_APP_JACS_OPEN_ASYNC_URL": "http://%API%/SCSW/JACS2OpenAsyncServices/v2"
 }
 
