@@ -3,6 +3,7 @@ version: "3.7"
 services:
 
   workstation-site:
+    image: ${NAMESPACE}/workstation-site:latest
     # Nginx must run as root
     expose:
       - "8080"

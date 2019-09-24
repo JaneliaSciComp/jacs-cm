@@ -1,6 +1,9 @@
 version: '3.7'
 services:
 
+  workstation-site:
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
+
   jade-agent2:
     image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
