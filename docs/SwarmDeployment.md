@@ -136,3 +136,36 @@ If you are using the default self-signed certificate, you will need to take some
 If you are using LDAP/AD integration, you should be able to log in with your normal user/password. If you are using the Workstation's internal user management, you must first login as user root (password: root), and then select **Window** → **Core** → **Administrative GUI** from the menus. Click "View Users", then "New User" and create your first user. Add the user to all of the relevant groups, including MouseLight.
 
 
+## Optional: Adding NFS Storage
+
+If you have data on NFS, and those NFS drives can be mounted on the MouseLight hosts, that data can be made available to the Workstation.
+
+First, create a file at deployments/mouselight/docker-swarm.prod.yml which looks like this:
+```
+version: '3.7'
+services:
+  jade-agent1:
+    volumes:
+      - /path/to/your/nfs:/path/to/your/nfs:ro,shared
+  jade-agent2:
+    volumes:
+      - /path/to/your/nfs:/path/to/your/nfs:ro,shared
+```
+
+This will expose the path to both JADE agent containers. Now you need to configure the JADE agents to serve this data. On both hosts, edit /opt/jacs/config/jade/config.properties and add the following:
+
+```
+StorageVolume.mouseLightNFS.RootDir=/path/to/your/nfs
+StorageVolume.mouseLightNFS.VirtualPath=/path/to/your/nfs
+StorageVolume.mouseLightNFS.Shared=true
+StorageVolume.mouseLightNFS.Tags=mousebrain,light
+StorageVolume.mouseLightNFS.VolumePermissions=READ
+```
+
+You can use any name you want instead of mouseLightNFS. Then you should add this name to StorageAgent.BootstrappedVolumes:
+```
+StorageAgent.BootstrappedVolumes=jade1,mouseLightNFS
+```
+
+You will need to bounce the service stack to pick up these changes.
+

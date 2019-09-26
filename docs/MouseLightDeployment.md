@@ -17,7 +17,7 @@ The JACS backend consists of several services which need to be deployed on serve
     * Each server has 40 cores (e.g. Intel Xeon Gold 6148 2.4G)
     * Each server has 192 GB of memory
     * The hard drives are configured as follows:
-        * 2 x 200GB SSD - Operating system (/)
+        * 2 x 200GB SSD in RAID1 - Operating system (/)
         * 2 x 960GB SSD in RAID1 - Databases, user preferences, etc. (/opt)
         * 12 x 10TB in RAID6 - Image files (/data)
 
