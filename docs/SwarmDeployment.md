@@ -49,15 +49,12 @@ Next, start up all of the service containers. The parameter to the start command
 ./manage.sh start prod
 ```
 
-It may take a minute for everything to spin up. You can monitor the progress with this command:
+It may take a minute for the containers to spin up. You can monitor the progress with this command:
 ```
 ./manage.sh status
 ```
 
-If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the swarm service name, as reported by the status command. For example, if jacs_jade-agent2 fails to start, you would type:
-```
-./manage.sh status jacs_jade-agent2
-```
+At this stage, some of the services will not start because they depend on the databases. The next step will take care of that.
 
 
 ## Initialize Databases
@@ -66,12 +63,33 @@ Now you are ready to initalize the databases:
 ```
 ./manage.sh init-databases
 ```
+
 It's normal to see the "Unable to reach primary for set rsJacs" error repeated until the Mongo replica set converges on healthiness. After a few seconds, you should see a message "Databases have been initialized" and the process will exit successfully.
 
 You can validate the databases as follows:
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo`, and run `show tables`
 * Verify that you can connect to the MySQL instance using `./manage.sh mysql`, and run `show tables`
 * Connect to the RabbitMQ server at http://**HOST1**:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
+
+
+## Restart Services
+
+Bounce the stack so that everything reconnects to the databases:
+```
+./manage.sh stop prod
+./manage.sh start prod
+```
+
+Now you shoult wait for all the services to start. You can continue to monitor the progress with this command:
+
+```
+./manage.sh status
+```
+
+If any container failed to start up, it will show up with "0/N" replicas, and it will need to be investigated before moving further. You can view the corresponding error by specifying the swarm service name, as reported by the status command. For example, if jacs_jade-agent2 fails to start, you would type:
+```
+./manage.sh status jacs_jade-agent2
+```
 
 
 ## Verify Functionality
