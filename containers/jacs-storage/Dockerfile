@@ -5,6 +5,7 @@ ARG APP_TAG=master
 # Checkout and build the code
 RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
+RUN echo "Cloning $APP_TAG branch"
 RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs-storage.git . \
     && ./gradlew --no-daemon installDist -x test
 
