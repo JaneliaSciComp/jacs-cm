@@ -208,7 +208,6 @@ function build {
         $SUDO $DOCKER build --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
         set +x
     fi
-
 }
 
 #
