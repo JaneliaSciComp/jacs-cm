@@ -7,9 +7,9 @@ Note that this deployment does not build and serve the Workstation client instal
 
 ## System Setup
 
-This deployment should work on any system where Docker is supported. Currently, it has only been tested on Scientific Linux 7.
+This deployment should work on any system where Docker is supported. Currently, it has only been tested on Scientific Linux 7 and macOS Mojave.
 
-To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md).
+To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md). 
 
 
 ## Clone This Repo
@@ -32,31 +32,36 @@ vi .env.config
 
 At minimum, you must customize the following:
 1. Configured the `UNAME` and `GNAME` to your liking. Ideally, these should be your username and primary group.
-2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to point to directories accessible by `UNAME`:`GNAME`.
-3. Set `HOST1` to the hostname you are deploying on. Use a fully-qualified hostname -- it should match the SSL certificate you intend to use.
+2. Setup `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` to point to directories accessible by `UNAME`:`GNAME`. If you want to use the defaults, you may need to create these directories and set the permissions yourself.
+3. Set `HOST1` to the hostname you are deploying on. If possible, use a fully-qualified hostname -- it should match the SSL certificate you intend to use.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
 5. Generate 32-byte secret keys for JWT_SECRET_KEY and MONGODB_SECRET_KEY.
 
 
 ## Enable Databases (optional)
 
-Currently, Janelia runs MongoDB and MySQL outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml f
-iles under ./deployments/jacs/ and uncomment the databases.
+Currently, Janelia runs MongoDB and MySQL outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml files under ./deployments/jacs/ and uncomment the databases.
 
 
 ## Initialize Filesystems
 
-The first step is to initialize the filesystem. Ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). Then, run the initialization procedure:
+The first step is to initialize the filesystem. Ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). 
+If you are using Docker for Mac, you'll need to take the additional step of configuring share paths at Docker -> Preferences... -> File Sharing. Add both `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` and then click "Apply & Restart" to save your changes.
+
+Next, run the filesystem initialization procedure:
+
 ```
 ./manage.sh init-local-filesystem
 ```
 
-Now you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment.
+You should see output about directories being created and initialized. If there are any errors, they need to be resolved before moving further. 
+
+Once the initialization is complete, you can manually edit the files found in `CONFIG_DIR`. You can use these configuration files to customize much of the JACS environment.
 
 
 ### SSL Certificates
 
-At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
+At this point, **it is strongly recommended is to replace the self-signed certificates** in `CONFIG_DIR/certs/*` with your own certificates signed by a Certificate Authority:
 ```
 sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
@@ -89,13 +94,13 @@ Now you can bring up all of the application containers:
 
 You can monitor the progress with this command:
 ```
-./manage.sh compose ps
+./manage.sh compose ps standalone
 ```
 
 
 ## Initialize Databases
 
-Now you are ready to initalize the databases:
+If you are running your own databases, you will need to initalize them now:
 ```
 ./manage.sh init-databases
 ```
