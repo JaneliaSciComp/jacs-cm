@@ -62,7 +62,7 @@ services:
       - mongo1
     volumes:
       - ${CONFIG_DIR}/jade:/app/config:ro
-      - ${DATA_DIR}:/data:shared
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
@@ -89,7 +89,7 @@ services:
     image: ${NAMESPACE}/jacs-compute:latest
     user: ${DOCKER_USER}
     volumes:
-      - ${CONFIG_DIR}/jacs-sync:/app/config
+      - ${CONFIG_DIR}/jacs-sync:/app/config:ro
     environment:
       - SERVICE_MODE=sync
       - HOSTNAME=jacs-sync

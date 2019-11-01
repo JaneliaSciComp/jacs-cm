@@ -140,7 +140,7 @@ services:
       - mongo1
     volumes:
       - ${CONFIG_DIR}/jade:/app/config:ro
-      - ${DATA_DIR}:/data:shared
+      - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
