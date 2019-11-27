@@ -186,7 +186,7 @@ curl -X POST \
 * ktxOctreeContainerImage - ktx octree container image. See above regarding the format based on container processor type.
 * subtreeLengthForSubjobSplitting - this parameter applies only for the ktx processor and it tells the service how to split the job. The conversion process typically starts at a certain node and it performs tiff to ktx conversion for a specified number of levels. If you start a process at the root and convert all levels the job may take a while so if you want you have the option to parallelize it by going only for a limited number of levels from the root and start new jobs from all nodes at the level equal with the subtree depth.
 
-Note that the service invocation requires authentication so before you invoke it you need to obtain an JWS token from the authentication service.
+Note that the service invocation requires authentication so before you invoke it, you need to obtain an JWS token from the authentication service.
 
 ## Import Imagery
 
