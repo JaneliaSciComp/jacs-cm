@@ -184,13 +184,15 @@ curl -X POST \
 * voxelSize - specifies the voxel size in um. 
 * tiffOctreeContainerImage - tiff octree container image. Not that the format is slightly different for specifying the image name if docker is used or if singularity is used. Since singularity supports docker images, if singularity runtime is used you need to explictily specify that the image is a docker image.
 * ktxOctreeContainerImage - ktx octree container image. See above regarding the format based on container processor type.
-* subtreeLengthForSubjobSplitting - this parameter applies only for the ktx processor and it tells the service how to split the job. The conversion process typically starts at a certain node and it performs tiff to ktx conversion for a specified number of levels. If you start a process at the root and convert all levels the job may take a while so if you want you have the option to parallelize it by going only for a limited number of levels from the root and start new jobs from all nodes at the level equal with the subtree depth.
+* subtreeLengthForSubjobSplitting - this parameter applies only for the ktx processor and it tells the service how to split the job and it has a default value of 5. The conversion process typically starts at a certain node and it performs tiff to ktx conversion for a specified number of levels. If you start a process at the root and convert all levels the job may take a while so if you want you have the option to parallelize it by going only for a limited number of levels from the root and start new jobs from all nodes at the level equal with the subtree depth. For example if you have 8 levels and you set `subtreeLengthForSubjobSplitting` to `3` then KTX conversion will start `1 + 8^3 + 8^6 = 1 + 512 + 262144 = 262657` jobs with the following parameters:
+`"" 3, "111" 3, "112" 3, ..., "118" 3, ..., "888" 3, ..., "111111" 3, ..., "888888" 3`
+If you leave the default (`subtreeLengthForSubjobSplitting=5`) then the KTX conversion will start only `1 + 8^5 = 32769` jobs (`"11111" 5, ..., "88888" 5`)
 
 Note that the service invocation requires authentication so before you invoke it, you need to obtain an JWS token from the authentication service.
 
 ## Import Imagery
 
-You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the sample as `/jade1/<sampleDirectoryName>`.
+You should place each sample in $DATA_DIR/jacsstorage/samples on one of the servers. If you place the sample on the first server, in `$DATA_DIR/jacsstorage/samples/<sampleDirectoryName>`, then in the Workstation you will refer to the sample as `/jade1/<sampleDirectoryName>`. As a side note if you use 'lvDataImport' service to generate the imagery, the service does not use JADE to persist the data. So if you need the data to be on a storage that is only accessible on certain hosts, JACS must run on that host in order to be able to write the data to the corresponding location. If that is not an option you can generate the data to a temporary location then move it to the intended sample directory.
 
 In the Workstation, select **File** → **New** → **Tiled Microscope Sample**, and then set "Sample Name" to `<sampleDirectoryName>` and "Path to Render Folder" as `/jade1/<sampleDirectoryName>`.
 
