@@ -188,7 +188,7 @@ curl -X POST \
 `"" 3, "111" 3, "112" 3, ..., "118" 3, ..., "888" 3, ..., "111111" 3, ..., "888888" 3`
 If you leave the default (`subtreeLengthForSubjobSplitting=5`) then the KTX conversion will start only `1 + 8^5 = 32769` jobs (`"11111" 5, ..., "88888" 5`)
 
-Note that the service invocation requires authentication so before you invoke it, you need to obtain an JWS token from the authentication service.
+Note that the service invocation requires authentication so before you invoke it, you need to obtain an JWS token from the authentication service - see [Verify Functionality part from SwarmDeployment.md document](SwarmDeployment.md).
 
 ## Import Imagery
 
