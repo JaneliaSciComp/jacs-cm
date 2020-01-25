@@ -7,3 +7,6 @@ docker-compose.local.*yml
 # local stuff
 local
 .tmp.swarm.yml
+# IDE
+.idea
+*.iml
