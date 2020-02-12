@@ -92,7 +92,7 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 8G
+          memory: 16G
         reservations:
           cpus: "6"
           memory: 4G
