@@ -139,6 +139,8 @@ services:
       - ${CONFIG_DIR}/api-gateway/content:/usr/local/openresty/nginx/html/external:ro
     environment:
       - JWT_SECRET=${JWT_SECRET_KEY}
+      - JACS_ASYNC_HOST=${JACS_ASYNC_HOST}
+      - JACS_ASYNC_PORT=${JACS_ASYNC_PORT}
     ports:
       - "80:80"
       - "443:443"
