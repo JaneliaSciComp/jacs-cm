@@ -25,18 +25,18 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer Your_Token' \
   -d '{
-	"args": [
-		"-containerProcessor", "singularity",
-		"-inputDir", "/path/to/volumeData",
-		"-inputFilenamePattern", "test.{channel}.tif",
-		"-outputDir", "/path/to/lvv/sampleData",
-		"-channels", "0,1",
-		"-levels", "4",
-		"-voxelSize", "1,1,1",
-		"-subtreeLengthForSubjobSplitting", 2,
-        "-tiffOctreeContainerImage", "docker://registry.int.janelia.org/jacs-scripts/octree:1.0",
-		"-ktxOctreeContainerImage", "docker://registry.int.janelia.org/jacs-scripts/pyktx:1.0"
-	],
+        "args": [
+                "-containerProcessor", "singularity",
+                "-inputDir", "/path/to/volumeData",
+                "-inputFilenamePattern", "test.{channel}.tif",
+                "-outputDir", "/path/to/lvv/sampleData",
+                "-channels", "0,1",
+                "-levels", "4",
+                "-voxelSize", "1,1,1",
+                "-subtreeLengthForSubjobSplitting", 2,
+                "-tiffOctreeContainerImage", "docker://registry.int.janelia.org/jacs-scripts/octree:1.0",
+                "-ktxOctreeContainerImage", "docker://registry.int.janelia.org/jacs-scripts/pyktx:1.0"
+        ],
 	"resources": {
 	}
 }
@@ -54,7 +54,7 @@ curl -X POST \
 	"args": [
 		"-containerProcessor", "docker",
 		"-inputDir", "/path/to/volumeData",
-        "-inputFilenamePattern", "default.{channel}.tif",
+                "-inputFilenamePattern", "default.{channel}.tif",
 		"-outputDir", "/path/to/lvv/sampleData",
 		"-channels", "0",
 		"-levels", "3",
