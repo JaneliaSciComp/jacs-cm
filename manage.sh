@@ -482,6 +482,7 @@ if [[ "$#" -lt 2 ]]; then
     echo "  run [containerName] - Run the given container"
     echo "  shell [containerName] - Shell into the given container"
     echo "  push [containerName] - Push the built container to a remote repository defined by the NAMESPACE variable in the .env.config file"
+    echo "  publish [containerName] - Push the built container to a remote repository defined by the PUBLISHING_NAMESPACE variable in the .env.config file"
     echo
     echo "Installation: "
     echo "  init-local-filesystem - Initialize the local filesystem on the current host"
