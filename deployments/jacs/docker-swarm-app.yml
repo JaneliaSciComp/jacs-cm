@@ -14,8 +14,8 @@ services:
         constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
-          cpus: "1"
-          memory: 50M
+          cpus: "2"
+          memory: 10M
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -31,9 +31,6 @@ services:
       resources:
         limits:
           cpus: "2"
-          memory: 50M
-        reservations:
-          cpus: "1"
           memory: 10M
       restart_policy:
         condition: on-failure
@@ -50,10 +47,7 @@ services:
       resources:
         limits:
           cpus: "2"
-          memory: 100M
-        reservations:
-          cpus: "1"
-          memory: 50M
+          memory: 200M
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -70,11 +64,11 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "2"
-          memory: 2G
+          cpus: "20"
+          memory: 100M
         reservations:
-          cpus: "2"
-          memory: 1G
+          cpus: "1"
+          memory: 20M
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -89,17 +83,16 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "4"
-          memory: 20G
+          cpus: "20"
+          memory: 40G
         reservations:
           cpus: "2"
-          memory: 4G
+          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 3s
         max_attempts: 3
         window: 120s
-
 
 #  jacs-async:
 #    networks:
@@ -132,8 +125,8 @@ services:
           cpus: "4"
           memory: 20G
         reservations:
-          cpus: "2"
-          memory: 10G
+          cpus: "1"
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -169,10 +162,10 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 20G
+          memory: 10G
         reservations:
-          cpus: "2"
-          memory: 2G
+          cpus: "1"
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -209,10 +202,10 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 20G
+          memory: 10G
         reservations:
-          cpus: "2"
-          memory: 2G
+          cpus: "1"
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -249,10 +242,10 @@ services:
       resources:
         limits:
           cpus: "4"
-          memory: 20G
+          memory: 10G
         reservations:
-          cpus: "2"
-          memory: 2G
+          cpus: "1"
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 3s

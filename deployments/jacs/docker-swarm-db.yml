@@ -91,11 +91,11 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "4"
-          memory: 16G
+          cpus: "10"
+          memory: 40G
         reservations:
-          cpus: "6"
-          memory: 4G
+          cpus: "2"
+          memory: 1G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -110,11 +110,11 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "2"
+          cpus: "10"
           memory: 40G
         reservations:
-          cpus: "6"
-          memory: 30G
+          cpus: "2"
+          memory: 10G
       restart_policy:
         condition: on-failure
         delay: 3s
