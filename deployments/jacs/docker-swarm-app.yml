@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   workstation-site:
-    image: ${NAMESPACE}/workstation-site:latest
+    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
     # Nginx must run as root
     expose:
       - "8080"
@@ -173,7 +173,7 @@ services:
         window: 120s
 
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
@@ -213,7 +213,7 @@ services:
         window: 120s
 
   jade-agent3:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master

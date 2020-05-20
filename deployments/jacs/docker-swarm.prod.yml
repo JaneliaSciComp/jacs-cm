@@ -1,11 +1,7 @@
 version: '3.7'
 services:
 
-  workstation-site:
-    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
-
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
@@ -20,7 +16,6 @@ services:
       - /nrs/mouselight-v:/nrs/mouselight-v:ro,shared
 
   jade-agent3:
-    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
