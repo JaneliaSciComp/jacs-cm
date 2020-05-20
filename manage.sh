@@ -472,7 +472,7 @@ if [[ "$1" == "login" ]]; then
     exit 0
 fi
 
-if [[ "$#" -lt 2 ]]; then
+if [[ "$#" -lt 1 ]]; then
     echo
     echo "This script simplifies deployment and management of the JACS system. Usage details:"
     echo
@@ -489,9 +489,9 @@ if [[ "$#" -lt 2 ]]; then
     echo "  init-filesystems - Initalize all filesystems in the Swarm"
     echo "  init-databases - Initialize the databases"
     echo
-    echo "Swarm Deployment: [start|stop|status] [environment]"
+    echo "Swarm Deployment: [start|stop]"
     echo
-    echo "Compose Deployment: compose [up|down|ps|top] [environment]"
+    echo "Compose Deployment: compose [up|down|ps|top]"
     echo
     echo "Service Management:"
     echo "  status - Print the status of all services"
@@ -606,13 +606,10 @@ do
 
     elif [[ "$COMMAND" == "start" ]]; then
 
-        TIER=$1
-        shift 1 # remove tier
-
         if [[ $1 == "--dbonly" ]]; then
-            getyml $TIER "dbonly" "swarm" "YML"
+            getyml $STAGE "dbonly" "swarm" "YML"
         else
-            getyml $TIER "" "swarm" "YML"
+            getyml $STAGE "" "swarm" "YML"
         fi
 
         set -x
@@ -631,18 +628,15 @@ do
         COMPOSE_COMMAND=$1
         shift 1 # remove compose command
 
-        TIER=$1
-        shift 1 # remove tier
-
         if [[ $1 == "--dbonly" ]]; then
             shift 1 # remove dbonly flag
-            getyml $TIER "dbonly" "" "YML"
+            getyml $STAGE "dbonly" "" "YML"
         else
-            getyml $TIER "" "" "YML"
+            getyml $STAGE "" "" "YML"
         fi
 
         OPTS="$@"
-        echo "Bringing $COMPOSE_COMMAND $TIER tier"
+        echo "Bringing $COMPOSE_COMMAND ($STAGE)"
         set -x
         DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
         set +x
