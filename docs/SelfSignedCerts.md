@@ -8,10 +8,10 @@ Then, in order to allow the Workstation to accept the certificate, it needs to b
 
 ## Windows
 
-On Windows, type "cmd" in the Cortana box to find the Command Prompt, then right-click it and select "Run as administrator". You need to find out where your JVM is installed by looking under C:\Program Files\Java. Then, import the certificate. Here it's assumed the cert was saved to the C: root directory:
+On Windows, click Start and type "cmd" to find the Command Prompt, then right-click it and select "Run as administrator". You need to find out where your JVM is installed by looking under C:\Program Files\Zulu. Then, import the certificate. Here it's assumed the cert was saved to the current working directory:
 
 ```
-C:\> "C:\Program Files\Java\jre1.8.0_181\bin\keytool.exe" -import -alias mouse1selfcert -file C:\cert.crt -keystore "C:\Program Files\Java\jdk1.8.0_181\jre\lib\security\cacerts" -keypass changeit -storepass changeit
+C:\> "C:\Program Files\Zulu\zulu-8\bin\keytool.exe" -import -alias mouse1selfcert -file cert.crt -keystore "C:\Program Files\Zulu\zulu-8\jre\lib\security\cacerts" -keypass changeit -storepass changeit
 ```
 
 The **alias** should be a descriptive name that will be used later if you want to remove or view the certificate. The password for the JVM keystore is actually "changeit", so don't change the **keypass** or **storepass** values above.
@@ -23,8 +23,10 @@ First, you need to know where the JVM is located. You can use the same method th
 ```
 export JDK_HOME=`/usr/libexec/java_home -v 1.8`
 ```
+
 Now you can import the certificate into the keystore. Here it's assumed the cert was saved to the desktop:
 ```
 sudo keytool -import -v -trustcacerts -alias mouse1 -file ~/Desktop/cert.crt -keystore $JDK_HOME/jre/lib/security/cacerts -keypass changeit -storepass changeit
+```
 
 The **alias** should be a descriptive name that will be used later if you want to remove or view the certificate. The password for the JVM keystore is actually "changeit", so don't change the **keypass** or **storepass** values above.
