@@ -89,12 +89,12 @@ The URL should point to your authentication server. The SearchBase is part of a 
 
 Now you can bring up all of the application containers:
 ```
-./manage.sh compose up standalone -d
+./manage.sh compose up -d
 ```
 
 You can monitor the progress with this command:
 ```
-./manage.sh compose ps standalone
+./manage.sh compose ps
 ```
 
 
@@ -128,7 +128,7 @@ Containers in this deployment are automatically updated by [Watchtower](https://
 
 To stop all containers, run this command:
 ```
-./manage.sh compose down standalone
+./manage.sh compose down
 ```
 
 
