@@ -192,6 +192,9 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
 
         if [[ $NAME == "workstation-site" ]]; then
+        
+            BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_CLIENT_MEM=$WORKSTATION_CLIENT_MEM"
+            
             if [[ ! -e $CDIR/cert.crt || ! -e $CDIR/cert.key ]]; then
                 echo
                 echo "Building workstation-site requires cert.crt and cert.key to exist in $CDIR"
@@ -199,6 +202,7 @@ function build {
                 echo
                 exit 1
             fi
+        
         fi
 
         echo "---------------------------------------------------------------------------------"

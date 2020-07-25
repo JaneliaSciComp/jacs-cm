@@ -14,6 +14,7 @@ RUN rm Gemfile.lock && bundler exec jekyll build
 FROM janeliascicomp/builder:1.1.0 as builder
 ARG APP_TAG=master
 ARG KEYSTORE_PASSWORD=password
+ARG WORKSTATION_CLIENT_MEM=8192m
 
 COPY cert.crt /tmp/cert.crt
 COPY cert.key /tmp/cert.key
@@ -31,7 +32,9 @@ RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/work
 COPY my.properties .
 RUN WORKSTATION_BUILD_VERSION=$APP_TAG \
     envsubst < my.properties > ./modules/Core/src/main/resources/my.properties \
-    && cat ./modules/Core/src/main/resources/my.properties
+    && cat ./modules/Core/src/main/resources/my.properties \
+    && sed -i "s/-J-Xmx[^[:space:]]\+/-J-Xmx${WORKSTATION_CLIENT_MEM}/" ./modules/application/src/main/resources/janeliaws.conf \
+    && cat ./modules/application/src/main/resources/janeliaws.conf
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install \
     && cd modules/application \
