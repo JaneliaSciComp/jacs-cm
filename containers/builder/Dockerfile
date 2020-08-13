@@ -4,7 +4,7 @@ LABEL description="Tiny builder image which includes bash, git and other useful 
 RUN apk update && apk upgrade \
     # avoid "missing libnss3.so" error with Docker
     && apk add --no-cache nss \
-    # shell tilities
+    # shell utilities
     && apk add --no-cache bash sed grep bc jq coreutils \
     # envsubst
     && apk add --no-cache gettext libintl \
@@ -13,5 +13,8 @@ RUN apk update && apk upgrade \
     # Java builds
     && apk add --no-cache openjdk8 gradle maven \
     # node.js builds
-    && apk add --no-cache npm
+    && apk add --no-cache npm \
+    # python utils
+    && apk add --no-cache python3 py3-pip \
+    && pip3 install yq
 COPY ./scripts/ /usr/local/bin
