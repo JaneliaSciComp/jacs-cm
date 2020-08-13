@@ -46,7 +46,7 @@ if [[ "$@" != "build builder" ]]; then
     if [[ -e .env ]]; then
         set +e
         # parse the previous SHA1 sum out of the file and check it against the current sum
-        cat .env | sed 's|# ||' | sed -n 4p | sha1sum --status -c - > /dev/null
+        sed 's|# ||' .env | sed -n 4p | sha1sum --status -c - > /dev/null
         res=$?
         if [[ $res -eq "1" ]]; then
             # Sum doesn't match, regenerate the .env file
