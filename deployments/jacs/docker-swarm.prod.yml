@@ -4,6 +4,7 @@ services:
   jade-agent2:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
+      - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
       - /groups/flylight:/groups/flylight:ro,shared
       - /groups/projtechres:/groups/projtechres:ro,shared
@@ -18,6 +19,7 @@ services:
   jade-agent3:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
+      - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
       - /groups/flylight:/groups/flylight:ro,shared
       - /groups/projtechres:/groups/projtechres:ro,shared

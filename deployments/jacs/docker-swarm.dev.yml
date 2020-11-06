@@ -4,8 +4,9 @@ services:
 
   jade-agent2:
     volumes:
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
+      - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
@@ -14,8 +15,9 @@ services:
 
   jade-agent3:
     volumes:
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
+      - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
