@@ -165,7 +165,7 @@ services:
           memory: 10G
         reservations:
           cpus: "1"
-          memory: 1G
+          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -184,7 +184,7 @@ services:
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
+      - JAVA_OPTS=-Xmx3G -Xms1G -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT2_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT2_EXPOSED_PORT:-9882}
@@ -205,7 +205,7 @@ services:
           memory: 10G
         reservations:
           cpus: "1"
-          memory: 1G
+          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 3s
@@ -224,7 +224,7 @@ services:
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-agent.xml
+      - JAVA_OPTS=-Xmx3G -Xms1G -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT3_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT3_EXPOSED_PORT:-9882}
@@ -245,7 +245,7 @@ services:
           memory: 10G
         reservations:
           cpus: "1"
-          memory: 1G
+          memory: 2G
       restart_policy:
         condition: on-failure
         delay: 3s
