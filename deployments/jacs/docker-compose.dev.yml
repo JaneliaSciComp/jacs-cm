@@ -8,6 +8,7 @@ services:
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
 
   jade-agent1:
     volumes:
@@ -17,6 +18,7 @@ services:
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
 
   jacs-sync:
     volumes:

@@ -11,6 +11,7 @@ services:
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
 
   jade-agent3:
     volumes:
@@ -21,4 +22,5 @@ services:
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
+      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
 
