@@ -364,14 +364,6 @@ if [[ "$1" == "mongo" ]]; then
     exit 0
 fi
 
-if [[ "$1" == "mysql" ]]; then
-    echo "Opening MySQL shell..."
-    set -x
-    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 /usr/bin/mysql -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql ${MYSQL_DATABASE}
-    set +x
-    exit 0
-fi
-
 if [[ "$1" == "dbMaintenance" ]]; then
     echo "Perform DB maintenance..."
     shift
@@ -450,19 +442,9 @@ if [[ "$1" == "backup" ]]; then
         set +x
         exit 0
 
-    elif [[ "$2" == "mysql" ]]; then
-
-        FILENAME=flyportal-$(date +%Y%m%d%H%M%S).sql.gz
-        MYSQL_BACKUPS_DIR=$BACKUPS_DIR/mysql
-        echo "Dumping Mysql backup to $MYSQL_BACKUPS_DIR/$FILENAME"
-        set -x
-        $SUDO $DOCKER run --rm -i -v $MYSQL_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mysql:5.6.42 bash -c "/usr/bin/mysqldump -u ${MYSQL_JACS_USER} -p${MYSQL_JACS_PASSWORD} -h mysql --all-databases | gzip >/backup/$FILENAME"
-        set +x
-        exit 0
-
     else
 
-        echo "Valid choices for backups are mongo and mysql."
+        echo "Valid choices for backups are: mongo"
         exit 1
 
     fi
@@ -504,10 +486,9 @@ if [[ "$#" -lt 1 ]]; then
     echo "  status [service] - Print the status of the specified service"
     echo "  restart [service] - Fetch the latest container for the service and redeploy it"
     echo "  mongo - Open shell into the Mongo database"
-    echo "  mysql - Open shell into the MySQL database"
     echo "  dbMaintenance - Ensure that all databases indexes and denormalizations are up-to-date"
     echo "  rebuildSolrIndex - Rebuild the SOLR index from scratch"
-    echo "  backup [mongo|mysql] - Generate a database backup into $BACKUPS_DIR"
+    echo "  backup [mongo] - Generate a database backup into $BACKUPS_DIR"
     echo "  login - Log into the system and generate a JWS token"
     echo
     exit 1

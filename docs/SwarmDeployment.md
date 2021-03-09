@@ -68,7 +68,6 @@ It's normal to see the "Unable to reach primary for set rsJacs" error repeated u
 
 You can validate the databases as follows:
 * Verify that you can connect to the Mongo instance using `./manage.sh mongo`, and run `show tables`
-* Verify that you can connect to the MySQL instance using `./manage.sh mysql`, and run `show tables`
 * Connect to the RabbitMQ server at http://**HOST1**:15672 and log in with your `RABBITMQ_USER`/`RABBITMQ_PASSWORD`
 
 
@@ -141,7 +140,6 @@ SOLR index refresh (if using SOLR):
 Database backups (if using containerized databases):
 ```
 0 4 * * * /opt/deploy/jacs-cm/manage.sh backup mongo
-0 5 * * * /opt/deploy/jacs-cm/manage.sh backup mysql
 ```
 
 

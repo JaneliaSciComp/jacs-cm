@@ -4,14 +4,14 @@ Part of the [Janelia Workstation](https://github.com/JaneliaSciComp/workstation)
 
 This repository allows for the creation and deployment of Docker containers which run the JACS infrastructure. It is designed around the DevOps concept of [Infrastructure as Code (IaC)](https://en.wikipedia.org/wiki/Infrastructure_as_Code).
 
-Each subdirectory in the `containers` directory contains a versioned, containerized service which can be built into a Docker container using manage.sh. These containers have official builds which are [published on Docker Hub](https://hub.docker.com/u/janeliascicomp).
+Each subdirectory in the `containers` directory contains a versioned, containerized service which can be built into a Docker container using `manage.sh`. These containers have official versioned builds which are [published on Docker Hub](https://hub.docker.com/u/janeliascicomp), so you can skip the build step.
 
 Each subdirectory in the `deployments` directory contains the configuration for a deployment orchestrated by e.g. Docker Compose or Docker Swarm.
 
 
 ## Deployment Walkthroughs
 
-Different types of deployments are possible which provide various combinations of services with multiple swarm topologies. Currently, only the MouseLight tools are currently supported outside of Janelia.
+Different types of deployments are possible which provide various combinations of services with multiple swarm topologies. Currently, only the MouseLight tools are supported outside of Janelia. 
 
 ### Full JACS and Workstation
 

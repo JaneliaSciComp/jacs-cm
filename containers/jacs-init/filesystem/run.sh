@@ -66,30 +66,6 @@ else
 fi
 
 #
-# MySQL Data Directory
-#
-mysql_data_dir=$db_dir/mysql/$project
-if [[ ! -e "$mysql_data_dir" ]]; then
-    echo "Initializing MySQL data directory: $mysql_data_dir"
-    mkdir -p $mysql_data_dir
-else
-    echo "Verified MySQL data directory: $mysql_data_dir"
-fi
-
-#
-# MySQL Database Configuration
-#
-mysql_config_dir=$config_dir/mysql
-if [[ ! -e "$mysql_config_dir" ]]; then
-    echo "Deploying MySQL config directory: $mysql_config_dir"
-    mkdir -p $mysql_config_dir/$project
-    cp -R $DIR/mysql/conf $mysql_config_dir/$project
-    cp -R $DIR/mysql/sql $mysql_config_dir/$project
-else
-    echo "Verified MySQL config directory: $mysql_config_dir"
-fi
-
-#
 # SOLR Indexes Directory
 #
 solr_data_dir=$db_dir/solr
@@ -245,14 +221,6 @@ if [[ ! -e "$mongo_backups_dir" ]]; then
     mkdir -p $mongo_backups_dir
 else
     echo "Verified Mongo backups directory: $mongo_backups_dir"
-fi
-
-mysql_backups_dir=$BACKUPS_DIR/mysql
-if [[ ! -e "$mysql_backups_dir" ]]; then
-    echo "Creating MySQL backups directory: $mysql_backups_dir"
-    mkdir -p $mysql_backups_dir
-else
-    echo "Verified MySQL backups directory: $mysql_backups_dir"
 fi
 
 messaging_backups_dir=$BACKUPS_DIR/messaging

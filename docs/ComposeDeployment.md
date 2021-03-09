@@ -40,7 +40,7 @@ At minimum, you must customize the following:
 
 ## Enable Databases (optional)
 
-Currently, Janelia runs MongoDB and MySQL outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml files under ./deployments/jacs/ and uncomment the databases.
+Currently, Janelia runs MongoDB outside of the Swarm, so they are commented out in the deployment. If you'd like to run the databases as part of the swarm, edit the yaml files under ./deployments/jacs/ and uncomment the databases.
 
 
 ## Initialize Filesystems

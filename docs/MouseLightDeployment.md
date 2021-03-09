@@ -34,7 +34,7 @@ This two-server deployment can support 5-10 concurrent users. We use the followi
 
 ## Install Scientific Linux 7
 
-The backend software should run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
+The backend software runs on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
 
 
 ## Install Docker

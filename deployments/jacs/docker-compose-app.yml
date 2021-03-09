@@ -91,9 +91,6 @@ services:
       - jacs_Messaging_Server=rabbitmq
       - jacs_Messaging_User=${RABBITMQ_USER}
       - jacs_Messaging_Password=${RABBITMQ_PASSWORD}
-      - jacs_mouselight_db_url=${MYSQL_URL}
-      - jacs_mouselight_db_user=${MYSQL_JACS_USER}
-      - jacs_mouselight_db_password=${MYSQL_JACS_PASSWORD}
       - jacs_StorageService_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - jacs_StorageService_ApiKey=${JADE_API_KEY}
       - jacs_JACS_ApiKey=${JACS_API_KEY}
