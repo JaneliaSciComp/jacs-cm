@@ -1,8 +1,8 @@
-# Installing Docker on Scientific Linux 7
+# Installing Docker on Oracle Linux 8
 
-If you are performing a fresh installation, we now recommend using [Oracle Linux 8](InstallingDockerOL8.md).
+To install Docker on a server running Oracle Linux 8, some special configuration is needed. Much of this comes from the [official documentation](https://docs.docker.com/install/linux/docker-ce/centos/).
 
-To install Docker on a server running Scientific Linux 7, some special configuration is needed. Much of this comes from the [official documentation](https://docs.docker.com/install/linux/docker-ce/centos/).
+If you are using a previous generation CentOS-compatible Linux distribution, refer to the instructions for [Scientific Linux 7](InstallingDockerSL7.md).
 
 ## Prerequisites
 
@@ -30,32 +30,18 @@ realtime =none                   extsz=4096   blocks=0, rtextents=0
 
 If the above says ftype=0, then the filesystem will need to be recreated ([reference](https://linuxer.pro/2017/03/what-is-d_type-and-why-docker-overlayfs-need-it/)).
 
-Make sure centos-extras is enabled:
-```
-sudo yum install -y yum-utils
-sudo yum-config-manager --enable centos-extras
-```
-
-You may also need to manually create a file at /etc/yum.repos.d/centos-extras.repo with content:
-```
-cat <<END >centos-extras.repo
-[centos-extras]
-name=Centos Extras
-baseurl=http://mirror.centos.org/centos/7/extras/x86_64
-enabled=1
-gpgcheck=0
-END
-sudo cp centos-extras.repo /etc/yum.repos.d/centos-extras.repo && rm centos-extras.repo
-```
-
 ## Installing Docker
 
 ```
+sudo yum install -y yum-utils
 sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install docker-ce
+sudo yum install -y docker-ce
 ```
 
-If this fails because it can’t find container-selinux, it means that centos-extras repo is not correctly configured. Make sure the file above is in place and that the line enabled=1 is present.
+If this fails with error messages like `package containerd.io-1.4.3-3.2.el8.x86_64 conflicts with runc provided by runc` then you may have conflicting packages installed already. Try removing them like this:
+```
+sudo yum erase podman buildah
+```
 
 ## Post Install Configuration
 
@@ -73,8 +59,8 @@ Create a file at /etc/docker/daemon.json with this content:
 
 ```
 {
-    "data-root": "/opt/docker",
-    "storage-driver": "overlay2"
+  "data-root": "/opt/docker",
+  "storage-driver": "overlay2"
 }
 ```
 
@@ -92,6 +78,11 @@ sudo systemctl start docker
 
 ## Installing Docker Compose
 
-Follow the [instructions here](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-centos-7) to install Docker Compose. The version must be greater than 1.23.2.
+You'll also need to install the Docker Compose executable:
 
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
 
+Note that there are newer versions of the Docker Compose, but they have bugs that prevent them from working with our scripts. Please use the version above to ensure compatibility.

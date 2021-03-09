@@ -4,7 +4,7 @@ This page describes basic usage of this repository and conventions which should 
 
 ## Initial Setup
 
-You will need Docker and Docker Compose. Installing [Docker on Scientific Linux 7](InstallingDockerSL7.md) is standardized to make it easier to deploy JACS on these systems. For other architectures, please refer to the Docker documentation.
+You will need Docker and Docker Compose. Installing [Docker on Oracle Linux 8](InstallingDockerOL8.md) is standardized to make it easier to deploy JACS on these systems. For other architectures, please refer to the Docker documentation.
 
 Next, create a .env.config file which defines the environment (usernames, passwords, etc.) You can copy the template to get started:
 ```

@@ -9,7 +9,7 @@ Note that this deployment does not build and serve the Workstation client instal
 
 This deployment should work on any system where Docker is supported. Currently, it has only been tested on Scientific Linux 7 and macOS Mojave.
 
-To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md). 
+To install Docker and Docker Compose on Oracle Linux 8, follow [these instructions](InstallingDockerOL8.md). 
 
 
 ## Clone This Repo

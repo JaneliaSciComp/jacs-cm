@@ -20,14 +20,14 @@ We'll refer to the three deployment hosts as **HOST1**, **HOST2**, and **HOST3**
 Note that an additional server or VM is necessary to run the JACS Async Services outside of Docker, if you are planning to submit image processing jobs to an HPC cluster, such as with the Image Processing Pipeline (IPP).
 
 
-## Install Scientific Linux 7
+## Install Oracle Linux 8
 
-The backend software should run on any operating system which supports Docker. However, Scientific Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Scientific Linux 7 or CentOS 7.
+The backend software should run on any operating system which supports Docker. However, Oracle Linux is used at Janelia and has been extensively tested with this software. Therefore, we recommend installing the latest version of Oracle Linux 8. Previously, we used Scientific Linux 7 and that is also known well although it's no longer supported.
 
 
 ## Install Docker
 
-To install Docker and Docker Compose on Scientific Linux 7, follow [these instructions](InstallingDockerSL7.md).
+To install Docker and Docker Compose on Oracle Linux 8, follow [these instructions](InstallingDockerOL8.md).
 
 
 ## Setup Docker Swarm

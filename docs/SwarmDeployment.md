@@ -7,7 +7,7 @@ The following steps are common to all Docker Swarm deployments of the Workstatio
 
 ## Initialize Filesystems
 
-The first step is to initialize the filesystems on all your Swarm systems. On each server, ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). Then, run the Swarm-based initialization procedure:
+The first step is to initialize the filesystems on all your Swarm systems. On each server, ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). Then, run the Swarm-based initialization procedure from **HOST1**:
 ```
 ./manage.sh init-filesystems
 ```
@@ -19,6 +19,7 @@ You can manually edit the files found in `CONFIG_DIR` to further customize the i
 
 At this point, **it is strongly recommended is to replace the self-signed certificates** in `$CONFIG_DIR/certs/*` on each server with your own certificates signed by a Certificate Authority:
 ```
+. .env
 sudo cp /path/to/your/certs/cert.{crt,key} $CONFIG_DIR/certs/
 sudo chown docker-nobody:docker-nobody $CONFIG_DIR/certs/*
 ```
@@ -46,7 +47,7 @@ The URL should point to your authentication server. The SearchBase is part of a 
 
 Next, start up all of the service containers. The parameter to the start command specifies the environment to use. The **dev** environment uses containers tagged as *latest* and updates them automatically when they change. The **prod** deployment uses a frozen set of production versions. When in doubt, use the **prod** deployment:
 ```
-./manage.sh start prod
+./manage.sh start
 ```
 
 It may take a minute for the containers to spin up. You can monitor the progress with this command:
@@ -54,7 +55,7 @@ It may take a minute for the containers to spin up. You can monitor the progress
 ./manage.sh status
 ```
 
-At this stage, some of the services will not start because they depend on the databases. The next step will take care of that.
+At this stage, some of the services may not start because they depend on the databases. The next step will take care of that.
 
 
 ## Initialize Databases
@@ -75,8 +76,8 @@ You can validate the databases as follows:
 
 Bounce the stack so that everything reconnects to the databases:
 ```
-./manage.sh stop prod
-./manage.sh start prod
+./manage.sh stop
+./manage.sh start
 ```
 
 Now you shoult wait for all the services to start. You can continue to monitor the progress with this command:
@@ -110,7 +111,7 @@ As long as your Docker daemon is configured to restart on boot, all of the Swarm
 
 If you want to remove all the services from the Swarm and do a clean restart of everything, you can use this command:
 ```
-./manage.sh stop prod
+./manage.sh stop
 ```
 
 To pull and redeploy the latest image for a single service, e.g. workstation-site:
