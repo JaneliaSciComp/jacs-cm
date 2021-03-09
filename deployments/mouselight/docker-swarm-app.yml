@@ -133,7 +133,7 @@ services:
         max_attempts: 1000
 
   jade-agent2:
-    image: ${NAMESPACE}/jacs-storage:latest
+    image: ${NAMESPACE}/jacs-storage:${JACS_STORAGE_VERSION}
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
