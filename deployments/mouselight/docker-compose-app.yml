@@ -107,6 +107,7 @@ services:
       - jacs_StorageService_ApiKey=${JADE_API_KEY}
       - jacs_JACS_ApiKey=${JACS_API_KEY}
       - jacs_Solr_ServerURL=http://solr:8080/solr/
+      - jacs_Dataset_Storage_DefaultVolume=
     expose:
       - "8080"
     depends_on:
