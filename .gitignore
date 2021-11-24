@@ -10,3 +10,4 @@ local
 # IDE
 .idea
 *.iml
+*.swp
