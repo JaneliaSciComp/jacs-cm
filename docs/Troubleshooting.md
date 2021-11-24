@@ -34,6 +34,14 @@ If you see an intermittent error like this, just retry the command again:
 failed to create service jacs-cm_jacs-sync: Error response from daemon: network jacs-cm_jacs-net not found
 ```
 
+### bind errors during init-filesystems
+
+If during `init-filesystems` you see an error that the config folder could not be bound on a particular node of the swarm cluster, make sure you did not forget to create the config and db directories on each node that is part of the swarm. The directories must exist in order for docker to be able to mount the corresponding volumes.
+After you created all folders if you already ran `./manage.sh init-filesystems` and it failed before you run it again stop it using
+```
+./manage.sh stop
+```
+and then you can try to re-run it
 
 ## RESTful services
 

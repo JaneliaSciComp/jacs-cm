@@ -7,13 +7,24 @@ The following steps are common to all Docker Swarm deployments of the Workstatio
 
 ## Initialize Filesystems
 
-The first step is to initialize the filesystems on all your Swarm systems. On each server, ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody). Then, run the Swarm-based initialization procedure from **HOST1**:
+The first step is to initialize the filesystems on all your Swarm systems. On each server, ensure that your `REDUNDANT_STORAGE` (default: /opt/jacs), `NON_REDUNDANT_STORAGE` (default: /data) directories exist and can be written to by your UNAME:GNAME user (default: docker-nobody).
+Next, run the local filesystem initialization procedure in order to setup the config file:
+```
+./manage.sh init-local-filesystem
+```
+
+Then, run the Swarm-based initialization procedure from **HOST1**:
 ```
 ./manage.sh init-filesystems
 ```
 
 You can manually edit the files found in `CONFIG_DIR` to further customize the installation. 
 
+Once the initialization completes you can just run:
+```
+./manage.sh stop
+```
+Also it is a good idea to stop the initialization stack if anything goes wrong before you try it again.
 
 ### SSL Certificates
 
