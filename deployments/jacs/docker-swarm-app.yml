@@ -14,7 +14,7 @@ services:
         constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
-          cpus: "2"
+          cpus: '2'
           memory: 10M
       restart_policy:
         condition: on-failure
@@ -30,7 +30,7 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "2"
+          cpus: '2'
           memory: 10M
       restart_policy:
         condition: on-failure
@@ -46,7 +46,7 @@ services:
         constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
-          cpus: "2"
+          cpus: '2'
           memory: 200M
       restart_policy:
         condition: on-failure
@@ -64,10 +64,10 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "20"
+          cpus: '20'
           memory: 100M
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 20M
       restart_policy:
         condition: on-failure
@@ -83,10 +83,10 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "20"
+          cpus: '20'
           memory: 40G
         reservations:
-          cpus: "2"
+          cpus: '2'
           memory: 2G
       restart_policy:
         condition: on-failure
@@ -102,10 +102,10 @@ services:
 #        constraints: [node.labels.jacs_name==node1]
 #      resources:
 #        limits:
-#          cpus: "8"
+#          cpus: '8'
 #          memory: 20G
 #        reservations:
-#          cpus: "4"
+#          cpus: '4'
 #          memory: 10G
 #      restart_policy:
 #        condition: on-failure
@@ -122,10 +122,10 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "4"
+          cpus: '4'
           memory: 20G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 1G
       restart_policy:
         condition: on-failure
@@ -142,10 +142,10 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "4"
+          cpus: '4'
           memory: 2G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 4G
       restart_policy:
         condition: on-failure
@@ -161,10 +161,10 @@ services:
         constraints: [node.labels.jacs_name==node1]
       resources:
         limits:
-          cpus: "4"
+          cpus: '4'
           memory: 10G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 2G
       restart_policy:
         condition: on-failure
@@ -201,10 +201,10 @@ services:
         constraints: [node.labels.jacs_name==node2]
       resources:
         limits:
-          cpus: "4"
+          cpus: '4'
           memory: 10G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 2G
       restart_policy:
         condition: on-failure
@@ -241,10 +241,10 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "4"
+          cpus: '4'
           memory: 10G
         reservations:
-          cpus: "1"
+          cpus: '1'
           memory: 2G
       restart_policy:
         condition: on-failure

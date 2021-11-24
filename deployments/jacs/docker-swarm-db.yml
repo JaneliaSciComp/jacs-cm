@@ -15,10 +15,10 @@ services:
 #        constraints: [node.labels.jacs_name==node1]
 #      resources:
 #        limits:
-#          cpus: "6"
+#          cpus: '6'
 #          memory: 36G
 #        reservations:
-#          cpus: "4"
+#          cpus: '4'
 #          memory: 24G
 #      restart_policy:
 #        condition: on-failure
@@ -34,10 +34,10 @@ services:
 #        constraints: [node.labels.jacs_name==node2]
 #      resources:
 #        limits:
-#          cpus: "6"
+#          cpus: '6'
 #          memory: 36G
 #        reservations:
-#          cpus: "4"
+#          cpus: '4'
 #          memory: 24G
 #      restart_policy:
 #        condition: on-failure
@@ -53,10 +53,10 @@ services:
 #        constraints: [node.labels.jacs_name==node3]
 #      resources:
 #        limits:
-#          cpus: "2"
+#          cpus: '2'
 #          memory: 2G
 #        reservations:
-#          cpus: "1"
+#          cpus: '1'
 #          memory: 1G
 #      restart_policy:
 #        condition: on-failure
@@ -72,10 +72,10 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "10"
+          cpus: '10'
           memory: 40G
         reservations:
-          cpus: "2"
+          cpus: '2'
           memory: 1G
       restart_policy:
         condition: on-failure
@@ -91,10 +91,10 @@ services:
         constraints: [node.labels.jacs_name==node3]
       resources:
         limits:
-          cpus: "10"
+          cpus: '10'
           memory: 40G
         reservations:
-          cpus: "2"
+          cpus: '2'
           memory: 10G
       restart_policy:
         condition: on-failure

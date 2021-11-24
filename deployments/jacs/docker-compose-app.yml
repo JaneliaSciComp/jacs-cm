@@ -3,8 +3,8 @@
 #
 # This service set needs to be composed with the databases defined in docker-compose-db.yml
 #
+version: "3.7"
 
-version: '3.7'
 services:
 
   jacs-messaging:
