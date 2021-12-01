@@ -162,6 +162,7 @@ services:
 
   esdata1:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    user: ${DOCKER_USER}
     environment:
       - node.name=es-data1
       - node.master=false
@@ -201,6 +202,7 @@ services:
 
   esdata2:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    user: ${DOCKER_USER}
     environment:
       - node.name=es-data2
       - node.master=false
@@ -240,6 +242,7 @@ services:
 
   esdata3:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    user: ${DOCKER_USER}
     environment:
       - node.name=es-data3
       - node.master=false
