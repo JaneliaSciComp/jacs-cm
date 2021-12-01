@@ -12,6 +12,7 @@ DIR=$(cd "$(dirname "$0")"; pwd)
 # Constants
 CONTAINER_DIRNAME=containers
 DEPLOYMENTS_DIRNAME=deployments
+STACKS_DIRNAME=stacks
 CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
 SLEEP_TIME=6
 
@@ -79,6 +80,7 @@ if [[ -z "$DEPLOYMENT" ]]; then
 fi
 DEPLOYMENT_DIR="$DIR/$DEPLOYMENTS_DIRNAME/$DEPLOYMENT"
 echo "Using deployment $DEPLOYMENT defined by $DEPLOYMENT_DIR"
+ELK_DEPLOYMENT_DIR="$DIR/$STACKS_DIRNAME/elk"
 
 # More variables
 CONTAINER_PREFIX="$NAMESPACE/"
@@ -612,11 +614,19 @@ do
         $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
         set +x
 
+    elif [[ "$COMMAND" == "start-elk" ]]; then
+
+        $SUDO $DOCKER stack deploy --prune -c $ELK_DEPLOYMENT_DIR/docker-compose.yml ${COMPOSE_PROJECT_NAME}_elk && sleep $SLEEP_TIME
+
     elif [[ "$COMMAND" == "stop" ]]; then
 
         set -x
         $SUDO $DOCKER stack rm $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
         set +x
+
+    elif [[ "$COMMAND" == "stop-elk" ]]; then
+
+        $SUDO $DOCKER stack rm ${COMPOSE_PROJECT_NAME}_elk && sleep $SLEEP_TIME
 
     elif [[ "$COMMAND" == "compose" ]]; then
 
