@@ -1,0 +1,60 @@
+filebeat:
+  autodiscover.providers:
+    - type: docker
+      templates:
+        - condition.or:
+            - contains:
+                docker.container.image: jacs-compute
+            - contains:
+                docker.container.image: jacs-messaging
+            - contains:
+                docker.container.image: jacs-storage
+          config:
+            - type: container
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              fields:
+                type: jacs
+              multiline:
+                # e.g. 2019-08-13_20:33:52.739
+                pattern: "^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}_[[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2}.[[:digit:]]{3} "
+                negate: true
+                match: after
+
+        - condition.or:
+            - contains:
+                docker.container.image: solr-search
+          config:
+            - type: container
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              fields:
+                type: solr
+              multiline:
+                # e.g. 2019-08-14 16:07:50
+                pattern: "^[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2} [[:digit:]]{2}:[[:digit:]]{2}:[[:digit:]]{2} "
+                negate: true
+                match: after
+
+        - condition.or:
+            - contains:
+                docker.container.image: api-gateway
+          config:
+            - type: container
+              paths:
+                - "/var/lib/docker/containers/${data.docker.container.id}/*.log"
+              fields:
+                type: api_gateway
+
+setup.kibana:
+  host: "c13u08:5601"
+  protocol: "http"
+
+output.logstash:
+  hosts: ["logstash:5044"]
+
+# Write Filebeat own logs only to file to avoid catching them with itself in docker log files
+logging.to_files: true
+logging.to_syslog: false
+
+setup.dashboards.enabled: false

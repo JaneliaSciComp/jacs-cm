@@ -1,0 +1,2 @@
+- pipeline.id: jacs_pipeline
+  path.config: "pipelines/jacs_pipeline.conf"

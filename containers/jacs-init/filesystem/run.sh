@@ -231,3 +231,38 @@ else
     echo "Verified jacs-messaging backups directory: $messaging_backups_dir"
 fi
 
+#
+# ElasticSearch Indexes Directory
+#
+elasticsearch_data_dir=$db_dir/elasticsearch
+if [[ ! -e "$elasticsearch_data_dir" ]]; then
+    echo "Initializing ElasticSearch indexes directory: $elasticsearch_data_dir"
+    mkdir -p $elasticsearch_data_dir
+else
+    echo "Verified ElasticSearch indexes directory: $elasticsearch_data_dir"
+fi
+
+#
+# Logstash config
+#
+logstash_dir=$config_dir/logstash
+if [[ ! -e "$logstash_dir" ]]; then
+    echo "Initializing logstash config directory: $logstash_dir"
+    mkdir -p $logstash_dir
+
+    echo "Copy logstash configuration"
+    cp -a $DIR/logstash/pipelines* $logstash_dir
+else
+    echo "Verified logstash config directory: $logstash_dir"
+fi
+
+#
+# Filebeat config
+#
+filebeat_dir=$config_dir/filebeat
+if [[ ! -e "$filebeat_dir" ]]; then
+    echo "Initializing filebeat config directory: $filebeat_dir"
+    cp -a $DIR/filebeat $config_dir
+else
+    echo "Verified filebeat config directory: $filebeat_dir"
+fi

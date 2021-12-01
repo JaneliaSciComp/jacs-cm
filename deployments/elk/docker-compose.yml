@@ -1,0 +1,373 @@
+version: '3.7'
+services:
+
+  escoord:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    healthcheck:
+      test: curl -fs http://localhost:9200/_cat/health || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    ports: 
+      - 9200:9200
+    environment:
+      - node.name=es-coord
+      - node.master=false
+      - node.data=false
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      mode: replicated
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - jacs-es-net
+
+  esmaster1:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-master1
+      - node.master=true
+      - node.data=false
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node1 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - esmaster1:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  esmaster2:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-master2
+      - node.master=true
+      - node.data=false
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node2 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - esmaster2:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  esmaster3:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-master3
+      - node.master=true
+      - node.data=false
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node3 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - esmaster3:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  esdata1:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-data1
+      - node.master=false
+      - node.data=true
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node1 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - ${DATA_DIR}/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  esdata2:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-data2
+      - node.master=false
+      - node.data=true
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node2 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - ${DATA_DIR}/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  esdata3:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    environment:
+      - node.name=es-data3
+      - node.master=false
+      - node.data=true
+      - node.ingest=false
+      - cluster.name=jacs-es-cluster
+      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - bootstrap.memory_lock=false
+      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+      - action.destructive_requires_name=true
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node3 ]
+      endpoint_mode: dnsrr
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    volumes:
+      - ${DATA_DIR}/elasticsearch:/usr/share/elasticsearch/data
+    networks:
+      - jacs-es-net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-oss:7.2.0
+    healthcheck:
+      test: curl -fs http://localhost:5601 || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    environment:
+      - ELASTICSEARCH_HOSTS=http://escoord:9200/
+    ports:
+      - 5601:5601
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - jacs-es-net
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:7.2.0
+    healthcheck:
+      test: curl -fs http://localhost:9600 || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+    environment:
+      - CONFIG_RELOAD_AUTOMATIC=true
+      - "LS_JAVA_OPTS=-Xmx16g -Xms16g"
+    volumes:
+      - ${CONFIG_DIR}/logstash:/usr/share/logstash:ro
+    ports:
+      - 5000:5000
+      - 9600:9600
+      - 5044:5044
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - jacs-es-net
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat-oss:7.2.0
+    command: filebeat -e -strict.perms=false
+    volumes:
+     - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+     - filebeat_data:/usr/share/filebeat/data:rw
+     - /opt/docker/containers:/var/lib/docker/containers:ro
+     - /var/run/docker.sock:/var/run/docker.sock
+    user: "0:0"
+    deploy:
+      mode: global
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - jacs-es-net
+
+networks:
+  jacs-es-net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  esmaster1:
+  esmaster2:
+  esmaster3:
+  filebeat_data:
