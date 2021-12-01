@@ -616,7 +616,8 @@ do
 
     elif [[ "$COMMAND" == "start-elk" ]]; then
 
-        $SUDO $DOCKER stack deploy --prune -c $ELK_DEPLOYMENT_DIR/docker-compose.yml ${COMPOSE_PROJECT_NAME}_elk && sleep $SLEEP_TIME
+        set -a && . .env && set +a
+        $SUDO $DOCKER stack deploy -c $ELK_DEPLOYMENT_DIR/docker-compose.yml ${COMPOSE_PROJECT_NAME}_elk && sleep $SLEEP_TIME
 
     elif [[ "$COMMAND" == "stop" ]]; then
 
