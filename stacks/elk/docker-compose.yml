@@ -81,6 +81,8 @@ services:
       - esmaster1:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
+    depends_on:
+      - esdata1
 
   esmaster2:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
@@ -120,6 +122,8 @@ services:
       - esmaster2:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
+    depends_on:
+      - esdata2
 
   esmaster3:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
@@ -159,6 +163,8 @@ services:
       - esmaster3:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
+    depends_on:
+      - esdata3
 
   esdata1:
     image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
