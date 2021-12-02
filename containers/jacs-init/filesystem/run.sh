@@ -249,10 +249,11 @@ fi
 logstash_dir=$config_dir/logstash
 if [[ ! -e "$logstash_dir" ]]; then
     echo "Initializing logstash config directory: $logstash_dir"
-    mkdir -p $logstash_dir
+    mkdir -p "${logstash_dir}"
 
     echo "Copy logstash configuration"
-    cp -a $DIR/logstash/pipelines* $logstash_dir
+    cp -a $DIR/logstash/pipelines.yml "$logstash_dir"
+    cp -a $DIR/logstash/pipeline "$logstash_dir"
 else
     echo "Verified logstash config directory: $logstash_dir"
 fi

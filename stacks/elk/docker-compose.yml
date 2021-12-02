@@ -322,7 +322,8 @@ services:
       - CONFIG_RELOAD_AUTOMATIC=true
       - "LS_JAVA_OPTS=-Xmx16g -Xms16g"
     volumes:
-      - ${CONFIG_DIR}/logstash:/usr/share/logstash:ro
+      - ${CONFIG_DIR}/logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
+      - ${CONFIG_DIR}/logstash/pipeline:/usr/share/logstash/pipeline:ro
     ports:
       - 5000:5000
       - 9600:9600
