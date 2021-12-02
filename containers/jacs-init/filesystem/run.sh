@@ -235,9 +235,10 @@ fi
 # ElasticSearch Indexes Directory
 #
 elasticsearch_data_dir=$DATA_DIR/elasticsearch
-if [[ ! -e "$elasticsearch_data_dir/nodes" ]]; then
+if [[ ! -e "$elasticsearch_data_dir" ]]; then
     echo "Initializing ElasticSearch indexes directory: $elasticsearch_data_dir"
-    mkdir -p "$elasticsearch_data_dir/nodes"
+    mkdir -p "$elasticsearch_data_dir"
+    chmod -R 2777 $elasticsearch_data_dir
 else
     echo "Verified ElasticSearch indexes directory: $elasticsearch_data_dir"
 fi
