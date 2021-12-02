@@ -53,7 +53,7 @@ services:
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=es-master1,es-master2,es-master3
       - bootstrap.memory_lock=false
-      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - discovery.seed_hosts=esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
@@ -94,7 +94,7 @@ services:
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=es-master1,es-master2,es-master3
       - bootstrap.memory_lock=false
-      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - discovery.seed_hosts=esmaster1,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
@@ -135,7 +135,7 @@ services:
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=es-master1,es-master2,es-master3
       - bootstrap.memory_lock=false
-      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
+      - discovery.seed_hosts=esmaster1,esmaster2
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
       - http.cors.enabled=true
       - http.cors.allow-origin=*
