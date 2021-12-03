@@ -4,18 +4,18 @@ services:
   escoord:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     healthcheck:
-      test: curl -fs http://escoord:9200/_cat/health || exit 1
+      test: curl -fs http://localhost:9200/_cat/health || exit 1
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 45s
-    ports: 
-      - 9200:9200
     environment:
-      - node.name=es-coord
-      - node.roles=
+      - node.name=escoord
+      - node.master=false
+      - node.data=false
+      - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
@@ -31,6 +31,7 @@ services:
     cap_add:
       - ALL
     deploy:
+      endpoint_mode: dnsrr
       mode: replicated
       replicas: 2
       restart_policy:
@@ -40,20 +41,16 @@ services:
         window: 120s
     networks:
       - jacs-es-net
-    depends_on:
-      - esmaster1
-      - esmaster2
-      - esmaster3
 
   esmaster1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-master1
+      - node.name=esmaster1
       - node.master=true
       - node.data=false
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
@@ -83,18 +80,16 @@ services:
       - esmaster1:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
-    depends_on:
-      - esdata1
 
   esmaster2:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-master2
+      - node.name=esmaster2
       - node.master=true
       - node.data=false
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
@@ -124,18 +119,16 @@ services:
       - esmaster2:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
-    depends_on:
-      - esdata2
 
   esmaster3:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-master3
+      - node.name=esmaster3
       - node.master=true
       - node.data=false
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
@@ -165,18 +158,16 @@ services:
       - esmaster3:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
-    depends_on:
-      - esdata3
 
   esdata1:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-data1
+      - node.name=esdata1
       - node.master=false
       - node.data=true
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
@@ -210,12 +201,12 @@ services:
   esdata2:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-data2
+      - node.name=esdata2
       - node.master=false
       - node.data=true
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
@@ -249,12 +240,12 @@ services:
   esdata3:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
-      - node.name=es-data3
+      - node.name=esdata3
       - node.master=false
       - node.data=true
       - node.ingest=false
       - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=es-master1,es-master2,es-master3
+      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
