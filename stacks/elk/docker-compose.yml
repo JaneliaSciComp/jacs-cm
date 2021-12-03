@@ -2,9 +2,9 @@ version: '3.7'
 services:
 
   escoord:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     healthcheck:
-      test: curl -fs http://localhost:9200/_cat/health || exit 1
+      test: curl -fs http://escoord:9200/_cat/health || exit 1
       interval: 30s
       timeout: 5s
       retries: 3
@@ -13,9 +13,7 @@ services:
       - 9200:9200
     environment:
       - node.name=es-coord
-      - node.master=false
-      - node.data=false
-      - node.ingest=false
+      - node.roles=
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=es-master1,es-master2,es-master3
       - bootstrap.memory_lock=false
@@ -48,7 +46,7 @@ services:
       - esmaster3
 
   esmaster1:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-master1
       - node.master=true
@@ -89,7 +87,7 @@ services:
       - esdata1
 
   esmaster2:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-master2
       - node.master=true
@@ -130,7 +128,7 @@ services:
       - esdata2
 
   esmaster3:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-master3
       - node.master=true
@@ -171,7 +169,7 @@ services:
       - esdata3
 
   esdata1:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-data1
       - node.master=false
@@ -210,7 +208,7 @@ services:
       - jacs-es-net
 
   esdata2:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-data2
       - node.master=false
@@ -249,7 +247,7 @@ services:
       - jacs-es-net
 
   esdata3:
-    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.2.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=es-data3
       - node.master=false
@@ -288,7 +286,7 @@ services:
       - jacs-es-net
 
   kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.2.0
+    image: docker.elastic.co/kibana/kibana:7.15.2
     healthcheck:
       test: curl -fs http://localhost:5601 || exit 1
       interval: 30s
@@ -316,9 +314,11 @@ services:
         window: 120s
     networks:
       - jacs-es-net
+    depends_on:
+      - escoord
 
   logstash:
-    image: docker.elastic.co/logstash/logstash-oss:7.2.0
+    image: docker.elastic.co/logstash/logstash:7.15.2
     healthcheck:
       test: curl -fs http://localhost:9600 || exit 1
       interval: 30s
@@ -354,14 +354,13 @@ services:
       - jacs-es-net
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat-oss:7.2.0
+    image: docker.elastic.co/beats/filebeat:7.15.2
     command: filebeat -e -strict.perms=false
     volumes:
      - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
      - filebeat_data:/usr/share/filebeat/data:rw
      - /opt/docker/containers:/var/lib/docker/containers:ro
      - /var/run/docker.sock:/var/run/docker.sock
-    user: "0:0"
     deploy:
       mode: global
       restart_policy:
