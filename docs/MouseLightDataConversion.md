@@ -1,20 +1,20 @@
 # Mouselight Data Conversion
 
 In principle, any 3d volumetric data can be imported into the MouseLight Workstation. 
-We provide some basic tools for converting TIFF format images into the expected format on disk.
+At this moment we only provide some very basic tools for converting only TIFF format images into the expected format on disk. Another limitation of the current tools is that the entire volume must be in a single tiff file (per channel)
 
-The imagery for MouseLight Workstation is a directory containing TIFF and KTX images organized into octrees. JACS compute includes a a service that can generate the octree data from a TIFF file. If there is more than 1 channel, the channels are numbered 0 .. n-s and each channel is expected to be in its own file. For example if you have 2 channels you would have two tiff files:
+The imagery for MouseLight Workstation is a directory containing TIFF and KTX images organized into octrees. JACS compute includes a a service that can generate the octree data from a single volume TIFF file. If there is more than 1 channel, the channels are numbered 0 .. n-1 and each channel is expected to be in its own file. For example if you have 2 channels you would have two tiff files:
 
 ```
 /path/to/volume/volume.0.tiff
 /path/to/volume/volume.1.tiff
 ```
 
-The current functionality is pretty basic and it assumes that the TIFF file contains the entire volume. The service also requires docker or singularity installed because the actual services are packaged in two docker containers - the first one that generates a TIFF octree and the second takes the TIFF octree and converts the octant channel images into the correspomding ktx blocks.
+The import service requires docker or singularity installed because the actual conversion services are packaged in two docker containers - one that generates a TIFF octree and the other one that takes the TIFF octree and converts the octant channel images into the correspomding ktx blocks.
 
 Currently pre-built containers for tiff octree tool and ktx tool are only available at Janelia's internal registry, but the containers build files are available at https://github.com/JaneliaSciComp/jacs-tools-docker.git in the 'tiff_octree' and 'ktx_octree' subdirectories, respectively. KTX tool container can also be built from https://github.com/JaneliaSciComp/pyktx.git.
 
-Generating the sample octree requires only a JACS service call which is a simple HTTP REST call that can be done using curl or Postman. This service can also be invoked from the JACS dashboard http://api-gateway-host:8080 by going to the "Services List" after Login and selecting "lvDataImport". The dashboard should also offer a brief description of each argument.
+Generating the sample octree requires only a JACS Async service call which is a simple HTTP REST call that can be done using curl or Postman. This service can also be invoked from the JACS dashboard http://api-gateway-host:8080 by going to the "Services List" after Login and selecting "lvDataImport". The dashboard should also offer a brief description of each argument.
 
 curl invocation to run the service with singularity (this is the JACS default):
 
