@@ -352,6 +352,7 @@ services:
      - filebeat_data:/usr/share/filebeat/data:rw
      - ${CONFIG_DIR}/filebeat/docker/containers:/var/lib/docker/containers:ro
      - /var/run/docker.sock:/var/run/docker.sock
+    user: '0:0'
     deploy:
       mode: global
       restart_policy:
