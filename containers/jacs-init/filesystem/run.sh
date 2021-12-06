@@ -268,3 +268,11 @@ if [[ ! -e "$filebeat_dir" ]]; then
 else
     echo "Verified filebeat config directory: $filebeat_dir"
 fi
+
+filebeat_containers_dir=$config_dir/filebeat/docker/containers
+if [[ ! -e "$filebeat_containers_dir" ]]; then
+    echo "Initializing filebeat containers directory: $filebeat_containers_dir"
+    mkdir -p $DIR/$filebeat_containers_dir
+else
+    echo "Verified filebeat containers directory: $filebeat_containers_dir"
+fi

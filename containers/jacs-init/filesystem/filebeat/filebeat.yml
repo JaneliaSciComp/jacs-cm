@@ -47,7 +47,7 @@ filebeat:
                 type: api_gateway
 
 setup.kibana:
-  host: "c13u08:5601"
+  host: "kibana:5601"
   protocol: "http"
 
 output.logstash:
