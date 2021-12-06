@@ -11,9 +11,7 @@ services:
       start_period: 45s
     environment:
       - node.name=escoord
-      - node.master=false
-      - node.data=false
-      - node.ingest=false
+      - node.roles=
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -46,9 +44,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esmaster1
-      - node.master=true
-      - node.data=false
-      - node.ingest=false
+      - node.roles=master
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -85,9 +81,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esmaster2
-      - node.master=true
-      - node.data=false
-      - node.ingest=false
+      - node.roles=master
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -124,9 +118,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esmaster3
-      - node.master=true
-      - node.data=false
-      - node.ingest=false
+      - node.roles=master
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -163,9 +155,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esdata1
-      - node.master=false
-      - node.data=true
-      - node.ingest=false
+      - node.roles=data
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -202,9 +192,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esdata2
-      - node.master=false
-      - node.data=true
-      - node.ingest=false
+      - node.roles=data
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
@@ -241,9 +229,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
     environment:
       - node.name=esdata3
-      - node.master=false
-      - node.data=true
-      - node.ingest=false
+      - node.roles=data
       - cluster.name=jacs-es-cluster
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
