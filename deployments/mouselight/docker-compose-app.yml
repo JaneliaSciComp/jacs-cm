@@ -122,6 +122,7 @@ services:
     volumes:
       - ${CONFIG_DIR}/jacs-async:/app/config:ro
       - ${DATA_DIR}:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - SERVICE_MODE=async
       - HOSTNAME=jacs-async
