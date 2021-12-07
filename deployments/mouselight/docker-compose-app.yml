@@ -86,7 +86,7 @@ services:
       - jacs-net
 
   jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
+    image: ${NAMESPACE}/jacs-compute:${JACS_SYNC_COMPUTE_VERSION}
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-sync:/app/config:ro
@@ -117,7 +117,7 @@ services:
       - jacs-net
 
   jacs-async:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
+    image: ${NAMESPACE}/jacs-async:${JACS_ASYNC_COMPUTE_VERSION}
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-async:/app/config:ro

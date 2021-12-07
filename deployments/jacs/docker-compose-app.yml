@@ -74,7 +74,7 @@ services:
       - jacs-net
 
   jacs-sync:
-    image: ${NAMESPACE}/jacs-compute:${JACS_COMPUTE_VERSION}
+    image: ${NAMESPACE}/jacs-compute:${JACS_SYNC_COMPUTE_VERSION}
     user: ${DOCKER_USER}
     volumes:
       - ${CONFIG_DIR}/jacs-sync:/app/config

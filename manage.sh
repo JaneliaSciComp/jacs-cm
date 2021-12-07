@@ -20,7 +20,8 @@ SLEEP_TIME=6
 export API_GATEWAY_VERSION=`cat $CONTAINER_DIR/api-gateway/VERSION`
 export BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
 export JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
-export JACS_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-compute/VERSION`
+export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-async/VERSION`
+export JACS_SYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-compute/VERSION`
 export JACS_DASHBOARD_VERSION=`cat $CONTAINER_DIR/jacs-dashboard/VERSION`
 export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
 export JACS_MESSAGING_VERSION=`cat $CONTAINER_DIR/jacs-messaging/VERSION`
@@ -285,7 +286,8 @@ if [[ "$1" == "versions" ]]; then
     echo "workstation-site: $WORKSTATION_VERSION"
     echo "api-gateway: $API_GATEWAY_VERSION"
     echo "jacs-init: $JACS_INIT_VERSION"
-    echo "jacs-compute: $JACS_COMPUTE_VERSION"
+    echo "jacs-compute: $JACS_SYNC_COMPUTE_VERSION"
+    echo "jacs-async: $JACS_ASYNC_COMPUTE_VERSION"
     echo "jacs-dashboard: $JACS_DASHBOARD_VERSION"
     echo "jacs-storage: $JACS_STORAGE_VERSION"
     echo "jacs-messaging: $JACS_MESSAGING_VERSION"
