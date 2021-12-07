@@ -35,8 +35,31 @@ RUN yum update -y && \
 
 RUN VERSION=1.11 OS=linux ARCH=amd64 && \
     wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
-    sudo tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
+    tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
     rm go$VERSION.$OS-$ARCH.tar.gz
+
+ENV GOPATH /gopath
+ENV PATH ${PATH}:${GOPATH}/bin
+RUN mkdir $GOPATH
+
+WORKDIR /singularity_install
+
+RUN go get -u github.com/golang/dep/cmd/dep && \
+    export VERSION=3.9.1 && \
+    wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \
+    rpmbuild -tb singularity-${VERSION}.tar.gz && \
+    sudo rpm -ivh ~/rpmbuild/RPMS/x86_64/singularity-$VERSION-1.el7.x86_64.rpm && \
+    rm -rf rpmbuild singularity-$VERSION*.tar.gz
+
+
+    # mkdir -p $GOPATH/src/github.com/sylabs && \
+    # cd $GOPATH/src/github.com/sylabs && \
+    # wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \
+    # tar -xzf singularity-${VERSION}.tar.gz && \
+    # cd ./singularity && \
+    # ./mconfig && \
+    # make -C ./builddir && \
+    # sudo make -C ./builddir install
 
 # Install the app
 RUN mkdir /app
