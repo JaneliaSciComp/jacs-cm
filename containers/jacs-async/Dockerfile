@@ -27,46 +27,39 @@ RUN yum update -y && \
     yum groupinstall -y 'Development Tools' && \
     yum install -y \
         java-1.8.0-openjdk-headless \
-        openssl-devel \
-        libuuid-devel \
-        libseccomp-devel \
         wget \
-        squashfs-tools        
+        libseccomp-devel \
+        squashfs-tools \
+        cryptsetup
 
-RUN VERSION=1.11 OS=linux ARCH=amd64 && \
-    wget https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz && \
-    tar -C /usr/local -xzvf go$VERSION.$OS-$ARCH.tar.gz && \
-    rm go$VERSION.$OS-$ARCH.tar.gz
+WORKDIR /gopath
 
 ENV GOPATH /gopath
-ENV PATH ${PATH}:${GOPATH}/bin
-RUN mkdir $GOPATH
+ENV GOVERSION 1.17.4.linux-amd64
+ENV PATH ${PATH}:/usr/local/go/bin:${GOPATH}/bin
 
-WORKDIR /singularity_install
+RUN wget https://dl.google.com/go/go$GOVERSION.tar.gz && \
+    tar -C /usr/local -xzvf go$GOVERSION.tar.gz && \
+    rm go$GOVERSION.tar.gz
 
-RUN go get -u github.com/golang/dep/cmd/dep && \
-    export VERSION=3.9.1 && \
-    wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \
-    rpmbuild -tb singularity-${VERSION}.tar.gz && \
-    sudo rpm -ivh ~/rpmbuild/RPMS/x86_64/singularity-$VERSION-1.el7.x86_64.rpm && \
-    rm -rf rpmbuild singularity-$VERSION*.tar.gz
+WORKDIR /app
 
+ENV SINGULARITY_VERSION 3.9.1
 
-    # mkdir -p $GOPATH/src/github.com/sylabs && \
-    # cd $GOPATH/src/github.com/sylabs && \
-    # wget https://github.com/sylabs/singularity/releases/download/v${VERSION}/singularity-${VERSION}.tar.gz && \
-    # tar -xzf singularity-${VERSION}.tar.gz && \
-    # cd ./singularity && \
-    # ./mconfig && \
-    # make -C ./builddir && \
-    # sudo make -C ./builddir install
+RUN mkdir /singularity_install && \
+    cd /singularity_install && \
+    wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VERSION}/singularity-ce-${SINGULARITY_VERSION}.tar.gz && \
+    rpmbuild -tb singularity-ce-${SINGULARITY_VERSION}.tar.gz && \
+    rpm -ivh ~/rpmbuild/RPMS/x86_64/singularity-ce-$SINGULARITY_VERSION-1.el7.x86_64.rpm && \
+    rm -rf ~/rpmbuild && \
+    rm -rf /singularity_install
 
 # Install the app
-RUN mkdir /app
 ENV JAVA_HOME /usr/lib/jvm/jre
-WORKDIR /app
 COPY --from=builder /tmp/jacs-compute/jacs2-asyncweb/build/install/jacs2-asyncweb ./async
 COPY start.sh /app/
 
 # Command for running the application
+
 CMD ["/bin/sh", "/app/start.sh"]
+
