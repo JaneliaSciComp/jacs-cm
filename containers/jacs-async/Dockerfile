@@ -22,10 +22,17 @@ LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Async Services"
 ENV HOSTNAME=localhost
 
-# Install JRE for running
+# Install JRE and singularity for running
 RUN yum update -y && \
+    yum install -y \
+        yum-utils \
+        device-mapper-persistent-data \
+	lvm2 && \
+    yum-config-manager --add-repo \
+        https://download.docker.com/linux/centos/docker-ce.repo && \
     yum groupinstall -y 'Development Tools' && \
     yum install -y \
+        docker-ce-stable docker-ce-cli \
         java-1.8.0-openjdk-headless \
         wget \
         libseccomp-devel \
@@ -45,6 +52,8 @@ RUN wget https://dl.google.com/go/go$GOVERSION.tar.gz && \
 WORKDIR /app
 
 ENV SINGULARITY_VERSION 3.9.1
+
+VOLUME /var/lib/docker
 
 RUN mkdir /singularity_install && \
     cd /singularity_install && \
