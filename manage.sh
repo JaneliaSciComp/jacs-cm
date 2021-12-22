@@ -331,7 +331,7 @@ if [[ "$1" == "init-filesystems" ]]; then
     DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML --env-file .env config > .tmp.swarm.yml
     DEPLOY_YML_CFG=`echo $YML | sed s/-f/-c/g`
     set -a && . .env && set +a
-    $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $STACK_NAME && sleep 10
+    export DOCKER_USER && $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $STACK_NAME && sleep 10
     $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
     $SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init
     set +x
@@ -613,7 +613,7 @@ do
         # the workaround is to use multiple configurations and set the environment from .env file
         DEPLOY_YML_CFG=`echo $YML | sed s/-f/-c/g`
         set -a && . .env && set +a
-        $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
+        export DOCKER_USER DOCKER_GID=$MYGID && $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $COMPOSE_PROJECT_NAME && sleep $SLEEP_TIME
         set +x
 
     elif [[ "$COMMAND" == "start-elk" ]]; then
@@ -646,7 +646,7 @@ do
         OPTS="$@"
         echo "Bringing $COMPOSE_COMMAND ($STAGE)"
         set -x
-        DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML $COMPOSE_COMMAND $OPTS
+        DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML --env-file .env.config $COMPOSE_COMMAND $OPTS
         set +x
 
     else

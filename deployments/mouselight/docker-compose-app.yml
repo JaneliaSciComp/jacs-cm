@@ -118,7 +118,7 @@ services:
 
   jacs-async:
     image: ${NAMESPACE}/jacs-async:${JACS_ASYNC_COMPUTE_VERSION}
-    user: ${DOCKER_USER}
+    user: "0:${DOCKER_GID}"
     volumes:
       - ${CONFIG_DIR}/jacs-async:/app/config:ro
       - ${DATA_DIR}:/data
@@ -142,6 +142,8 @@ services:
       - jacs_service_queue_id=${JACS_QUEUE_ID}
     expose:
       - "8080"
+    ports:
+      - "9000:8080"
     depends_on:
       - mongo1
     restart: unless-stopped
