@@ -646,7 +646,7 @@ do
         OPTS="$@"
         echo "Bringing $COMPOSE_COMMAND ($STAGE)"
         set -x
-        DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $YML --env-file .env.config $COMPOSE_COMMAND $OPTS
+        DOCKER_USER="$DOCKER_USER" DOCKER_GID=$MYGID $DOCKER_COMPOSE $YML --env-file .env.config $COMPOSE_COMMAND $OPTS
         set +x
 
     else
