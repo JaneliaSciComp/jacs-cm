@@ -27,6 +27,30 @@ If you would like to see the Swarm's status in a web-based GUI, we recommend ins
 
 ## Common issues
 
+### config variable not set
+
+If you see a lot of errors or warnings similar to the ones below, first check that the `.env` file was generated correctly - it should have all environment variables from .env.config, present and set. If it is not just remove it and try the commands again. It is possible that you may have run a command like `./manage.sh init-filesystems` before the swarm cluster was available.
+
+```
+WARN[0000] The "CONFIG_DIR" variable is not set. Defaulting to a blank string.
+WARN[0000] The "DATA_DIR" variable is not set. Defaulting to a blank string.
+WARN[0000] The "DB_DIR" variable is not set. Defaulting to a blank string.
+WARN[0000] The "BACKUPS_DIR" variable is not set. Defaulting to a blank string.
+WARN[0000] The "CERT_SUBJ" variable is not set. Defaulting to a blank string.
+WARN[0000] The "DEPLOYMENT" variable is not set. Defaulting to a blank string.
+WARN[0000] The "MONGODB_SECRET_KEY" variable is not set. Defaulting to a blank string.
+WARN[0000] The "API_GATEWAY_EXPOSED_HOST" variable is not set. Defaulting to a blank string.
+WARN[0000] The "RABBITMQ_EXPOSED_HOST" variable is not set. Defaulting to a blank string.
+WARN[0000] The "RABBITMQ_USER" variable is not set. Defaulting to a blank string.
+WARN[0000] The "RABBITMQ_PASSWORD" variable is not set. Defaulting to a blank string.
+WARN[0000] The "MAIL_SERVER" variable is not set. Defaulting to a blank string.
+WARN[0000] The "NAMESPACE" variable is not set. Defaulting to a blank string.
+WARN[0000] The "REDUNDANT_STORAGE" variable is not set. Defaulting to a blank string.
+WARN[0000] The "REDUNDANT_STORAGE" variable is not set. Defaulting to a blank string.
+WARN[0000] The "NON_REDUNDANT_STORAGE" variable is not set. Defaulting to a blank string.
+WARN[0000] The "NON_REDUNDANT_STORAGE" variable is not set. Defaulting to a blank string.
+```
+
 ### "network not found"
 
 If you see an intermittent error like this, just retry the command again:
