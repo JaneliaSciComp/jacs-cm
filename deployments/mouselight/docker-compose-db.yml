@@ -62,6 +62,8 @@ services:
     image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
     volumes:
       - ${DB_DIR}/solr:/data
+    environment:
+      - JAVA_OPTS=${SEARCH_JAVA_OPTS}
     expose:
       - 8080
     ports:
