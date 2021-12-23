@@ -63,7 +63,8 @@ services:
     volumes:
       - ${DB_DIR}/solr:/data
     environment:
-      - JAVA_OPTS=${SEARCH_JAVA_OPTS}
+      - SEARCH_MAX_MEM_SIZE=${SEARCH_MAX_MEM_SIZE:-30}
+      - SEARCH_INIT_MEM_SIZE=${SEARCH_INIT_MEM_SIZE:-10}
     expose:
       - 8080
     ports:
