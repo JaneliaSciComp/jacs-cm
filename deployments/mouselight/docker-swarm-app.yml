@@ -154,7 +154,7 @@ services:
       - jade_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jade_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jade_MongoDB_Password=${MONGODB_APP_PASSWORD}
-      - jade_StorageAgent_BootstrappedVolumes=jade2
+      - jade_StorageAgent_BootstrappedVolumes=${JADE_AGENT2_VOLUMES}
     expose:
       - '8080'
     ports:
