@@ -133,6 +133,7 @@ services:
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
+      - jacs_Solr_ServerURL=http://solr:8080/solr/
       - jacs_Messaging_Server=rabbitmq
       - jacs_Messaging_User=${RABBITMQ_USER}
       - jacs_Messaging_Password=${RABBITMQ_PASSWORD}
