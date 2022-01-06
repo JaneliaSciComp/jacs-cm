@@ -642,6 +642,7 @@ do
         shift 1 # remove compose command
 
         if [[ $1 == "--dbonly" ]]; then
+            echo "Start docker-compose only with DB services"
             shift 1 # remove dbonly flag
             getyml $STAGE "dbonly" "" "YML"
         else
