@@ -141,11 +141,10 @@ function getyml() {
             fi
 
         fi
-    fi
-
-    # custom JADE volume mounts
-    if [[ -e "local/docker-jade-volumes.yml" ]]; then
-        YML="$YML -f local/docker-jade-volumes.yml"
+        # custom JADE volume mounts
+        if [[ -e "local/docker-jade-volumes.yml" ]]; then
+            YML="$YML -f local/docker-jade-volumes.yml"
+        fi
     fi
 
     eval $_result_var="'$YML'"
