@@ -5,24 +5,6 @@
 
 DIR=$(cd "$(dirname "$0")"; pwd)
 
-echo
-echo "Customizing RabbitMQ Environment"
-RABBIT_CONF=$DIR/rabbitmq/rabbit_queues_config.json
-TMP_RABBIT_CONF=/tmp/rabbit_queues_config.json
-cp $RABBIT_CONF $TMP_RABBIT_CONF
-RABBITMQ_PASSWORD_HASH=$(python $DIR/rabbitmq/hash.py $RABBITMQ_PASSWORD)
-sed -i -e "s@RABBITMQ_USER@${RABBITMQ_USER}@g" $TMP_RABBIT_CONF
-sed -i -e "s@RABBITMQ_PASSWORD@${RABBITMQ_PASSWORD_HASH}@g" $TMP_RABBIT_CONF
-
-echo "RabbitMQ config: $(cat $TMP_RABBIT_CONF)"
-
-echo
-echo "Initializing RabbitMQ Data"
-curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$TMP_RABBIT_CONF http://rabbitmq:15672/api/definitions
-curl -v -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -X DELETE http://rabbitmq:15672/api/users/guest
-
-echo "Initialized RabbitMQ"
-
 if [[ -z "$MONGODB_INIT_ROOT_USERNAME" ]]; then
     echo "No MONGODB_INIT_ROOT_USERNAME is specified. Mongo will not be initialized."
     exit 1
@@ -56,8 +38,27 @@ for filepath in $DIR/mongo/*.json; do
     echo
     echo "Initializing default data from $filepath to $collection collection"
     echo "mongoimport --authenticationDatabase=admin -u $MONGODB_APP_USERNAME -p *** -h rsJacs/$REPLICA_HOSTS --db jacs --collection $collection $filepath"
-    mongoimport --authenticationDatabase admin -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD \
-                -h rsJacs/$REPLICA_HOSTS --db jacs --collection $collection $filepath
-
+    mongoimport --authenticationDatabase admin \
+                -u $MONGODB_APP_USERNAME -p $MONGODB_APP_PASSWORD \
+                -h rsJacs/$REPLICA_HOSTS \
+                --db jacs --collection $collection $filepath
     sleep 1
 done
+
+echo
+echo "Customizing RabbitMQ Environment"
+RABBIT_CONF=$DIR/rabbitmq/rabbit_queues_config.json
+TMP_RABBIT_CONF=/tmp/rabbit_queues_config.json
+cp $RABBIT_CONF $TMP_RABBIT_CONF
+RABBITMQ_PASSWORD_HASH=$(python $DIR/rabbitmq/hash.py $RABBITMQ_PASSWORD)
+sed -i -e "s@RABBITMQ_USER@${RABBITMQ_USER}@g" $TMP_RABBIT_CONF
+sed -i -e "s@RABBITMQ_PASSWORD@${RABBITMQ_PASSWORD_HASH}@g" $TMP_RABBIT_CONF
+
+echo "RabbitMQ config: $(cat $TMP_RABBIT_CONF)"
+
+echo
+echo "Initializing RabbitMQ Data"
+curl -v -u guest:guest -H "Content-Type: multipart/form-data" -H "Accept: application/json" -H "Expect:" -F file=@$TMP_RABBIT_CONF http://rabbitmq:15672/api/definitions
+curl -v -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -X DELETE http://rabbitmq:15672/api/users/guest
+
+echo "Initialized RabbitMQ"
