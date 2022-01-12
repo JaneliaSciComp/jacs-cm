@@ -9,4 +9,6 @@ rsconf = {
 
 rs.initiate(rsconf);
 
+rs.status();
+
 rs.conf();

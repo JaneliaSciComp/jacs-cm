@@ -347,7 +347,7 @@ fi
 if [[ "$1" == "init-local-filesystem" ]]; then
     echo "Initializing local file system..."
     set -x
-    $SUDO $DOCKER run --rm --env-file $DIR/.env -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    $SUDO $DOCKER run --env-file $DIR/.env -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
     set +x
     echo ""
     echo "The local filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
