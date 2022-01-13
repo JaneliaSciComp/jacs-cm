@@ -42,14 +42,14 @@ function init_mongo() {
   echo
   echo "Initializing MongoDB Users"
   cat >/tmp/createUserJacs.js <<-EOL
-  db.createUser(
-    {
-      user: "${MONGODB_APP_USERNAME}",
-      pwd: "${MONGODB_APP_PASSWORD}",
-      roles: [ { role: "readWriteAnyDatabase", db: "admin" } ],
-      passwordDigestor : "server"
-    });
-  EOL
+	db.createUser(
+	{
+	  user: "${MONGODB_APP_USERNAME}",
+	  pwd: "${MONGODB_APP_PASSWORD}",
+	  roles: [ { role: "readWriteAnyDatabase", db: "admin" } ],
+	  passwordDigestor : "server"
+	});
+	EOL
 
   REPLICA_HOSTS=mongo1:27017,mongo2:27017,mongo3:27017
   for filename in /tmp/*.js; do
