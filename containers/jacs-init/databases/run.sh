@@ -5,6 +5,28 @@
 
 DIR=$(cd "$(dirname "$0")"; pwd)
 
+
+function wait_for_rabbitmq() {
+    local rabbitmq_retries=0
+    local rabbitmq_running=
+
+    echo "Wait for RabbitMQ"
+    while [ ${rabbitmq_retries} -lt 10 ] ; do
+        rabbitmq_running=`curl -I -X HEAD http://rabbitmq:15672 | grep "HTTP.*200 OK"`
+        if [[ -n "${rabbitmq_running}" ]]; then
+            break
+        fi
+        sleep 5
+        ((rabbitmq_retries++))
+    done
+
+    if [ -z "${rabbitmq_running}" ] ; then
+        echo "RabbitMQ might not be up yet - tried ${rabbitmq_retries} times"
+    else
+        echo "RabbitMQ started"
+    fi
+}
+
 function init_rabbitmq() {
     echo
     echo "Customizing RabbitMQ Environment"
@@ -19,6 +41,8 @@ function init_rabbitmq() {
     sed -i -e "s@RABBITMQ_PASSWORD@${RABBITMQ_PASSWORD_HASH}@g" $TMP_RABBIT_CONF
 
     echo "RabbitMQ config: $(cat $TMP_RABBIT_CONF)"
+
+    wait_for_rabbitmq
 
     echo
     echo "Initializing RabbitMQ Data"
