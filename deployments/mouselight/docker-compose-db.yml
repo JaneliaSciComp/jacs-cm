@@ -22,7 +22,7 @@ services:
       - jacs-net
 
   mongo1:
-    image: mongo:5.0.5
+    image: mongo:${MONGO_VERSION}
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
@@ -39,7 +39,7 @@ services:
       - jacs-net
 
   mongo2:
-    image: mongo:5.0.5
+    image: mongo:${MONGO_VERSION}
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 12
     volumes:
@@ -49,7 +49,7 @@ services:
       - jacs-net
 
   mongo3:
-    image: mongo:5.0.5
+    image: mongo:${MONGO_VERSION}
     user: ${DOCKER_USER}
     command: --replSet rsJacs --keyFile /data/db/mongodb-keyfile --wiredTigerCacheSizeGB 1 --quiet
     volumes:
