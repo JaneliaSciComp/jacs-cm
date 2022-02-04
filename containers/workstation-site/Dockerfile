@@ -38,7 +38,7 @@ RUN WORKSTATION_BUILD_VERSION=$APP_TAG \
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install \
     && cd modules/application \
-    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD package -P deployment
+    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD package -P deployment -P javaws
 
 # Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
