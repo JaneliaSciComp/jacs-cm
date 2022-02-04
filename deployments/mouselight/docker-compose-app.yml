@@ -162,7 +162,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
-    image: ${NAMESPACE}/workstation-site:${WORKSTATION_VERSION}
+    image: ${NAMESPACE}/workstation-site-horta:${WORKSTATION_VERSION}
     expose:
       - "8080"
     ports:
