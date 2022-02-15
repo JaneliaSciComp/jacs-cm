@@ -1,0 +1,48 @@
+title: Janelia Workstation
+tagline: Discovery Platform for Neuroscience
+description: > # this means to ignore newlines until "baseurl:"
+  The Janelia Workstation is a discovery platform for neuroscience.
+  The aim of this project is to create a common framework for interaction
+  among scientists working in different labs, studying different organisms
+  with diverse modalities and computational methods.
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+components:
+    remote: false
+    vaa3d: false
+    fiji: false
+poc:
+    client:
+        username: rokickik
+        name: Konrad Rokicki
+        email: "rokickik@janelia.hhmi.org"
+    mouse:
+        username: olbrisd
+        name: Donald J. Olbris
+        email: "olbrisd@janelia.hhmi.org"
+urls:
+    git: "https://github.com/JaneliaSciComp/janelia-workstation"
+
+    bugs:
+        view: "https://github.com/JaneliaSciComp/workstation/issues"
+        report: "https://github.com/JaneliaSciComp/workstation/issues/new"
+        email: "mailto:workstation-support@janelia.hhmi.org"
+
+    docs:
+        user: "https://github.com/JaneliaSciComp/workstation/"
+
+    download:
+        mac: "/files/JaneliaWorkstation-macosx.tgz"
+        windows: "/files/JaneliaWorkstation-windows.exe"
+        linux: "/files/JaneliaWorkstation-linux.sh"
+
+    jdk:
+        mac: "https://cdn.azul.com/zulu/bin/zulu8.42.0.21-ca-jdk8.0.232-macosx_x64.dmg"
+        windows: "https://cdn.azul.com/zulu/bin/zulu8.42.0.21-ca-jdk8.0.232-win_x64.msi"
+        linux: "https://cdn.azul.com/zulu/bin/zulu8.42.0.21-ca-jdk8.0.232-linux_x64.tar.gz"
+
+# Build settings
+markdown: kramdown
+exclude:
+  - Gemfile
+  - Gemfile.lock
