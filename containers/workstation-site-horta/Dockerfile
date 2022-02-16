@@ -43,10 +43,10 @@ RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD 
 # Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
 LABEL maintainer="rokickik@janelia.hhmi.org"
-LABEL description="Janelia Workstation Website and Update Center"
+LABEL description="Horta Workstation Website and Update Center"
 
 RUN mkdir -p /var/www/files /var/www/updates
 COPY --from=jekyll /tmp/website/_site/ /var/www/
-COPY --from=builder /tmp/workstation/modules/application_horta/target/horta* /var/www/files/
+COPY --from=builder /tmp/workstation/modules/application_horta/target/Horta* /var/www/files/
 COPY --from=builder /tmp/workstation/modules/application_horta/target/netbeans_site/* /var/www/updates/
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
