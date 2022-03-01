@@ -2,14 +2,6 @@ version: "3.7"
 
 services:
 
-  jade-master:
-    volumes:
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
-      - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
-      - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
-      - /nrs/mouselight:/nrs/mouselight:ro,shared
-      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
-
   jade-agent1:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
@@ -21,7 +13,8 @@ services:
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
       - /nearline/flylight:/nearline/flylight:shared
-      - /groups/cosem:/groups/cosem:shared
+      - /groups/cellmap:/groups/cellmap:shared
+      - /nrs/scicompsoft:/nrs/scicompsoft:shared
 
   jacs-sync:
     volumes:
