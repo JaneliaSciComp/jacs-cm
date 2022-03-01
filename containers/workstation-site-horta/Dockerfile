@@ -47,6 +47,7 @@ LABEL description="Horta Workstation Website and Update Center"
 
 RUN mkdir -p /var/www/files /var/www/updates
 COPY --from=jekyll /tmp/website/_site/ /var/www/
+COPY --from=builder /tmp/workstation/modules/application/src/main/app-resources/horta48.png /var/www/files/
 COPY --from=builder /tmp/workstation/modules/application_horta/target/Horta* /var/www/files/
 COPY --from=builder /tmp/workstation/modules/application_horta/target/netbeans_site/* /var/www/updates/
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
