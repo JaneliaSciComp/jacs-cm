@@ -17,11 +17,12 @@ CONTAINER_DIR="$DIR/$CONTAINER_DIRNAME"
 SLEEP_TIME=6
 
 # Container versioning (exported so that they're available for use in docker compose files)
+JACS_SYNC_CONTAINER=jacs-compute
 export API_GATEWAY_VERSION=`cat $CONTAINER_DIR/api-gateway/VERSION`
 export BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
 export JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
 export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-async/VERSION`
-export JACS_SYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-compute/VERSION`
+export JACS_SYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/${JACS_SYNC_CONTAINER}/VERSION`
 export JACS_DASHBOARD_VERSION=`cat $CONTAINER_DIR/jacs-dashboard/VERSION`
 export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
 export JACS_MESSAGING_VERSION=`cat $CONTAINER_DIR/jacs-messaging/VERSION`
@@ -440,16 +441,14 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     shift
 
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-sync curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER} curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
 fi
 
 if [[ "$1" == "backup" ]]; then
-
     if [[ "$2" == "mongo" ]]; then
-
         FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
         MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
         echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
@@ -457,12 +456,9 @@ if [[ "$1" == "backup" ]]; then
         $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:${MONGO_VERSION} /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
         set +x
         exit 0
-
     else
-
         echo "Valid choices for backups are: mongo"
         exit 1
-
     fi
 fi
 
@@ -470,9 +466,33 @@ if [[ "$1" == "login" ]]; then
     read -p "Username: " JACS_USERNAME
     read -s -p "Password: " JACS_PASSWORD
     echo
-    export TOKEN=$($SUDO docker run $ENV_PARAM -it --rm $NAMESPACE/builder:latest /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
+    export TOKEN=$($SUDO docker run $ENV_PARAM \
+                    -it --rm $NAMESPACE/builder:latest \
+                    /bin/bash -c "curl -sk --request POST --url https://${API_GATEWAY_EXPOSED_HOST}/SCSW/AuthenticationService/v1/authenticate --header \"Content-Type: application/json\" --data \"{\\\"username\\\":\\\"${JACS_USERNAME}\\\",\\\"password\\\":\\\"${JACS_PASSWORD}\\\"}\" | jq -r .token")
     echo "Token generated. Export it to your environment like this:"
     echo "export TOKEN=$TOKEN"
+    exit 0
+fi
+
+if [[ "$1" == "createUserFromJson" ]]; then
+    if [[ "$#" -lt 2 ]]; then
+        echo "Missing JSON input:"
+        echo "Usage manage.sh createUserFromJson <jsoninput>"
+        exit 1
+    fi
+    set -x
+    cat $2
+    d=$(dirname $2)
+    $SUDO $DOCKER run $ENV_PARAM \
+        -u $DOCKER_USER \
+        --network ${NETWORK_NAME} \
+        -v $d:$d \
+        ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER} \
+        curl -X PUT http://jacs-sync:8080/api/rest-v2/data/user \
+        -H "Authorization: APIKEY $JACS_API_KEY" \
+        -H "Content-Type: application/json" \
+        --data "@$2"
+    set +x
     exit 0
 fi
 
