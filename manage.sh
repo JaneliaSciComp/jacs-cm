@@ -255,7 +255,6 @@ function publish {
         $SUDO $DOCKER push $PVNAME
         set +x
     fi
-
 }
 
 
@@ -441,7 +440,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     shift
 
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER} curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER}:${JACS_SYNC_COMPUTE_VERSION} curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
@@ -487,7 +486,7 @@ if [[ "$1" == "createUserFromJson" ]]; then
         -u $DOCKER_USER \
         --network ${NETWORK_NAME} \
         -v $d:$d \
-        ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER} \
+        ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER}:${JACS_SYNC_COMPUTE_VERSION} \
         curl -X PUT http://jacs-sync:8080/api/rest-v2/data/user \
         -H "Authorization: APIKEY $JACS_API_KEY" \
         -H "Content-Type: application/json" \
