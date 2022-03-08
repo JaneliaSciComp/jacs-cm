@@ -486,11 +486,12 @@ if [[ "$1" == "createUserFromJson" ]]; then
         -u $DOCKER_USER \
         --network ${NETWORK_NAME} \
         -v $d:$d \
-        ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER}:${JACS_SYNC_COMPUTE_VERSION} \
+        -it \
+        ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} \
         curl -X PUT http://jacs-sync:8080/api/rest-v2/data/user \
         -H "Authorization: APIKEY $JACS_API_KEY" \
         -H "Content-Type: application/json" \
-        --data "@$2"
+        --data @$2
     set +x
     exit 0
 fi
