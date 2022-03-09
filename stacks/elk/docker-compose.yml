@@ -9,6 +9,11 @@ services:
       timeout: 5s
       retries: 3
       start_period: 45s
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: host
     environment:
       - node.name=escoord
       - node.roles=
@@ -17,6 +22,8 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - allow_partial_search_results=true
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -50,6 +57,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -73,7 +81,7 @@ services:
         max_attempts: 3
         window: 120s
     volumes:
-      - esmaster1:/usr/share/elasticsearch/data
+      - esmaster1_data:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
 
@@ -87,6 +95,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -110,7 +119,7 @@ services:
         max_attempts: 3
         window: 120s
     volumes:
-      - esmaster2:/usr/share/elasticsearch/data
+      - esmaster2_data:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
 
@@ -124,6 +133,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -147,7 +157,7 @@ services:
         max_attempts: 3
         window: 120s
     volumes:
-      - esmaster3:/usr/share/elasticsearch/data
+      - esmaster3_data:/usr/share/elasticsearch/data
     networks:
       - jacs-es-net
 
@@ -161,6 +171,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -198,6 +209,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -235,6 +247,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - xpack.security.enabled=false
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
@@ -271,9 +284,13 @@ services:
       retries: 3
       start_period: 45s
     environment:
-      - ELASTICSEARCH_HOSTS=http://escoord:9200/
+      - ELASTICSEARCH_HOSTS=http://escoord:9200
+      - allow_partial_search_results=true
     ports:
-      - 5601:5601
+      - target: 5601
+        published: 5601
+        protocol: tcp
+        mode: host
     ulimits:
       nproc: 65535
       memlock:
@@ -282,6 +299,7 @@ services:
     cap_add:
       - ALL
     deploy:
+      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
       restart_policy:
@@ -303,15 +321,25 @@ services:
       retries: 3
       start_period: 45s
     environment:
+      - ELASTICSEARCH_URL=http://escoord:9200
       - CONFIG_RELOAD_AUTOMATIC=true
       - "LS_JAVA_OPTS=-Xmx16g -Xms16g"
     volumes:
       - ${CONFIG_DIR}/logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ${CONFIG_DIR}/logstash/pipeline:/usr/share/logstash/pipeline:ro
     ports:
-      - 5000:5000
-      - 9600:9600
-      - 5044:5044
+      - target:  5000
+        published: 5000
+        protocol: tcp
+        mode: host
+      - target:  9600
+        published: 9600
+        protocol: tcp
+        mode: host
+      - target:  5044
+        published: 5044
+        protocol: tcp
+        mode: host
     ulimits:
       nproc: 65535
       memlock:
@@ -320,6 +348,7 @@ services:
     cap_add:
       - ALL
     deploy:
+      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
       restart_policy:
@@ -340,6 +369,7 @@ services:
      - /var/run/docker.sock:/var/run/docker.sock
     user: '0:0'
     deploy:
+      endpoint_mode: dnsrr
       mode: global
       restart_policy:
         condition: on-failure
@@ -355,7 +385,7 @@ networks:
     attachable: true
 
 volumes:
-  esmaster1:
-  esmaster2:
-  esmaster3:
+  esmaster1_data:
+  esmaster2_data:
+  esmaster3_data:
   filebeat_data:
