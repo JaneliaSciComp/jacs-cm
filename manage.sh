@@ -341,7 +341,7 @@ if [[ "$1" == "init-filesystems" ]]; then
     DOCKER_USER="$DOCKER_USER" $DOCKER_COMPOSE $ENV_PARAM $YML config > .tmp.swarm.yml
     DEPLOY_YML_CFG=`echo $YML | sed s/-f/-c/g`
     set -a && . .env && set +a
-    DOCKER_USER=$DOCKER_USER $SUDO $DOCKER stack deploy $ENV_PARAM --prune $DEPLOY_YML_CFG $STACK_NAME && sleep 10
+    DOCKER_USER=$DOCKER_USER $SUDO $DOCKER stack deploy --prune $DEPLOY_YML_CFG $STACK_NAME && sleep 10
     $SUDO $DOCKER service logs --no-task-ids --no-trunc ${STACK_NAME}_jacs-init
     $SUDO $DOCKER service ps --no-trunc ${STACK_NAME}_jacs-init
     set +x
