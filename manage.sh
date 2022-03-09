@@ -487,9 +487,11 @@ if [[ "$1" == "createUserFromJson" ]]; then
         --network ${NETWORK_NAME} \
         -v $d:$d \
         ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} \
-        curl -X PUT http://jacs-sync:8080/api/rest-v2/data/user \
+        curl -i -X PUT http://jacs-sync:8080/api/rest-v2/data/user \
         -H "Authorization: APIKEY $JACS_API_KEY" \
         -H "Content-Type: application/json" \
+        --retry 5 \
+        --retry-delay 60 \
         --data @$2
     set +x
     exit 0
