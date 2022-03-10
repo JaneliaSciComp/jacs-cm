@@ -22,6 +22,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - reindex.remote.whitelist=c13u08.int.janelia.org:9200,c13u15.int.janelia.org:9200,c13u17.int.janelia.org:9200
       - allow_partial_search_results=true
       - xpack.security.enabled=false
       - http.cors.enabled=true
@@ -36,6 +37,9 @@ services:
     cap_add:
       - ALL
     deploy:
+      placement:
+        # place this on node1 or node2
+        constraints: [ node.labels.jacs_name!=node3 ]
       endpoint_mode: dnsrr
       mode: replicated
       replicas: 2
@@ -307,10 +311,10 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
-    networks:
-      - jacs-es-net
     depends_on:
       - escoord
+    networks:
+      - jacs-es-net
 
   logstash:
     image: docker.elastic.co/logstash/logstash:7.15.2
@@ -321,7 +325,7 @@ services:
       retries: 3
       start_period: 45s
     environment:
-      - ELASTICSEARCH_URL=http://escoord:9200
+      - xpack.monitoring.elasticsearch.hosts=http://escoord:9200
       - CONFIG_RELOAD_AUTOMATIC=true
       - "LS_JAVA_OPTS=-Xmx16g -Xms16g"
     volumes:
@@ -348,6 +352,8 @@ services:
     cap_add:
       - ALL
     deploy:
+      placement:
+        constraints: [ node.labels.jacs_name==node1 ]
       endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
@@ -356,6 +362,9 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    depends_on:
+      - escoord
+      - filebeat
     networks:
       - jacs-es-net
 
