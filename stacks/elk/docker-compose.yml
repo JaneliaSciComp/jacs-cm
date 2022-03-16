@@ -289,10 +289,12 @@ services:
       start_period: 90s
     environment:
       - ELASTICSEARCH_HOSTS=http://escoord:9200
+      # use host1 for public base URL since we have a placement constraint on node1
+      - SERVER_PUBLICBASEURL=http://${HOST1}:5601
       - SERVER_HOST=0.0.0.0
-      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=0ffbd1a13061c1bfc36c84cc16a87156
-      - XPACK_REPORTING_ENCRYPTIONKEY=370c6429a6ce528da7e851d3237c2e1e
-      - XPACK_SECURITY_ENCRYPTIONKEY=baec93d5eb3cb72a57ea36f3ba98bb31
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ELK_SAVED_OBJECTS_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ELK_REPORTING_KEY}
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ELK_SECURITY_KEY}
       - allow_partial_search_results=true
     ports:
       - target: 5601
