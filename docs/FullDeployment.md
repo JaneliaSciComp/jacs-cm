@@ -95,6 +95,10 @@ Currently, Janelia runs MongoDB outside of the Swarm, so they are commented out 
 Now you can follow the [Swarm Deployment instructions](SwarmDeployment.md) to actually deploy the software.
 
 
+## Deploy ELK for monitoring
+
+To deploy an ELK stack for monitoring follow [ELK Deployment](ELKDeployment.md).
+
 ## Find More Information
 
 This concludes the Workstation installation procedure. Further information on using the tools can be found in the [Janelia Workstation User Manual](https://github.com/JaneliaSciComp/workstation/blob/master/docs/UserManual.md).

@@ -29,6 +29,8 @@ COPY logback.xml /app
 
 # Command for running the application
 ENV SYSTEM_OWNER=group:workstation-users
+ENV NEURON_BROKER_BACKUP_QUEUE=
+ENV INDEXING_BROKER_BACKUP_QUEUE=
 
 CMD /usr/bin/java -Dlogback.configurationFile=/app/logback.xml \
 -jar /app/sharedWorkspaceBroker.jar \
@@ -37,6 +39,6 @@ CMD /usr/bin/java -Dlogback.configurationFile=/app/logback.xml \
 -p ${RABBITMQ_PASSWORD} \
 -DneuronBroker.persistenceServer=${JACS_URL} \
 -DneuronBroker.sharedSpaceOwner=${SYSTEM_OWNER} \
--DneuronBroker.backupLocation=/app/backup/neuronBrokerBackupQueue \
+-DneuronBroker.backupLocation=${NEURON_BROKER_BACKUP_QUEUE} \
 -DindexingBroker.indexingServer=${JACS_URL} \
--DindexingBroker.backupQueue=/app/backup/indexingBrokerBackupQueue
+-DindexingBroker.backupQueue=${INDEXING_BROKER_BACKUP_QUEUE}

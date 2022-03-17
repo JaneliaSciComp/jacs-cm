@@ -22,7 +22,7 @@ services:
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
-      - reindex.remote.whitelist=c13u08.int.janelia.org:9200,c13u15.int.janelia.org:9200,c13u17.int.janelia.org:9200
+      - reindex.remote.whitelist=${ELK_WHITELIST}
       - allow_partial_search_results=true
       - xpack.security.enabled=false
       - http.cors.enabled=true
