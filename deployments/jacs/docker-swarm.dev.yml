@@ -6,10 +6,15 @@ services:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
-      - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
@@ -21,14 +26,20 @@ services:
     volumes:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
-      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
-      - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
+      - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
+      - /groups/flylight:/groups/flylight:ro,shared
+      - /groups/projtechres:/groups/projtechres:ro,shared
+      - /groups/ditp:/groups/ditp:ro,shared
+      - /groups/leet:/groups/leet:ro,shared
+      - /groups/lightsheet:/groups/lightsheet:ro,shared
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
+      - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
       - /nearline/flylight:/nearline/flylight:shared
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
+
 
