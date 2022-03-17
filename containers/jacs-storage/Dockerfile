@@ -7,7 +7,10 @@ RUN mkdir /tmp/jade
 WORKDIR /tmp/jade
 RUN echo "Cloning $APP_TAG branch"
 RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs-storage.git . \
-    && ./gradlew --no-daemon installDist -x test
+    && ./gradlew --no-daemon distTar installDist -x test \
+    && ./gradlew -q printVersion > version
+RUN mkdir client \
+    && tar xf ./jacsstorage-clients/build/distributions/jacsstorage-clients-`cat version`.tar --strip-components=1 --directory client
 
 # Build the final container
 FROM scientificlinux/sl:7
@@ -23,10 +26,11 @@ ENV JAVA_HOME /usr/lib/jvm/jre
 WORKDIR /app
 COPY --from=builder /tmp/jade/jacsstorage-masterweb/build/install/jacsstorage-masterweb ./master
 COPY --from=builder /tmp/jade/jacsstorage-agentweb/build/install/jacsstorage-agentweb ./agent
+COPY --from=builder /tmp/jade/client ./client
 COPY start.sh /app/
 
-# Service mode defaults to master node, but can be set to agent
-ENV SERVICE_MODE=master
+# Service mode defaults to client, but can be set to master or agent to run a server
+ENV SERVICE_MODE=client
 # These variables must be set when running this container in agent mode
 ENV JADE_AGENT_EXPOSED_HOST=localhost
 ENV JADE_AGENT_EXPOSED_PORT=9880
