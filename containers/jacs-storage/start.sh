@@ -13,6 +13,5 @@ elif [[ "$SERVICE_MODE" = "agent" ]]; then
         -DStorageAgent.InitialPingDelayInSeconds=10 \
         -bootstrapStorageVolumes
 else
-    echo "Unsupported service mode specified (with SERVICE_MODE environment variable): $SERVICE_MODE"
-    exit 1
+    /app/client/bin/jade "$@"
 fi
