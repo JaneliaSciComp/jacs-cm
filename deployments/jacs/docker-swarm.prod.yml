@@ -17,6 +17,7 @@ services:
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
+      - /nearline/flylight:/nearline/flylight:shared
 
   jade-agent3:
     volumes:
@@ -33,4 +34,5 @@ services:
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
+      - /nearline/flylight:/nearline/flylight:shared
 
