@@ -541,6 +541,7 @@ if [[ "$#" -lt 1 ]]; then
     echo "  status [service] - Print the status of the specified service"
     echo "  restart [service] - Fetch the latest container for the service and redeploy it"
     echo "  mongo - Open shell into the Mongo database"
+    echo "  mongo-backup <backup location> - Backup Mongo database"
     echo "  dbMaintenance - Ensure that all databases indexes and denormalizations are up-to-date"
     echo "  rebuildSolrIndex - Rebuild the SOLR index from scratch"
     echo "  backup [mongo] - Generate a database backup into $BACKUPS_DIR"
