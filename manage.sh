@@ -394,7 +394,10 @@ if [[ "$1" == "mongo-backup" ]]; then
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation}
+    /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation} && \
+    cd $1 && \
+    rm "$1/latest" && \
+    ln -s ${current_date} latest
     set +x
     exit 0
 fi
