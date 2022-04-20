@@ -386,7 +386,7 @@ if [[ "$1" == "mongo-backup" ]]; then
         echo "$0 mongo-backup <backup location>"
         exit 1
     fi
-    current_date=$(date +%F)
+    current_date=$(date +%Y%m%d%H%M%S)
     backupLocation="$1/$current_date"
     echo "MongoDB backup to $backupLocation..."
     set -x
