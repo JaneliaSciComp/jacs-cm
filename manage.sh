@@ -390,7 +390,7 @@ if [[ "$1" == "mongo-backup" ]]; then
     backupLocation="$1/$current_date"
     echo "MongoDB backup to $backupLocation..."
     set -x
-    $SUDO $DOCKER run -it -u $DOCKER_USER \
+    $SUDO $DOCKER run $ENV_PARAM -it -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     mongo:${MONGO_VERSION} \
     /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" --out=${backupLocation}
