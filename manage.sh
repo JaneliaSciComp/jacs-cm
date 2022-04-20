@@ -396,7 +396,7 @@ if [[ "$1" == "mongo-backup" ]]; then
     mongo:${MONGO_VERSION} \
     /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation} && \
     cd $1 && \
-    rm "$1/latest" && \
+    rm -f "$1/latest" && \
     ln -s ${current_date} latest
     set +x
     exit 0
