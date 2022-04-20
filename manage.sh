@@ -380,6 +380,24 @@ if [[ "$1" == "mongo" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "mongo-backup" ]]; then
+    shift
+    if [[ $# == 0 ]]; then
+        echo "$0 mongo-backup <backup location>"
+        exit 1
+    fi
+    current_date=$(date +%F)
+    backupLocation="$1/$current_date"
+    echo "MongoDB backup to $backupLocation..."
+    set -x
+    $SUDO $DOCKER run -it -u $DOCKER_USER \
+    --network ${NETWORK_NAME} \
+    mongo:${MONGO_VERSION} \
+    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" --out=${backupLocation}
+    set +x
+    exit 0
+fi
+
 if [[ "$1" == "dbMaintenance" ]]; then
     echo "Perform DB maintenance..."
     shift
