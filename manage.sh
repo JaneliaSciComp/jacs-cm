@@ -392,8 +392,9 @@ if [[ "$1" == "mongo-backup" ]]; then
     set -x
     $SUDO $DOCKER run $ENV_PARAM -it -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
+    -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" --out=${backupLocation}
+    /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation}
     set +x
     exit 0
 fi
