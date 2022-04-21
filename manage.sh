@@ -375,7 +375,11 @@ fi
 if [[ "$1" == "mongo" ]]; then
     echo "Opening MongoDB shell..."
     set -x
-    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:${MONGO_VERSION} /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}"
+    $SUDO $DOCKER run -it \
+    -u $DOCKER_USER \
+    --network ${NETWORK_NAME} \
+    mongo:${MONGO_VERSION} \
+    /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}"
     set +x
     exit 0
 fi
@@ -394,7 +398,7 @@ if [[ "$1" == "mongo-backup" ]]; then
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation} && \
+    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" --out=${backupLocation} && \
     cd $1 && \
     rm -f "$1/latest" && \
     ln -s ${current_date} latest
