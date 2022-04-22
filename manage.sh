@@ -406,6 +406,24 @@ if [[ "$1" == "mongo-backup" ]]; then
     exit 0
 fi
 
+if [[ "$1" == "mongo-restore" ]]; then
+    shift
+    if [[ $# == 0 ]]; then
+        echo "$0 mongo-restore <backup location>"
+        exit 1
+    fi
+    backupLocation="$1"
+    echo "MongoDB restore from $backupLocation..."
+    set -x
+    $SUDO $DOCKER run $ENV_PARAM \
+    --network ${NETWORK_NAME} \
+    -v $backupLocation:$backupLocation \
+    mongo:${MONGO_VERSION} \
+    /usr/bin/mongorestore "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" ${backupLocation}
+    set +x
+    exit 0
+fi
+
 if [[ "$1" == "dbMaintenance" ]]; then
     echo "Perform DB maintenance..."
     shift
