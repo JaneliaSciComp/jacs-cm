@@ -387,11 +387,18 @@ if [[ "$1" == "mongo" ]]; then
         tty_param=""
         shift
     fi
+    run_options=""
+    if [[ "$1" == "-run-opts" ]]; then
+        run_options="$2"
+        shift
+        shift
+    fi
     echo "Opening MongoDB shell..."
     set -x
     $SUDO $DOCKER run ${tty_param} \
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
+    ${run_options} \
     mongo:${MONGO_VERSION} \
     /usr/bin/${mongo_tool} "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" "$@"
     set +x
