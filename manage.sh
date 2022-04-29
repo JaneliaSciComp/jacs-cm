@@ -493,12 +493,13 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
 
     set -x
     $SUDO $DOCKER run $ENV_PARAM \
+    -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     ${CONTAINER_PREFIX}${JACS_ASYNC_CONTAINER}:${JACS_ASYNC_COMPUTE_VERSION} \
     curl -X POST http://jacs-async:8080/api/rest-v2/async-services/solrIndexBuilder \
     -H 'Accept: application/json' \
     -H 'Content-Type: application/json' \
-    -H 'username: $USERNAME' \
+    -H "username: ${USERNAME}" \
     -d '{ "args": [], "resources": {} }'
     set +x
 
