@@ -375,13 +375,14 @@ if [[ "$1" == "init-databases" ]]; then
 fi
 
 if [[ "$1" == "mongo" ]]; then
+    shift
     echo "Opening MongoDB shell..."
     set -x
     $SUDO $DOCKER run -it \
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}"
+    /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" "$@"
     set +x
     exit 0
 fi
