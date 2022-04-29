@@ -376,9 +376,14 @@ fi
 
 if [[ "$1" == "mongo" ]]; then
     shift
+    tty_param="-it"
+    if [[ "$1" == "-notty" ]]; then
+        tty_param=""
+        shift
+    fi
     echo "Opening MongoDB shell..."
     set -x
-    $SUDO $DOCKER run -it \
+    $SUDO $DOCKER run ${tty_param} \
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     mongo:${MONGO_VERSION} \
