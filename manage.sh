@@ -483,8 +483,21 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     echo "Rebuilding SOLR index ..."
     shift
 
+    if [[ $# == 0 ]]; then
+        echo "$0 rebuildSolrIndex <username>"
+        exit 1
+    fi
+    USERNAME=$1
+
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER}:${JACS_SYNC_COMPUTE_VERSION} curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $SUDO $DOCKER run $ENV_PARAM \
+    -u $DOCKER_USER --network ${NETWORK_NAME} \
+    ${CONTAINER_PREFIX}${JACS_ASYNC_CONTAINER}:${JACS_ASYNC_COMPUTE_VERSION} \
+    curl -X POST http://jacs-async:8080/api/rest-v2/async-services/solrIndexBuilder \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -H 'username: $USERNAME' \
+    -d '{ "args": [], "resources": {} }'
     set +x
 
     exit 0
