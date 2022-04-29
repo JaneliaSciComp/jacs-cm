@@ -18,10 +18,12 @@ SLEEP_TIME=6
 
 # Container versioning (exported so that they're available for use in docker compose files)
 JACS_SYNC_CONTAINER=jacs-compute
+JACS_ASYNC_CONTAINER=jacs-async
+
 export API_GATEWAY_VERSION=`cat $CONTAINER_DIR/api-gateway/VERSION`
 export BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
 export JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
-export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-async/VERSION`
+export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/${JACS_ASYNC_CONTAINER}/VERSION`
 export JACS_SYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/${JACS_SYNC_CONTAINER}/VERSION`
 export JACS_DASHBOARD_VERSION=`cat $CONTAINER_DIR/jacs-dashboard/VERSION`
 export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
@@ -491,7 +493,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
 
     set -x
     $SUDO $DOCKER run $ENV_PARAM \
-    -u $DOCKER_USER --network ${NETWORK_NAME} \
+    --network ${NETWORK_NAME} \
     ${CONTAINER_PREFIX}${JACS_ASYNC_CONTAINER}:${JACS_ASYNC_COMPUTE_VERSION} \
     curl -X POST http://jacs-async:8080/api/rest-v2/async-services/solrIndexBuilder \
     -H 'Accept: application/json' \
