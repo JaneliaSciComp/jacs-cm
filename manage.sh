@@ -376,6 +376,12 @@ fi
 
 if [[ "$1" == "mongo" ]]; then
     shift
+    mongo_tool="mongo"
+    if [[ "$1" == "-tool" ]]; then
+        mongo_tool="$2"
+        shift
+        shift
+    fi
     tty_param="-it"
     if [[ "$1" == "-notty" ]]; then
         tty_param=""
@@ -387,7 +393,7 @@ if [[ "$1" == "mongo" ]]; then
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" "$@"
+    /usr/bin/${mongo_tool} "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" "$@"
     set +x
     exit 0
 fi
