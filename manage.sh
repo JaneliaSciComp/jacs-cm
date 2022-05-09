@@ -411,18 +411,14 @@ if [[ "$1" == "mongo-backup" ]]; then
         echo "$0 mongo-backup <backup location>"
         exit 1
     fi
-    current_date=$(date +%Y%m%d%H%M%S)
-    backupLocation="$1/$current_date"
+    backupLocation="$1"
     echo "MongoDB backup to $backupLocation..."
     set -x
     $SUDO $DOCKER run $ENV_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" --out=${backupLocation} && \
-    cd $1 && \
-    rm -f "$1/latest" && \
-    ln -s ${current_date} latest
+    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
     set +x
     exit 0
 fi
