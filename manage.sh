@@ -521,21 +521,6 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     exit 0
 fi
 
-if [[ "$1" == "backup" ]]; then
-    if [[ "$2" == "mongo" ]]; then
-        FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
-        MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
-        echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
-        set -x
-        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:${MONGO_VERSION} /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
-        set +x
-        exit 0
-    else
-        echo "Valid choices for backups are: mongo"
-        exit 1
-    fi
-fi
-
 if [[ "$1" == "login" ]]; then
     read -p "Username: " JACS_USERNAME
     read -s -p "Password: " JACS_PASSWORD
