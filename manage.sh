@@ -18,10 +18,12 @@ SLEEP_TIME=6
 
 # Container versioning (exported so that they're available for use in docker compose files)
 JACS_SYNC_CONTAINER=jacs-compute
+JACS_ASYNC_CONTAINER=jacs-async
+
 export API_GATEWAY_VERSION=`cat $CONTAINER_DIR/api-gateway/VERSION`
 export BUILDER_VERSION=`cat $CONTAINER_DIR/builder/VERSION`
 export JACS_INIT_VERSION=`cat $CONTAINER_DIR/jacs-init/VERSION`
-export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/jacs-async/VERSION`
+export JACS_ASYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/${JACS_ASYNC_CONTAINER}/VERSION`
 export JACS_SYNC_COMPUTE_VERSION=`cat $CONTAINER_DIR/${JACS_SYNC_CONTAINER}/VERSION`
 export JACS_DASHBOARD_VERSION=`cat $CONTAINER_DIR/jacs-dashboard/VERSION`
 export JACS_STORAGE_VERSION=`cat $CONTAINER_DIR/jacs-storage/VERSION`
@@ -373,9 +375,32 @@ if [[ "$1" == "init-databases" ]]; then
 fi
 
 if [[ "$1" == "mongo" ]]; then
+    shift
+    mongo_tool="mongo"
+    if [[ "$1" == "-tool" ]]; then
+        mongo_tool="$2"
+        shift
+        shift
+    fi
+    tty_param="-it"
+    if [[ "$1" == "-notty" ]]; then
+        tty_param=""
+        shift
+    fi
+    run_options=""
+    if [[ "$1" == "-run-opts" ]]; then
+        run_options="$2"
+        shift
+        shift
+    fi
     echo "Opening MongoDB shell..."
     set -x
-    $SUDO $DOCKER run -it -u $DOCKER_USER --network ${NETWORK_NAME} mongo:${MONGO_VERSION} /usr/bin/mongo "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}"
+    $SUDO $DOCKER run ${tty_param} \
+    -u $DOCKER_USER \
+    --network ${NETWORK_NAME} \
+    ${run_options} \
+    mongo:${MONGO_VERSION} \
+    /usr/bin/${mongo_tool} "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" "$@"
     set +x
     exit 0
 fi
@@ -386,18 +411,32 @@ if [[ "$1" == "mongo-backup" ]]; then
         echo "$0 mongo-backup <backup location>"
         exit 1
     fi
-    current_date=$(date +%Y%m%d%H%M%S)
-    backupLocation="$1/$current_date"
+    backupLocation="$1"
     echo "MongoDB backup to $backupLocation..."
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -it \
+    $SUDO $DOCKER run $ENV_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_SERVER}/jacs" --out=${backupLocation} && \
-    cd $1 && \
-    rm -f "$1/latest" && \
-    ln -s ${current_date} latest
+    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
+    set +x
+    exit 0
+fi
+
+if [[ "$1" == "mongo-restore" ]]; then
+    shift
+    if [[ $# == 0 ]]; then
+        echo "$0 mongo-restore <backup location>"
+        exit 1
+    fi
+    backupLocation="$1"
+    echo "MongoDB restore from $backupLocation..."
+    set -x
+    $SUDO $DOCKER run $ENV_PARAM \
+    --network ${NETWORK_NAME} \
+    -v $backupLocation:$backupLocation \
+    mongo:${MONGO_VERSION} \
+    /usr/bin/mongorestore "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" ${backupLocation}
     set +x
     exit 0
 fi
@@ -461,26 +500,25 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     echo "Rebuilding SOLR index ..."
     shift
 
+    if [[ $# == 0 ]]; then
+        echo "$0 rebuildSolrIndex <username>"
+        exit 1
+    fi
+    USERNAME=$1
+
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}${JACS_SYNC_CONTAINER}:${JACS_SYNC_COMPUTE_VERSION} curl -X PUT http://jacs-sync:8080/api/rest-v2/data/searchIndex?clearIndex=true -H "Authorization: APIKEY $JACS_API_KEY"
+    $SUDO $DOCKER run $ENV_PARAM \
+    -u $DOCKER_USER \
+    --network ${NETWORK_NAME} \
+    ${CONTAINER_PREFIX}${JACS_ASYNC_CONTAINER}:${JACS_ASYNC_COMPUTE_VERSION} \
+    curl -X POST http://jacs-async:8080/api/rest-v2/async-services/solrIndexBuilder \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -H "username: ${USERNAME}" \
+    -d '{ "args": [], "resources": {} }'
     set +x
 
     exit 0
-fi
-
-if [[ "$1" == "backup" ]]; then
-    if [[ "$2" == "mongo" ]]; then
-        FILENAME=mongo-$(date +%Y%m%d%H%M%S).archive
-        MONGO_BACKUPS_DIR=$BACKUPS_DIR/mongo
-        echo "Dumping Mongo backup to $MONGO_BACKUPS_DIR/$FILENAME"
-        set -x
-        $SUDO $DOCKER run --rm -i -v $MONGO_BACKUPS_DIR:/backup -u $DOCKER_USER --network ${NETWORK_NAME} mongo:${MONGO_VERSION} /usr/bin/mongodump --uri "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --archive=/backup/$FILENAME
-        set +x
-        exit 0
-    else
-        echo "Valid choices for backups are: mongo"
-        exit 1
-    fi
 fi
 
 if [[ "$1" == "login" ]]; then
