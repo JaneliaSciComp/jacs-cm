@@ -622,11 +622,12 @@ do
         getcontainer $1 "NAME"
         getversion $NAME "VERSION"
         CDIR="$CONTAINER_DIR/$NAME"
+	shift
         if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             set -x
-            $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME
+            $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME "$@"
             set +x
         fi
 
