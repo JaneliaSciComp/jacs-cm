@@ -622,7 +622,7 @@ do
         getcontainer $1 "NAME"
         getversion $NAME "VERSION"
         CDIR="$CONTAINER_DIR/$NAME"
-	shift
+        shift
         if [[ ! -z $VERSION ]]; then
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
