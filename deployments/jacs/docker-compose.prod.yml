@@ -18,6 +18,7 @@ services:
       - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
       - /data/s3data:/s3data:shared
       - /nearline/flylight:/nearline/flylight:shared
+      - /groups/cellmap:/groups/cellmap:shared
 
   jacs-sync:
     volumes:
