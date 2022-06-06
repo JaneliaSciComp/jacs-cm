@@ -25,6 +25,7 @@ services:
       - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:shared
+      - /groups/jacs/jacsShare:/groups/jacs/jacsShare:shared
       - /groups/flylight:/groups/flylight:ro,shared
       - /groups/projtechres:/groups/projtechres:ro,shared
       - /groups/ditp:/groups/ditp:ro,shared
