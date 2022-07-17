@@ -16,7 +16,7 @@ services:
       - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
-      - /nrs/svoboda/bakaj/mouselight_data:/nrs/svoboda/bakaj/mouselight_data:ro,shared
+      - /nrs/svoboda:/nrs/svoboda:ro,shared
       - /data/s3data:/s3data:shared
       - /nearline/flylight:/nearline/flylight:shared
       - /groups/cellmap:/groups/cellmap:shared
