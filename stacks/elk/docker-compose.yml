@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   escoord:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     healthcheck:
       test: curl -fs http://localhost:9200/_cat/health || exit 1
       interval: 30s
@@ -21,7 +21,7 @@ services:
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "ES_JAVA_OPTS=-Xms7g -Xmx7g"
       - reindex.remote.whitelist=${ELK_WHITELIST}
       - allow_partial_search_results=true
       - xpack.security.enabled=false
@@ -31,6 +31,7 @@ services:
       - action.destructive_requires_name=true
     ulimits:
       nproc: 65535
+      nofile: 65536
       memlock:
         soft: -1
         hard: -1
@@ -40,6 +41,9 @@ services:
       placement:
         # place this on node1 or node2
         constraints: [ node.labels.jacs_name!=node3 ]
+      resources:
+        limits:
+          memory: 8g
       endpoint_mode: dnsrr
       mode: replicated
       replicas: 2
@@ -52,7 +56,7 @@ services:
       - jacs-es-net
 
   esmaster1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esmaster1
       - node.roles=master
@@ -90,7 +94,7 @@ services:
       - jacs-es-net
 
   esmaster2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esmaster2
       - node.roles=master
@@ -128,7 +132,7 @@ services:
       - jacs-es-net
 
   esmaster3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esmaster3
       - node.roles=master
@@ -166,7 +170,7 @@ services:
       - jacs-es-net
 
   esdata1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esdata1
       - node.roles=data
@@ -204,7 +208,7 @@ services:
       - jacs-es-net
 
   esdata2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esdata2
       - node.roles=data
@@ -242,7 +246,7 @@ services:
       - jacs-es-net
 
   esdata3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
     environment:
       - node.name=esdata3
       - node.roles=data
@@ -280,7 +284,7 @@ services:
       - jacs-es-net
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.0
+    image: docker.elastic.co/kibana/kibana:7.17.5
     healthcheck:
       test: curl -fs http://localhost:5601/status || exit 1
       interval: 30s
@@ -325,7 +329,7 @@ services:
       - jacs-es-net
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.17.0
+    image: docker.elastic.co/logstash/logstash:7.17.5
     healthcheck:
       test: curl -fs http://localhost:9600 || exit 1
       interval: 30s
@@ -377,7 +381,7 @@ services:
       - jacs-es-net
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:7.17.0
+    image: docker.elastic.co/beats/filebeat:7.17.5
     command: filebeat -e -strict.perms=false
     volumes:
      - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
