@@ -102,6 +102,18 @@ else
 fi
 
 #
+# Solr Config
+#
+solr_config_dir=$config_dir/solr
+if [[ ! -e "$solr_config_dir" ]]; then
+    echo "Initializing SOLR config directory: $solr_config_dir"
+    mkdir -p $solr_config_dir
+    cp $DIR/solr/* $solr_config_dir
+else
+    echo "Verified SOLR config directory: $solr_config_dir"
+fi
+
+#
 # JACS Async Services
 #
 jacs_async_dir=$config_dir/jacs-async
