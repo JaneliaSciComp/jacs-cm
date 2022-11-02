@@ -38,4 +38,3 @@ ENV JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
 
 # Command for running the application
 CMD ["/bin/sh", "/app/start.sh"]
-
