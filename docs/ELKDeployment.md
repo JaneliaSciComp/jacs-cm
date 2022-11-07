@@ -31,7 +31,7 @@ Some useful elasticsearch endpoints:
 ```
 #!/bin/bash
 
-remoteost=$1
+remoteHost=$1
 indexName=$2
 
 curl -H 'Content-Type: application/json' -X POST http://e03u08.int.janelia.org:9200/_reindex -d "{
