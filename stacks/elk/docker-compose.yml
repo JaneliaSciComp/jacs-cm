@@ -11,7 +11,7 @@ services:
       - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
       - discovery.seed_hosts=esmaster2,esmaster3
-      - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
       - reindex.remote.whitelist=${ELK_WHITELIST}
       - bootstrap.memory_lock=false
       - xpack.security.enabled=false
@@ -26,7 +26,7 @@ services:
         constraints: [ node.labels.jacs_name==node1 ]
       resources:
         limits:
-          memory: 9000M
+          memory: 4200M
       mode: replicated
       replicas: 1
       restart_policy:
@@ -64,7 +64,7 @@ services:
         constraints: [ node.labels.jacs_name==node2 ]
       resources:
         limits:
-          memory: 4500M
+          memory: 4200M
       mode: replicated
       replicas: 1
       restart_policy:
@@ -102,7 +102,7 @@ services:
         constraints: [ node.labels.jacs_name==node3 ]
       resources:
         limits:
-          memory: 4500M
+          memory: 4200M
       mode: replicated
       replicas: 1
       restart_policy:
