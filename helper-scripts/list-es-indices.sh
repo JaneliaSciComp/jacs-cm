@@ -1,4 +1,7 @@
 esHost=$1
-esPort=${2:-9200}
+shift
 
-curl http://${esHost}:${esPort}/_cat/indices
+esPort=${1:-9200}
+shift
+
+curl http://${esHost}:${esPort}/_cat/indices/$*
