@@ -1,86 +1,32 @@
-version: '3.7'
+version: '3.8'
 services:
 
-  escoord:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
-    healthcheck:
-      test: curl -fs http://localhost:9200/_cat/health || exit 1
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 45s
-    ports:
-      - target: 9200
-        published: 9200
-        protocol: tcp
-        mode: host
-    environment:
-      - node.name=escoord
-      - node.roles=
-      - cluster.name=jacs-es-cluster
-      - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
-      - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
-      - "ES_JAVA_OPTS=-Xms7g -Xmx7g"
-      - reindex.remote.whitelist=${ELK_WHITELIST}
-      - allow_partial_search_results=true
-      - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
-    ulimits:
-      nproc: 65535
-      nofile: 65536
-      memlock:
-        soft: -1
-        hard: -1
-    cap_add:
-      - ALL
-    deploy:
-      placement:
-        # place this on node1 or node2
-        constraints: [ node.labels.jacs_name!=node3 ]
-      resources:
-        limits:
-          memory: 8g
-      endpoint_mode: dnsrr
-      mode: replicated
-      replicas: 2
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-    networks:
-      - jacs-es-net
-
   esmaster1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    ports:
+      - 9200:9200
     environment:
       - node.name=esmaster1
       - node.roles=master
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster2,esmaster3
-      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+      - reindex.remote.whitelist=${ELK_WHITELIST}
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
+      - network.publish_host=esmaster1
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node1 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 9000M
       mode: replicated
       replicas: 1
       restart_policy:
@@ -94,31 +40,31 @@ services:
       - jacs-es-net
 
   esmaster2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    ports:
+      - 9201:9200
     environment:
       - node.name=esmaster2
       - node.roles=master
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster3
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - reindex.remote.whitelist=${ELK_WHITELIST}
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
+      - network.publish_host=esmaster2
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node2 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 4500M
       mode: replicated
       replicas: 1
       restart_policy:
@@ -132,31 +78,31 @@ services:
       - jacs-es-net
 
   esmaster3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
+    ports:
+      - 9202:9200
     environment:
       - node.name=esmaster3
       - node.roles=master
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2
       - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - reindex.remote.whitelist=${ELK_WHITELIST}
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
+      - network.publish_host=esmaster3
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node3 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 4500M
       mode: replicated
       replicas: 1
       restart_policy:
@@ -170,31 +116,27 @@ services:
       - jacs-es-net
 
   esdata1:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     environment:
       - node.name=esdata1
       - node.roles=data
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node1 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 25g
       mode: replicated
       replicas: 1
       restart_policy:
@@ -208,31 +150,27 @@ services:
       - jacs-es-net
 
   esdata2:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     environment:
       - node.name=esdata2
       - node.roles=data
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node2 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 25g
       mode: replicated
       replicas: 1
       restart_policy:
@@ -246,31 +184,27 @@ services:
       - jacs-es-net
 
   esdata3:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION}
     environment:
       - node.name=esdata3
       - node.roles=data
-      - cluster.name=jacs-es-cluster
+      - cluster.name=${ELASTIC_CLUSTER_NAME}
       - cluster.initial_master_nodes=esmaster1,esmaster2,esmaster3
-      - bootstrap.memory_lock=false
       - discovery.seed_hosts=esmaster1,esmaster2,esmaster3
       - "ES_JAVA_OPTS=-Xms24g -Xmx24g"
+      - bootstrap.memory_lock=false
       - xpack.security.enabled=false
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=0.0.0.0
-      - action.destructive_requires_name=true
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node3 ]
-      endpoint_mode: dnsrr
+      resources:
+        limits:
+          memory: 25g
       mode: replicated
       replicas: 1
       restart_policy:
@@ -284,7 +218,7 @@ services:
       - jacs-es-net
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.5
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION}
     healthcheck:
       test: curl -fs http://localhost:5601/status || exit 1
       interval: 30s
@@ -292,30 +226,25 @@ services:
       retries: 3
       start_period: 90s
     environment:
-      - ELASTICSEARCH_HOSTS=http://escoord:9200
+      - xpack.reporting.kibanaServer.hostname=${HOST1}
       # use host1 for public base URL since we have a placement constraint on node1
+      - ELASTICSEARCH_HOSTS=http://esmaster1:9200
+      - ELASTICSEARCH_USERNAME=${KIBANA_USER}
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASS}
       - SERVER_PUBLICBASEURL=http://${HOST1}:5601
-      - SERVER_HOST=0.0.0.0
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ELK_SAVED_OBJECTS_KEY}
       - XPACK_REPORTING_ENCRYPTIONKEY=${ELK_REPORTING_KEY}
       - XPACK_SECURITY_ENCRYPTIONKEY=${ELK_SECURITY_KEY}
-      - allow_partial_search_results=true
     ports:
-      - target: 5601
-        published: 5601
-        protocol: tcp
-        mode: host
+      - 5601:5601
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node1 ]
-      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
       restart_policy:
@@ -323,13 +252,17 @@ services:
         delay: 5s
         max_attempts: 3
         window: 120s
+    volumes:
+      - ${CONFIG_DIR}/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+      - ${DATA_DIR}/elasticsearch/kibana:/usr/share/kibana/data
     depends_on:
-      - escoord
+      - esmaster1
+      - logstash
     networks:
       - jacs-es-net
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:7.17.5
+    image: docker.elastic.co/logstash/logstash:${ELASTIC_VERSION}
     healthcheck:
       test: curl -fs http://localhost:9600 || exit 1
       interval: 30s
@@ -337,36 +270,24 @@ services:
       retries: 3
       start_period: 45s
     environment:
-      - xpack.monitoring.elasticsearch.hosts=http://escoord:9200
+      - xpack.monitoring.elasticsearch.hosts=http://esmaster1:9200
       - CONFIG_RELOAD_AUTOMATIC=true
       - "LS_JAVA_OPTS=-Xmx16g -Xms16g"
     volumes:
       - ${CONFIG_DIR}/logstash/pipelines.yml:/usr/share/logstash/pipelines.yml:ro
       - ${CONFIG_DIR}/logstash/pipeline:/usr/share/logstash/pipeline:ro
     ports:
-      - target:  5000
-        published: 5000
-        protocol: tcp
-        mode: host
-      - target:  9600
-        published: 9600
-        protocol: tcp
-        mode: host
-      - target:  5044
-        published: 5044
-        protocol: tcp
-        mode: host
+      - 5000:5000
+      - 9600:9600
+      - 5044:5044
     ulimits:
       nproc: 65535
       memlock:
         soft: -1
         hard: -1
-    cap_add:
-      - ALL
     deploy:
       placement:
         constraints: [ node.labels.jacs_name==node1 ]
-      endpoint_mode: dnsrr
       mode: replicated
       replicas: 1
       restart_policy:
@@ -375,13 +296,13 @@ services:
         max_attempts: 3
         window: 120s
     depends_on:
-      - escoord
+      - esmaster1
       - filebeat
     networks:
       - jacs-es-net
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:7.17.5
+    image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
     command: filebeat -e -strict.perms=false
     volumes:
      - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
@@ -390,7 +311,6 @@ services:
      - /var/run/docker.sock:/var/run/docker.sock
     user: '0:0'
     deploy:
-      endpoint_mode: dnsrr
       mode: global
       restart_policy:
         condition: on-failure
