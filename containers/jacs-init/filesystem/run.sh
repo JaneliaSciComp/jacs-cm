@@ -250,7 +250,7 @@ elasticsearch_data_dir=$DATA_DIR/elasticsearch
 if [[ ! -e "${elasticsearch_data_dir}" ||
       ! -e "${elasticsearch_data_dir}/data" ||
       ! -e "${elasticsearch_data_dir}/master" ||
-      ! -e  "${elasticsearch_data_dir}/kibana" ]]; then
+      ! -e "${elasticsearch_data_dir}/kibana" ]]; then
     echo "Initializing ElasticSearch indexes directory: ${elasticsearch_data_dir}"
     mkdir -p "${elasticsearch_data_dir}/data"
     mkdir -p "${elasticsearch_data_dir}/master"
