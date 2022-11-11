@@ -21,6 +21,7 @@ services:
       - /nearline/flylight:/nearline/flylight:shared
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
+      - /nrs/cellmap:/nrs/cellmap:shared
 
   jacs-sync:
     volumes:
