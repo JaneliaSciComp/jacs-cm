@@ -21,6 +21,7 @@ services:
       - /nearline/flylight:/nearline/flylight:shared
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
+      - /nrs/cellmap:/nrs/cellmap:shared
 
   jade-agent3:
     volumes:
@@ -41,5 +42,6 @@ services:
       - /nearline/flylight:/nearline/flylight:shared
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
+      - /nrs/cellmap:/nrs/cellmap:shared
 
 
