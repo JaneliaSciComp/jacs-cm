@@ -31,6 +31,7 @@ export JACS_MESSAGING_VERSION=`cat $CONTAINER_DIR/jacs-messaging/VERSION`
 export IPP_VERSION=`cat $CONTAINER_DIR/ipp/VERSION`
 export SOLR_SEARCH_VERSION=`cat $CONTAINER_DIR/solr-search/VERSION`
 export WORKSTATION_VERSION=`cat $CONTAINER_DIR/workstation-site/VERSION`
+export WORKSTATION_HORTA_VERSION=`cat $CONTAINER_DIR/workstation-site-horta/VERSION`
 
 # Environment file
 ENV_CONFIG=${ENV_CONFIG:-.env.config}
@@ -296,6 +297,7 @@ if [[ "$1" == "versions" ]]; then
     echo
     echo "builder: $BUILDER_VERSION"
     echo "workstation-site: $WORKSTATION_VERSION"
+    echo "workstation-horta-site: $WORKSTATION_HORTA_VERSION"
     echo "api-gateway: $API_GATEWAY_VERSION"
     echo "jacs-init: $JACS_INIT_VERSION"
     echo "jacs-compute: $JACS_SYNC_COMPUTE_VERSION"
