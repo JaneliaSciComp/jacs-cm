@@ -19,6 +19,7 @@ services:
       - /nrs/svoboda:/nrs/svoboda:ro,shared
       - /data/s3:/data/s3:shared
       - /nearline/flylight:/nearline/flylight:shared
+      - /nearline/jacs:/nearline/jacs:shared
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
       - /nrs/cellmap:/nrs/cellmap:shared
