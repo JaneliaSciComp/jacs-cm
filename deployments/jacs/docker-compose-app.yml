@@ -19,7 +19,7 @@ services:
     environment:
       - SYSTEM_OWNER=group:mouselight
       - RABBITMQ_HOSTNAME=rabbitmq
-      - JACS_URL=http://jacs-sync:8080/api/rest-v2/
+      - JACS_URL=${JACS_SYNC_SERVER:-http://jacs-sync:8080}/api/rest-v2/
       - RABBITMQ_USER=${RABBITMQ_USER}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
       - JACSBROKER_CONFIG=/app/config/jacsbroker.properties

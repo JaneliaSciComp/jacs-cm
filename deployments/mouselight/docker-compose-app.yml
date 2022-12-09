@@ -166,7 +166,7 @@ services:
 
   workstation-site:
     # Nginx must run as root
-    image: ${NAMESPACE}/workstation-site-horta:${WORKSTATION_VERSION}
+    image: ${NAMESPACE}/workstation-site-horta:${WORKSTATION_HORTA_VERSION}
     expose:
       - "8080"
     restart: unless-stopped

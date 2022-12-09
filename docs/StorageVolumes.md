@@ -8,11 +8,11 @@ The Workstation/JACS system relies on JADE for its storage API.
 
 On HOST1, edit /opt/jacs/config/jade/config.properties and add a block for your new volume, for example:
 ```
-StorageVolume.s3data.RootDir=/s3data
-StorageVolume.s3data.VirtualPath=/s3jade
-StorageVolume.s3data.Shared=true
-StorageVolume.s3data.Tags=aws,cloud
-StorageVolume.s3data.VolumePermissions=READ,WRITE,DELETE
+StorageVolume.janelia-mouselight-imagery.RootDir=/data/s3/janelia-mouselight-imagery
+StorageVolume.janelia-mouselight-imagery.VirtualPath=/data/s3/janelia-mouselight-imagery
+StorageVolume.janelia-mouselight-imagery.Shared=true
+StorageVolume.janelia-mouselight-imagery.Tags=aws,cloud
+StorageVolume.janelia-mouselight-imagery.VolumePermissions=READ,WRITE,DELETE
 ```
 
 The properties configure the volume as follows:
@@ -37,7 +37,7 @@ For example:
 ```yaml
   jade-agent1:
     volumes:
-      - /data/s3data:/s3data:shared
+      - /data/s3:/data/s3:shared
 ```
 
 Restart the stack after making the changes above and the volume will be created when the JADE worker starts.

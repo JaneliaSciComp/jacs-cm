@@ -1,0 +1,5 @@
+server.name: kibana
+server.host: 0.0.0.0
+monitoring.ui.container.elasticsearch.enabled: true
+xpack.reporting.roles.enabled: false
+xpack.reporting.kibanaServer.hostname: localhost

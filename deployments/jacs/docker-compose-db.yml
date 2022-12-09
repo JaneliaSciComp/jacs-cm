@@ -62,6 +62,7 @@ services:
     image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
     volumes:
       - ${DB_DIR}/solr:/data
+      - ${CONFIG_DIR}/solr/solr.xml:/app/solr/jacs/solr.xml
     environment:
       - SEARCH_MAX_MEM_SIZE=${SEARCH_MAX_MEM_SIZE:-30}
       - SEARCH_INIT_MEM_SIZE=${SEARCH_INIT_MEM_SIZE:-10}

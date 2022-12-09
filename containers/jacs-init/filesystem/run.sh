@@ -102,6 +102,18 @@ else
 fi
 
 #
+# Solr Config
+#
+solr_config_dir=$config_dir/solr
+if [[ ! -e "$solr_config_dir" ]]; then
+    echo "Initializing SOLR config directory: $solr_config_dir"
+    mkdir -p $solr_config_dir
+    cp $DIR/solr/* $solr_config_dir
+else
+    echo "Verified SOLR config directory: $solr_config_dir"
+fi
+
+#
 # JACS Async Services
 #
 jacs_async_dir=$config_dir/jacs-async
@@ -237,10 +249,12 @@ fi
 elasticsearch_data_dir=$DATA_DIR/elasticsearch
 if [[ ! -e "${elasticsearch_data_dir}" ||
       ! -e "${elasticsearch_data_dir}/data" ||
-      ! -e "${elasticsearch_data_dir}/master" ]]; then
+      ! -e "${elasticsearch_data_dir}/master" ||
+      ! -e "${elasticsearch_data_dir}/kibana" ]]; then
     echo "Initializing ElasticSearch indexes directory: ${elasticsearch_data_dir}"
     mkdir -p "${elasticsearch_data_dir}/data"
     mkdir -p "${elasticsearch_data_dir}/master"
+    mkdir -p "${elasticsearch_data_dir}/kibana"
     chmod -R 2777 ${elasticsearch_data_dir}
 else
     echo "Verified ElasticSearch indexes directory: $elasticsearch_data_dir"
@@ -259,6 +273,20 @@ if [[ ! -e "$logstash_dir" ]]; then
     cp -a $DIR/logstash/pipeline "$logstash_dir"
 else
     echo "Verified logstash config directory: $logstash_dir"
+fi
+
+#
+# Kibana config
+#
+kibana_dir=$config_dir/kibana
+if [[ ! -e "$kibana_dir" ]]; then
+    echo "Initializing Kibana config directory: $kibana_dir"
+    mkdir -p "${kibana_dir}"
+
+    echo "Copy kibana configuration"
+    cp -a $DIR/kibana/kibana.yml "$kibana_dir"
+else
+    echo "Verified kibana config directory: $kibana_dir"
 fi
 
 #

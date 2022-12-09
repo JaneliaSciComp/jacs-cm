@@ -190,6 +190,7 @@ services:
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT2_EXPOSED_PORT:-9882}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
+      - jade_StorageAgent_BootstrappedVolumes=
     expose:
       - '8080'
     ports:
@@ -227,9 +228,10 @@ services:
       - JAVA_OPTS=-Xmx3G -Xms1G -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT3_EXPOSED_HOST}
-      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT3_EXPOSED_PORT:-9882}
+      - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT3_EXPOSED_PORT:-9883}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
+      - jade_StorageAgent_BootstrappedVolumes=
     expose:
       - '8080'
     ports:
