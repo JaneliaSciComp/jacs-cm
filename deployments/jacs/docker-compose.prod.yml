@@ -23,7 +23,7 @@ services:
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
       - /nrs/cellmap:/nrs/cellmap:shared
-      - /nrs/lsms:/nrs/lsms:shared
+      - /nrs/lsms:/nrs/lsms:ro,shared
 
   jacs-sync:
     volumes:
