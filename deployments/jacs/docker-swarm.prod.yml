@@ -22,6 +22,7 @@ services:
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
       - /nrs/cellmap:/nrs/cellmap:shared
+      - /nrs/lsms:/nrs/lsms:shared
 
   jade-agent3:
     volumes:
@@ -44,3 +45,4 @@ services:
       - /groups/cellmap:/groups/cellmap:shared
       - /nrs/scicompsoft:/nrs/scicompsoft:shared
       - /nrs/cellmap:/nrs/cellmap:shared
+      - /nrs/lsms:/nrs/lsms:shared
