@@ -4,7 +4,6 @@ services:
 
   jade-agent1:
     volumes:
-      - /groups/scicomp/reports:/groups/scicomp/reports:ro,shared
       - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
