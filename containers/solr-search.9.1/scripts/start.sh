@@ -15,4 +15,4 @@ export JAVA_OPTS="${JAVA_OPTS:--XX:+UseConcMarkSweepGC -Xms${SEARCH_INIT_MEM_SIZ
 
 echo "JAVA_OPTS=${JAVA_OPTS}"
 
-/opt/bin/solr start -p 8080 "$@"
+/opt/solr/bin/solr start -p 8080 "$@"
