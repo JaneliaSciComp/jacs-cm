@@ -6,8 +6,6 @@ FROM tomcat:7.0.109-jdk8-openjdk
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS Solr Search Service"
 
-USER root
-
 # Install app
 WORKDIR /app
 

@@ -3,6 +3,8 @@ FROM solr:9.1.1
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS Solr Search Service"
 
+USER root
+
 # Install app
 WORKDIR /app
 
