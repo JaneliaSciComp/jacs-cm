@@ -3,14 +3,11 @@ FROM solr:9.1.1
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS Solr Search Service"
 
-USER root
-
 # Install app
 WORKDIR /app
 
 COPY ./solr /app/solr
 COPY ./scripts/start.sh /app/start.sh
-RUN chmod 755 /app/start.sh
 
 # Our Solr deployment requires 30GB of memory
 # The environment variables below are used to set JAVA_OPTS
