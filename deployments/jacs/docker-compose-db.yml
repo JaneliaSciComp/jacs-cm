@@ -60,8 +60,10 @@ services:
 
   solr:
     image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
+    user: ${DOCKER_USER}
     volumes:
       - ${DB_DIR}/solr:/data
+      - ${DB_DIR}/solr:/var/solr
       - ${CONFIG_DIR}/solr/solr.xml:/app/solr/jacs/solr.xml
     environment:
       - SEARCH_MAX_MEM_SIZE=${SEARCH_MAX_MEM_SIZE:-30}
@@ -73,4 +75,3 @@ services:
     restart: unless-stopped
     networks:
       - jacs-net
-
