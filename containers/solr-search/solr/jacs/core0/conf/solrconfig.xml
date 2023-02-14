@@ -972,6 +972,7 @@
        See https://solr.apache.org/guide/solr/latest/indexing-guide/schemaless-mode.html for further explanation.
 
     -->
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
   <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
