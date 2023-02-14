@@ -38,7 +38,7 @@
     catchall "text" field, and use that for searching.
 -->
 
-<schema name="default-config" version="1.6">
+<schema name="FlyWorkstation" version="1.6">
     <!-- attribute "name" is the name of this schema and is only used for display purposes.
        version="x.y" is Solr's version number for the schema syntax and
        semantics.  It should not normally be changed by applications.
@@ -223,12 +223,6 @@
       Unless this field is marked with required="false", it will be a required field
     -->
     <uniqueKey>id</uniqueKey>
-
-     <!-- field for the QueryParser to use when an explicit fieldname is absent -->
-    <defaultSearchField>text</defaultSearchField>
-
-    <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
-    <solrQueryParser defaultOperator="OR"/>
 
     <!-- copyField commands copy one field to another at the time a document
        is added to the index.  It's used either to index the same field differently,
