@@ -122,6 +122,45 @@
 
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
 
+    <!-- hardcoded search attributes for every document -->
+    <field name="doc_type" type="string" indexed="true" stored="true"/>
+    <field name="class" type="string" indexed="true" stored="true"/>
+    <field name="collection" type="string" indexed="true" stored="true"/>
+
+    <!-- @SearchAttributes from AbstractDomainObject -->
+    <field name="name" type="string" indexed="true" stored="true"/>
+    <field name="creation_date" type="date" indexed="true" stored="true"/>
+    <field name="updated_date" type="date" indexed="true" stored="true"/>
+    <field name="owner" type="text_general" indexed="true" stored="true"/>
+    <field name="subjects" type="string" indexed="true" stored="true" multiValued="true"/>
+    <field name="type_label" type="string" indexed="true" stored="true"/>
+    <field name="search_type" type="string" indexed="true" stored="true"/>
+
+    <!-- Ancestor lists for "Search Here" functionality -->
+    <field name="ancestor_ids" type="long" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- Multi-valued fulltext search for searching inside objects -->
+    <field name="fulltext_mt" type="string"  indexed="true"  stored="false" multiValued="true"/>
+
+    <!-- User annotations -->
+    <dynamicField name="*_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+    <field name="all_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+
+    <!-- Derived fields -->
+
+    <!-- text indexing -->
+    <field name="all_strings" type="string" indexed="true" stored="false" multiValued="true"/>
+
+    <!-- General text search field -->
+    <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
+
+    <!-- catchall text field that indexes tokens both normally and in reverse for efficient
+        leading wildcard queries. -->
+    <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
+
+    <!-- Timestamp indicating when the value was indexed -->
+    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
+
     <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
          because it's very expensive to index everything twice. -->
     <!-- <copyField source="*" dest="_text_"/> -->
@@ -132,20 +171,20 @@
        RESTRICTION: the glob-like pattern in the name attribute must have a "*"
        only at the start or the end.  -->
 
-    <dynamicField name="*_i"   type="pint"     indexed="true"  stored="true"/>
-    <dynamicField name="*_is"  type="pints"    indexed="true"  stored="true"/>
+    <dynamicField name="*_pi"   type="pint"     indexed="true"  stored="true"/>
+    <dynamicField name="*_pis"  type="pints"    indexed="true"  stored="true"/>
     <dynamicField name="*_s"   type="string"   indexed="true"  stored="true" />
     <dynamicField name="*_ss"  type="strings"  indexed="true"  stored="true"/>
-    <dynamicField name="*_l"   type="plong"    indexed="true"  stored="true"/>
-    <dynamicField name="*_ls"  type="plongs"   indexed="true"  stored="true"/>
+    <dynamicField name="*_pl"   type="plong"    indexed="true"  stored="true"/>
+    <dynamicField name="*_pls"  type="plongs"   indexed="true"  stored="true"/>
     <dynamicField name="*_b"   type="boolean"  indexed="true"  stored="true"/>
     <dynamicField name="*_bs"  type="booleans" indexed="true"  stored="true"/>
-    <dynamicField name="*_f"   type="pfloat"   indexed="true"  stored="true"/>
-    <dynamicField name="*_fs"  type="pfloats"  indexed="true"  stored="true"/>
-    <dynamicField name="*_d"   type="pdouble"  indexed="true"  stored="true"/>
-    <dynamicField name="*_ds"  type="pdoubles" indexed="true"  stored="true"/>
-    <dynamicField name="*_dt"  type="pdate"    indexed="true"  stored="true"/>
-    <dynamicField name="*_dts" type="pdates"   indexed="true"  stored="true"/>
+    <dynamicField name="*_pf"   type="pfloat"   indexed="true"  stored="true"/>
+    <dynamicField name="*_pfs"  type="pfloats"  indexed="true"  stored="true"/>
+    <dynamicField name="*_pd"   type="pdouble"  indexed="true"  stored="true"/>
+    <dynamicField name="*_pds"  type="pdoubles" indexed="true"  stored="true"/>
+    <dynamicField name="*_pdt"  type="pdate"    indexed="true"  stored="true"/>
+    <dynamicField name="*_pdts" type="pdates"   indexed="true"  stored="true"/>
     <dynamicField name="*_t"   type="text_general" indexed="true" stored="true" multiValued="false"/>
     <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
 
@@ -165,10 +204,31 @@
 
     <dynamicField name="attr_*" type="text_general" indexed="true" stored="true" multiValued="true"/>
 
+    <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
+    <dynamicField name="*_l"  type="long"   indexed="true"  stored="true"/>
+    <dynamicField name="*_f"  type="float"  indexed="true"  stored="true"/>
+    <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
+    <dynamicField name="*_dt" type="date"    indexed="true"  stored="true"/>
+
+    <dynamicField name="*_ti" type="tint"    indexed="true"  stored="true"/>
+    <dynamicField name="*_tl" type="tlong"   indexed="true"  stored="true"/>
+    <dynamicField name="*_tf" type="tfloat"  indexed="true"  stored="true"/>
+    <dynamicField name="*_td" type="tdouble" indexed="true"  stored="true"/>
+    <dynamicField name="*_tdt" type="tdate"  indexed="true"  stored="true"/>
+
+    <dynamicField name="*_sm"  type="string"  indexed="true"  stored="true" multiValued="true"/>
+    <dynamicField name="*_tm"  type="text_general"  indexed="true"  stored="true" multiValued="true"/>
+
     <!-- Field to use to determine and enforce document uniqueness.
       Unless this field is marked with required="false", it will be a required field
     -->
     <uniqueKey>id</uniqueKey>
+
+     <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+    <defaultSearchField>text</defaultSearchField>
+
+    <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+    <solrQueryParser defaultOperator="OR"/>
 
     <!-- copyField commands copy one field to another at the time a document
        is added to the index.  It's used either to index the same field differently,
@@ -252,6 +312,22 @@
 
     <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
     <fieldType name="binary" class="solr.BinaryField"/>
+
+    <!--
+      Default numeric field types. For faster range queries, consider the tint/tfloat/tlong/tdouble types.
+    -->
+    <fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="float" class="solr.TrieFloatField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="double" class="solr.TrieDoubleField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+
+    <fieldType name="tint" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+    <fieldType name="tdouble" class="solr.TrieDoubleField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+
+    <fieldType name="date" class="solr.TrieDateField" omitNorms="true" precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="tdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
 
     <!--
     RankFields can be used to store scoring factors to improve document ranking. They should be used
@@ -1018,6 +1094,26 @@
         <filter name="snowballPorter" language="Turkish"/>
       </analyzer>
     </fieldType>
+
+    <!-- capture all annotations in a single field so that we can easily check if a tree is annotated at all -->
+    <copyField source="*_annotations" dest="all_annotations"/>
+
+    <!-- all_strings gets searched first, for exact matches -->
+    <copyField source="name" dest="all_strings"/>
+    <copyField source="owner" dest="all_strings"/>
+    <copyField source="search_type" dest="all_strings"/>
+    <copyField source="*_txt" dest="all_strings"/>
+    <copyField source="*_t" dest="all_strings"/>
+
+    <!-- fulltext_mt gets searched next, for deep exact matches -->
+
+    <!-- text gets searched last, since it does all the fancy splitting and tokenizing -->
+    <copyField source="name" dest="text"/>
+    <copyField source="owner" dest="text"/>
+    <copyField source="search_type" dest="text"/>
+    <copyField source="fulltext_mt" dest="text"/>
+    <copyField source="*_txt" dest="text"/>
+    <copyField source="*_t" dest="text"/>
 
     <!-- Similarity is the scoring routine for each document vs. a query.
        A custom Similarity or SimilarityFactory may be specified here, but
