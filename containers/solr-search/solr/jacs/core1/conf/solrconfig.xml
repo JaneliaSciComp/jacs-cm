@@ -89,7 +89,7 @@
        replication is in use, this should match the replication
        configuration.
     -->
-  <dataDir>${solr.data.dir:/data/core1}</dataDir>
+  <dataDir>${solr.data.dir:}</dataDir>
 
 
   <!-- The DirectoryFactory to use for indexes.
@@ -217,11 +217,13 @@
          The latest commit point should always be preserved regardless
          of the criteria.
     -->
+    <!--
     <deletionPolicy class="solr.SolrDeletionPolicy">
+    -->
     <!-- The number of commit points to be kept -->
-    <str name="maxCommitsToKeep">1</str>
+    <!-- <str name="maxCommitsToKeep">1</str> -->
     <!-- The number of optimized commit points to be kept -->
-    <str name="maxOptimizedCommitsToKeep">0</str>
+    <!-- <str name="maxOptimizedCommitsToKeep">0</str> -->
     <!--
         Delete all commit points once they have reached the given age.
         Supports DateMathParser syntax e.g.
@@ -230,7 +232,9 @@
        <str name="maxCommitAge">30MINUTES</str>
        <str name="maxCommitAge">1DAY</str>
     -->
+    <!--
     </deletionPolicy>
+    -->
 
     <!-- Lucene Infostream
 
@@ -240,7 +244,7 @@
          Setting The value to true will instruct the underlying Lucene
          IndexWriter to write its debugging info the specified file
       -->
-    <infoStream file="INFOSTREAM.txt">false</infoStream>
+    <!-- <infoStream file="INFOSTREAM.txt">false</infoStream> -->
   </indexConfig>
 
   <!-- The default high-performance update handler -->
@@ -536,9 +540,11 @@
     </listener>
     <listener event="firstSearcher" class="solr.QuerySenderListener">
       <arr name="queries">
+        <!--
         <lst>
           <str name="q">static firstSearcher warming in solrconfig.xml</str>
         </lst>
+        -->
       </arr>
     </listener>
 
@@ -646,12 +652,12 @@
          *** WARNING ***
          Before enabling remote streaming, you should make sure your
          system has authentication enabled.
-      -->
 
-    <requestParsers enableRemoteStreaming="true"
-                    multipartUploadLimitInKB="2048000"
+    <requestParsers enableRemoteStreaming="false"
+                    multipartUploadLimitInKB="-1"
                     formdataUploadLimitInKB="-1"
                     addHttpRequestToContext="false"/>
+      -->
 
     <!-- HTTP Caching
 
@@ -729,11 +735,6 @@
     <lst name="defaults">
       <str name="echoParams">explicit</str>
       <int name="rows">10</int>
-       <str name="qf">
-          id^10.0 all_strings^0.7 fulltext_mt^0.6 text^0.5 
-       </str>
-       <str name="q.op">AND</str>
-
     </lst>
   </requestHandler>
 

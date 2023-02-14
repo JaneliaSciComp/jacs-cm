@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<solr persistent="true">
-  <cores adminPath="/admin/cores" defaultCoreName="FlyWorkstation">
-    <core name="FlyWorkstation" instanceDir="core0/"/>
-    <core name="FlyWorkstationBuild" instanceDir="core1/"/>
-  </cores>
-</solr>
