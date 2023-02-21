@@ -137,7 +137,7 @@
     <field name="search_type" type="string" indexed="true" stored="true"/>
 
     <!-- Ancestor lists for "Search Here" functionality -->
-    <field name="ancestor_ids" type="long" indexed="true" stored="true" multiValued="true"/>
+    <field name="ancestor_ids" type="plongs" indexed="true" stored="true"/>
 
     <!-- Multi-valued fulltext search for searching inside objects -->
     <field name="fulltext_mt" type="string"  indexed="true"  stored="false" multiValued="true"/>
