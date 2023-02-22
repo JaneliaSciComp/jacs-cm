@@ -124,7 +124,7 @@ fi
 solr_data_dir=$db_dir/solr
 init_solr_core $solr_data_dir core0 FlyWorkstation
 init_solr_core $solr_data_dir core1 FlyWorkstationBuild
-cp $DIR/solr/solr.xml ${solr_config_dir}
+cp $DIR/solr/solr.xml ${solr_data_dir}
 
 #
 # JACS Async Services
