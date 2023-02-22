@@ -60,11 +60,10 @@ services:
 
   solr:
     image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
-    command: /app/start.sh -f -p 8080 -s /app/solr/jacs
+    command: /app/start.sh -f -p 8080 -s /var/solr
     user: ${DOCKER_USER}
     volumes:
       - ${DB_DIR}/solr:/var/solr
-      - ${DB_DIR}/solr:/data/solr
     environment:
       - SEARCH_MAX_MEM_SIZE=${SEARCH_MAX_MEM_SIZE:-30}
       - SEARCH_INIT_MEM_SIZE=${SEARCH_INIT_MEM_SIZE:-10}
