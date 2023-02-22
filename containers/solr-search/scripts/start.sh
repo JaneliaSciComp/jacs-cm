@@ -1,18 +1,7 @@
 #!/bin/bash
 
 SEARCH_MAX_MEM_SIZE="${SEARCH_MAX_MEM_SIZE:-30}"
-SEARCH_INIT_MEM_SIZE="${SEARCH_INIT_MEM_SIZE:-10}"
 
-echo "SEARCH_INIT_MEM_SIZE=${SEARCH_INIT_MEM_SIZE}"
 echo "SEARCH_MAX_MEM_SIZE=${SEARCH_MAX_MEM_SIZE}"
 
-if [ "$SEARCH_INIT_MEM_SIZE" -gt "$SEARCH_MAX_MEM_SIZE" ] ; then
-    SEARCH_INIT_MEM_SIZE=${SEARCH_MAX_MEM_SIZE}
-    echo "Set initial heap size to: $SEARCH_INIT_MEM_SIZE"
-fi
-
-export JAVA_OPTS="${JAVA_OPTS:--XX:+UseConcMarkSweepGC -Xms${SEARCH_INIT_MEM_SIZE}G -Xmx${SEARCH_MAX_MEM_SIZE}G}"
-
-echo "JAVA_OPTS=${JAVA_OPTS}"
-
-/opt/solr/bin/solr start "$@"
+/opt/solr/bin/solr start -m ${SEARCH_MAX_MEM_SIZE}G "$@"
