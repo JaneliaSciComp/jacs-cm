@@ -255,26 +255,26 @@
     -->
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
-    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" />
-    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true" docValues="true" />
+    <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true" omitNorms="true"/>
+    <fieldType name="strings" class="solr.StrField" sortMissingLast="true" multiValued="true" docValues="true" omitNorms="true"/>
 
     <!-- boolean type: "true" or "false" -->
-    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
-    <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true"/>
+    <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="booleans" class="solr.BoolField" sortMissingLast="true" multiValued="true" omitNorms="true"/>
 
     <!--
       Numeric field types that index values using KD-trees.
       Point fields don't support FieldCache, so they must have docValues="true" if needed for sorting, faceting, functions, etc.
     -->
-    <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
-    <fieldType name="pfloat" class="solr.FloatPointField" docValues="true"/>
-    <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
-    <fieldType name="pdouble" class="solr.DoublePointField" docValues="true"/>
+    <fieldType name="pint" class="solr.IntPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="pfloat" class="solr.FloatPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="plong" class="solr.LongPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="pdouble" class="solr.DoublePointField" docValues="true" omitNorms="true"/>
 
-    <fieldType name="pints" class="solr.IntPointField" docValues="true" multiValued="true"/>
-    <fieldType name="pfloats" class="solr.FloatPointField" docValues="true" multiValued="true"/>
-    <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true"/>
-    <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true"/>
+    <fieldType name="pints" class="solr.IntPointField" docValues="true" multiValued="true" omitNorms="true"/>
+    <fieldType name="pfloats" class="solr.FloatPointField" docValues="true" multiValued="true" omitNorms="true"/>
+    <fieldType name="plongs" class="solr.LongPointField" docValues="true" multiValued="true" omitNorms="true"/>
+    <fieldType name="pdoubles" class="solr.DoublePointField" docValues="true" multiValued="true" omitNorms="true"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
 
     <!-- since fields of this type are by default not stored or indexed,
@@ -301,8 +301,8 @@
 
       -->
     <!-- KD-tree versions of date fields -->
-    <fieldType name="pdate" class="solr.DatePointField" docValues="true"/>
-    <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true"/>
+    <fieldType name="pdate" class="solr.DatePointField" docValues="true" omitNorms="true"/>
+    <fieldType name="pdates" class="solr.DatePointField" docValues="true" multiValued="true" omitNorms="true"/>
 
     <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
     <fieldType name="binary" class="solr.BinaryField"/>
@@ -310,18 +310,18 @@
     <!--
       Default numeric field types. For faster range queries, consider the tint/tfloat/tlong/tdouble types.
     -->
-    <fieldType name="int" class="solr.IntPointField" docValues="true"/>
-    <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
-    <fieldType name="long" class="solr.LongPointField" docValues="true"/>
-    <fieldType name="double" class="solr.DoublePointField" docValues="true"/>
+    <fieldType name="int" class="solr.IntPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="float" class="solr.FloatPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="long" class="solr.LongPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="double" class="solr.DoublePointField" docValues="true" omitNorms="true"/>
 
-    <fieldType name="tint" class="solr.IntPointField" docValues="true"/>
-    <fieldType name="tfloat" class="solr.FloatPointField" docValues="true"/>
-    <fieldType name="tlong" class="solr.LongPointField" docValues="true"/>
-    <fieldType name="tdouble" class="solr.DoublePointField" docValues="true"/>
+    <fieldType name="tint" class="solr.IntPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="tfloat" class="solr.FloatPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="tlong" class="solr.LongPointField" docValues="true" omitNorms="true"/>
+    <fieldType name="tdouble" class="solr.DoublePointField" docValues="true" omitNorms="true"/>
 
-    <fieldType name="date" class="solr.DatePointField" docValues="true"/>
-    <fieldType name="tdate" class="solr.DatePointField" docValues="true"/>
+    <fieldType name="date" class="solr.DatePointField" docValues="true" omitNorms="true"/>
+    <fieldType name="tdate" class="solr.DatePointField" docValues="true" omitNorms="true"/>
 
     <!--
     RankFields can be used to store scoring factors to improve document ranking. They should be used
