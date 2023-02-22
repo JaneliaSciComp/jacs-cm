@@ -6,7 +6,6 @@ LABEL description="JACS Solr Search Service"
 # Install app
 WORKDIR /app
 
-COPY ./solr /app/solr
 COPY ./scripts/start.sh /app/start.sh
 
 # Our Solr deployment requires 30GB of memory

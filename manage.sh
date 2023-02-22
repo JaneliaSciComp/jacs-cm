@@ -78,7 +78,7 @@ if [[ "$@" != "build builder" ]]; then
         echo "##################################################################################" >> $DIR/.env
         echo "# "`sha1sum .env.config` >> $DIR/.env
         echo "" >> $DIR/.env
-        $SUDO $DOCKER run --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
+        $SUDO $DOCKER run $PLATFORM_PARAM --rm -v $DIR/$ENV_CONFIG:/env $NAMESPACE/builder:$BUILDER_VERSION /bin/bash -c "/usr/local/bin/multisub.sh /env"  >> $DIR/.env
     fi
 
     # Parse environment
@@ -228,7 +228,7 @@ function build {
         echo " Building image for $NAME"
         echo "---------------------------------------------------------------------------------"
         set -x
-        $SUDO $DOCKER build --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
+        $SUDO $DOCKER build $PLATFORM_PARAM --no-cache $BUILD_ARGS --label "version=$APP_TAG" -t $VNAME -t $LNAME $CDIR
         set +x
     fi
 }
@@ -357,7 +357,7 @@ fi
 if [[ "$1" == "init-local-filesystem" ]]; then
     echo "Initializing local file system..."
     set -x
-    $SUDO $DOCKER run $ENV_PARAM -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM -v ${REDUNDANT_STORAGE}:${REDUNDANT_STORAGE} -v ${NON_REDUNDANT_STORAGE}:${NON_REDUNDANT_STORAGE} -u $DOCKER_USER ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/filesystem/run.sh
     set +x
     echo ""
     echo "The local filesystem is initialized. You should now edit the template files in $CONFIG_DIR to match your deployment environment."
@@ -368,7 +368,7 @@ fi
 if [[ "$1" == "init-databases" ]]; then
     echo "Initializing databases..."
     set -x
-    $SUDO $DOCKER run $ENV_PARAM --rm -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM --rm -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-init:${JACS_INIT_VERSION} /app/databases/run.sh
     set +x
     echo ""
     echo "Databases have been initialized."
@@ -397,7 +397,7 @@ if [[ "$1" == "mongo" ]]; then
     fi
     echo "Opening MongoDB shell..."
     set -x
-    $SUDO $DOCKER run ${tty_param} \
+    $SUDO $DOCKER run $PLATFORM_PARAM ${tty_param} \
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     ${run_options} \
@@ -416,7 +416,7 @@ if [[ "$1" == "mongo-backup" ]]; then
     backupLocation="$1"
     echo "MongoDB backup to $backupLocation..."
     set -x
-    $SUDO $DOCKER run $ENV_PARAM \
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
@@ -434,7 +434,7 @@ if [[ "$1" == "mongo-restore" ]]; then
     backupLocation="$1"
     echo "MongoDB restore from $backupLocation..."
     set -x
-    $SUDO $DOCKER run $ENV_PARAM \
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
@@ -492,7 +492,7 @@ if [[ "$1" == "dbMaintenance" ]]; then
     service_json_args="{\"args\": [${service_json_args:1}]}"
 
     set -x
-        $SUDO $DOCKER run $ENV_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl ${JACS_ASYNC_SERVER}/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}" -H "Authorization: APIKEY $JACS_API_KEY"
+        $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM -u $DOCKER_USER --network ${NETWORK_NAME} ${CONTAINER_PREFIX}jacs-async curl ${JACS_ASYNC_SERVER}/api/rest-v2/async-services/dbMaintenance -H $userParam -H 'Accept: application/json' -H 'Content-Type: application/json' -d "${service_json_args}" -H "Authorization: APIKEY $JACS_API_KEY"
     set +x
 
     exit 0
@@ -509,7 +509,7 @@ if [[ "$1" == "rebuildSolrIndex" ]]; then
     USERNAME=$1
 
     set -x
-    $SUDO $DOCKER run $ENV_PARAM \
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM \
     -u $DOCKER_USER \
     --network ${NETWORK_NAME} \
     ${CONTAINER_PREFIX}${JACS_ASYNC_CONTAINER}:${JACS_ASYNC_COMPUTE_VERSION} \
@@ -544,7 +544,7 @@ if [[ "$1" == "createUserFromJson" ]]; then
     set -x
     cat $2
     d=$(dirname $2)
-    $SUDO $DOCKER run $ENV_PARAM \
+    $SUDO $DOCKER run $ENV_PARAM $PLATFORM_PARAM \
         -u $DOCKER_USER \
         --network ${NETWORK_NAME} \
         -v $d:$d \
@@ -629,7 +629,7 @@ do
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             set -x
-            $SUDO $DOCKER run -it -u $DOCKER_USER --rm $VNAME "$@"
+            $SUDO $DOCKER run $PLATFORM_PARAM -it -u $DOCKER_USER --rm $VNAME "$@"
             set +x
         fi
 
@@ -646,7 +646,7 @@ do
             echo "Linting $NAME"
             # hadolint exits with an error code if there are linting issues, but we want to keep going
             set +e
-            $SUDO $DOCKER run --rm -i hadolint/hadolint < $CDIR/Dockerfile
+            $SUDO $DOCKER run $PLATFORM_PARAM --rm -i hadolint/hadolint < $CDIR/Dockerfile
             set -e
         done
 
@@ -659,7 +659,7 @@ do
             CNAME=${CONTAINER_PREFIX}${NAME}
             VNAME=$CNAME:${VERSION}
             set -x
-            $SUDO $DOCKER run -it $VNAME /bin/bash
+            $SUDO $DOCKER run $PLATFORM_PARAM -it $VNAME /bin/bash
             set +x
         fi
 

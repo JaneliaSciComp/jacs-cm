@@ -17,6 +17,34 @@ data_dir=$DATA_DIR
 db_dir=$DB_DIR
 backups_dir=$BACKUPS_DIR
 
+function init_solr_core() {
+    local solr_data_dir=$1
+    local core_subdir=$2
+    local core_name=$3
+
+    local solr_config_dir=${solr_data_dir}
+
+    if [[ ! -e "${solr_data_dir}/${core_subdir}" ]]; then
+        echo "Initializing SOLR Index dir: ${solr_data_dir}/${core_subdir}"
+        mkdir -p ${solr_data_dir}/${core_subdir}
+    fi
+
+    if [[ ! -e "${solr_config_dir}/${core_subdir}" ]]; then
+        echo "Initializing SOLR ${core_subdir} config directory: ${solr_config_dir}/${core_subdir}"
+        mkdir -p ${solr_config_dir}/${core_subdir}
+    fi
+
+    if [[ ! -e "${solr_config_dir}/${core_subdir}/conf" ]]; then
+        cp -a $DIR/solr/conf ${solr_config_dir}/${core_subdir}
+    fi
+
+    if [[ ! -e "${solr_config_dir}/${core_subdir}/core.properties" ]]; then
+        sed s/this_core_name/${core_name}/ $DIR/solr/core.properties > ${solr_config_dir}/${core_subdir}/core.properties
+    fi
+
+    echo "Verified SOLR ${core_subdir} config -> $solr_config_dir/${core_subdir}"
+}
+
 if mkdir -p $config_dir; then
     echo "Verified CONFIG_DIR exists: $config_dir"
 else
@@ -66,17 +94,6 @@ else
 fi
 
 #
-# SOLR Indexes Directory
-#
-solr_data_dir=$db_dir/solr
-if [[ ! -e "$solr_data_dir" ]]; then
-    echo "Initializing SOLR indexes directory: $solr_data_dir"
-    mkdir -p $solr_data_dir
-else
-    echo "Verified SOLR indexes directory: $solr_data_dir"
-fi
-
-#
 # RabbitMQ
 #
 rabbitmq_data_dir=$db_dir/rabbitmq/$project
@@ -102,16 +119,11 @@ else
 fi
 
 #
-# Solr Config
+# Initialize Solr Config
 #
-solr_config_dir=$config_dir/solr
-if [[ ! -e "$solr_config_dir" ]]; then
-    echo "Initializing SOLR config directory: $solr_config_dir"
-    mkdir -p $solr_config_dir
-    cp $DIR/solr/* $solr_config_dir
-else
-    echo "Verified SOLR config directory: $solr_config_dir"
-fi
+solr_data_dir=$db_dir/solr
+init_solr_core $solr_data_dir core0 FlyWorkstation
+init_solr_core $solr_data_dir core1 FlyWorkstationBuild
 
 #
 # JACS Async Services
