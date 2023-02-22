@@ -1,4 +1,4 @@
-FROM solr:9.1.1
+FROM solr:8.11.2
 
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS Solr Search Service"
