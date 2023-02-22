@@ -60,6 +60,8 @@ services:
 
   solr:
     image: ${NAMESPACE}/solr-search:${SOLR_SEARCH_VERSION}
+    command: /app/start.sh -f -p 8080 -s /var/solr
+    user: ${DOCKER_USER}
     volumes:
       - ${DB_DIR}/solr:/data
     environment:
