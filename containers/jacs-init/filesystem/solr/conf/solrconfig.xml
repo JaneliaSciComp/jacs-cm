@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
  Licensed to the Apache Software Foundation (ASF) under one or more
  contributor license agreements.  See the NOTICE file distributed with
@@ -72,7 +72,7 @@
        The example below can be used to load a Solr Module along
        with their external dependencies.
     -->
-    <!-- <lib dir="${solr.install.dir:../../../..}/modules/ltr/lib" regex=".*\.jar" /> -->
+  <!-- <lib dir="${solr.install.dir:../../../..}/modules/ltr/lib" regex=".*\.jar" /> -->
 
   <!-- an exact 'path' can be used instead of a 'dir' to specify a
        specific jar file.  This will cause a serious error to be logged
@@ -135,7 +135,7 @@
      <filter class="solr.LimitTokenCountFilterFactory" maxTokenCount="10000"/>
     -->
     <!-- Maximum time to wait for a write lock (ms) for an IndexWriter. Default: 1000 -->
-    <!-- <writeLockTimeout>1000</writeLockTimeout>  -->
+    <writeLockTimeout>20000</writeLockTimeout> 
 
     <!-- Expert: Enabling compound file will use less files for the index,
          using fewer file descriptors on the expense of performance decrease.
@@ -149,7 +149,7 @@
          before flushing.
          If both ramBufferSizeMB and maxBufferedDocs is set, then
          Lucene will flush based on whichever limit is hit first.  -->
-    <!-- <ramBufferSizeMB>100</ramBufferSizeMB> -->
+    <ramBufferSizeMB>128</ramBufferSizeMB>
     <!-- <maxBufferedDocs>1000</maxBufferedDocs> -->
 
     <!-- Expert: ramPerThreadHardLimitMB sets the maximum amount of RAM that can be consumed
@@ -217,24 +217,20 @@
          The latest commit point should always be preserved regardless
          of the criteria.
     -->
-    <!--
     <deletionPolicy class="solr.SolrDeletionPolicy">
-    -->
-    <!-- The number of commit points to be kept -->
-    <!-- <str name="maxCommitsToKeep">1</str> -->
-    <!-- The number of optimized commit points to be kept -->
-    <!-- <str name="maxOptimizedCommitsToKeep">0</str> -->
-    <!--
-        Delete all commit points once they have reached the given age.
-        Supports DateMathParser syntax e.g.
+      <!-- The number of commit points to be kept -->
+      <str name="maxCommitsToKeep">1</str>
+      <!-- The number of optimized commit points to be kept -->
+      <str name="maxOptimizedCommitsToKeep">0</str>
+      <!--
+          Delete all commit points once they have reached the given age.
+          Supports DateMathParser syntax e.g.
+        -->
+      <!--
+        <str name="maxCommitAge">30MINUTES</str>
+        <str name="maxCommitAge">1DAY</str>
       -->
-    <!--
-       <str name="maxCommitAge">30MINUTES</str>
-       <str name="maxCommitAge">1DAY</str>
-    -->
-    <!--
     </deletionPolicy>
-    -->
 
     <!-- Lucene Infostream
 
@@ -290,8 +286,9 @@
          have some sort of hard autoCommit to limit the log size.
       -->
     <autoCommit>
-      <maxTime>${solr.autoCommit.maxTime:15000}</maxTime>
+      <maxTime>${solr.autoCommit.maxTime:60000}</maxTime>
       <maxDocs>${solr.autoCommit.maxDocs:50000}</maxDocs>
+      <maxSize>512m</maxSize>
       <openSearcher>false</openSearcher>
     </autoCommit>
 
@@ -495,7 +492,7 @@
       -->
     <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
 
-  <!-- Use Filter For Sorted Query
+    <!-- Use Filter For Sorted Query
 
    A possible optimization that attempts to use a filter to
    satisfy a search.  If the requested sort does not include
@@ -565,7 +562,7 @@
      circuit breakers
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 
-    <!-- Circuit Breakers
+  <!-- Circuit Breakers
 
      Circuit breakers are designed to allow stability and predictable query
      execution. They prevent operations that can take down the node and cause
@@ -576,7 +573,7 @@
      they are free to add their specific configuration but need to ensure that this flag is always
      respected - this should have veto over all independent configuration flags.
     -->
-    <circuitBreakers enabled="true">
+  <circuitBreakers enabled="true">
 
     <!-- Memory Circuit Breaker Configuration
 
@@ -602,7 +599,7 @@
    <memBreaker enabled="true" threshold="75"/>
     -->
 
-      <!-- CPU Circuit Breaker Configuration
+    <!-- CPU Circuit Breaker Configuration
 
      Specific configuration for CPU utilization based circuit breaker. This configuration defines whether the circuit breaker is enabled
      and the average load over the last minute at which the circuit breaker should start rejecting queries.
@@ -612,7 +609,7 @@
      allocated.
     -->
 
-      <!--
+    <!--
        <cpuBreaker enabled="true" threshold="75"/>
       -->
 
@@ -853,8 +850,8 @@
       <!-- Configure the standard fragmenter -->
       <!-- This could most likely be commented out in the "default" case -->
       <fragmenter name="gap"
-                  default="true"
-                  class="solr.highlight.GapFragmenter">
+        default="true"
+        class="solr.highlight.GapFragmenter">
         <lst name="defaults">
           <int name="hl.fragsize">100</int>
         </lst>
@@ -864,7 +861,7 @@
            (for sentence extraction)
         -->
       <fragmenter name="regex"
-                  class="solr.highlight.RegexFragmenter">
+        class="solr.highlight.RegexFragmenter">
         <lst name="defaults">
           <!-- slightly smaller fragsizes work better because of slop -->
           <int name="hl.fragsize">70</int>
@@ -877,8 +874,8 @@
 
       <!-- Configure the standard formatter -->
       <formatter name="html"
-                 default="true"
-                 class="solr.highlight.HtmlFormatter">
+        default="true"
+        class="solr.highlight.HtmlFormatter">
         <lst name="defaults">
           <str name="hl.simple.pre"><![CDATA[<em>]]></str>
           <str name="hl.simple.post"><![CDATA[</em>]]></str>
@@ -887,7 +884,7 @@
 
       <!-- Configure the standard encoder -->
       <encoder name="html"
-               class="solr.highlight.HtmlEncoder" />
+        class="solr.highlight.HtmlEncoder" />
 
       <!-- Configure the standard fragListBuilder -->
       <fragListBuilder name="simple"
@@ -899,13 +896,13 @@
 
       <!-- Configure the weighted fragListBuilder -->
       <fragListBuilder name="weighted"
-                       default="true"
+        default="true"
                        class="solr.highlight.WeightedFragListBuilder"/>
 
       <!-- default tag FragmentsBuilder -->
       <fragmentsBuilder name="default"
-                        default="true"
-                        class="solr.highlight.ScoreOrderFragmentsBuilder">
+        default="true"
+        class="solr.highlight.ScoreOrderFragmentsBuilder">
         <!--
         <lst name="defaults">
           <str name="hl.multiValuedSeparatorChar">/</str>
@@ -915,7 +912,7 @@
 
       <!-- multi-colored tag FragmentsBuilder -->
       <fragmentsBuilder name="colored"
-                        class="solr.highlight.ScoreOrderFragmentsBuilder">
+        class="solr.highlight.ScoreOrderFragmentsBuilder">
         <lst name="defaults">
           <str name="hl.tag.pre"><![CDATA[
                <b style="background:yellow">,<b style="background:lawgreen">,
@@ -928,8 +925,8 @@
       </fragmentsBuilder>
 
       <boundaryScanner name="default"
-                       default="true"
-                       class="solr.highlight.SimpleBoundaryScanner">
+        default="true"
+        class="solr.highlight.SimpleBoundaryScanner">
         <lst name="defaults">
           <str name="hl.bs.maxScan">10</str>
           <str name="hl.bs.chars">.,!? &#9;&#10;&#13;</str>
@@ -937,7 +934,7 @@
       </boundaryScanner>
 
       <boundaryScanner name="breakIterator"
-                       class="solr.highlight.BreakIteratorBoundaryScanner">
+        class="solr.highlight.BreakIteratorBoundaryScanner">
         <lst name="defaults">
           <!-- type should be one of CHARACTER, WORD(default), LINE and SENTENCE -->
           <str name="hl.bs.type">WORD</str>
@@ -973,6 +970,11 @@
        See https://solr.apache.org/guide/solr/latest/indexing-guide/schemaless-mode.html for further explanation.
 
     -->
+  <schemaFactory class="ManagedIndexSchemaFactory">
+    <bool name="mutable">false</bool>
+    <str name="managedSchemaResourceName">managed-schema.xml</str>
+  </schemaFactory>
+
   <updateProcessor class="solr.UUIDUpdateProcessorFactory" name="uuid"/>
   <updateProcessor class="solr.RemoveBlankFieldUpdateProcessorFactory" name="remove-blank"/>
   <updateProcessor class="solr.FieldNameMutatingUpdateProcessorFactory" name="field-name-mutating">
@@ -1025,7 +1027,7 @@
 
   <!-- The update.autoCreateFields property can be turned to false to disable schemaless mode -->
   <updateRequestProcessorChain name="add-unknown-fields-to-the-schema" default="${update.autoCreateFields:false}"
-           processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
+                               processor="uuid,remove-blank,field-name-mutating,parse-boolean,parse-long,parse-double,parse-date,add-schema-fields">
     <processor class="solr.LogUpdateProcessorFactory"/>
     <processor class="solr.DistributedUpdateProcessorFactory"/>
     <processor class="solr.RunUpdateProcessorFactory"/>
