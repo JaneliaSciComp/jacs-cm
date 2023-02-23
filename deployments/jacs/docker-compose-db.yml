@@ -74,3 +74,11 @@ services:
     restart: unless-stopped
     networks:
       - jacs-net
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 40G
+        reservations:
+          cpus: '2'
+          memory: 10G
