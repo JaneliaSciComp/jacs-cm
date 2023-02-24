@@ -45,6 +45,15 @@ else
     exit 1
 fi
 
+echo ":: Starting file system initialization ::"
+
+#
+# Nginx temporary data
+#
+nginx_db_dir=$db_dir/nginx/tmp
+echo "Initializing Nginx caching directories under: $nginx_db_dir"
+mkdir -p $nginx_db_dir/{cache,client-body,fastcgi,proxy,scgi,uwsgi}
+
 #
 # Mongo Data Directory
 #
@@ -307,3 +316,6 @@ if [[ ! -e "$filebeat_containers_dir" ]]; then
 else
     echo "Verified filebeat containers directory: $filebeat_containers_dir"
 fi
+
+echo ":: Finished file system initialization ::"
+

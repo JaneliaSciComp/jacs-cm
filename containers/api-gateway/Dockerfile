@@ -23,6 +23,9 @@ COPY --from=builder /tmp/lightsheet-pipeline/lightsheetInterface/app/static /app
 COPY ./conf/nginx/ /usr/local/openresty/nginx/conf/
 COPY ./html/ /usr/local/openresty/nginx/html/
 
+WORKDIR /usr/local/openresty/nginx/tmp
+RUN mkdir -p client-body proxy fastcgi uwsgi scgi
+
 # Runtime configuration
 WORKDIR /app
 COPY start.sh /app/
@@ -30,4 +33,3 @@ EXPOSE 443
 EXPOSE 80
 
 CMD ["/bin/sh", "/app/start.sh"]
-
