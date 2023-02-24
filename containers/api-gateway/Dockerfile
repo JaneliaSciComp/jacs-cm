@@ -13,7 +13,7 @@ WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/lightsheet-pipeline.git
 
 # Build the final container
-FROM openresty/openresty:1.13.6.2-1-centos
+FROM openresty/openresty:1.21.4.1-6-centos7
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS API Gateway"
 RUN mkdir /app
@@ -23,6 +23,9 @@ COPY --from=builder /tmp/lightsheet-pipeline/lightsheetInterface/app/static /app
 COPY ./conf/nginx/ /usr/local/openresty/nginx/conf/
 COPY ./html/ /usr/local/openresty/nginx/html/
 
+WORKDIR /usr/local/openresty/nginx/tmp
+RUN mkdir -p client-body proxy fastcgi uwsgi scgi
+
 # Runtime configuration
 WORKDIR /app
 COPY start.sh /app/
@@ -30,4 +33,3 @@ EXPOSE 443
 EXPOSE 80
 
 CMD ["/bin/sh", "/app/start.sh"]
-
