@@ -13,7 +13,7 @@ WORKDIR /tmp
 RUN git clone https://github.com/JaneliaSciComp/lightsheet-pipeline.git
 
 # Build the final container
-FROM openresty/openresty:1.13.6.2-1-centos
+FROM openresty/openresty:1.21.4.1-6-centos7
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="JACS API Gateway"
 RUN mkdir /app
