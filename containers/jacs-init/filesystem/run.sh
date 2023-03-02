@@ -11,6 +11,8 @@ fi
 set -e
 DIR=$(cd "$(dirname "$0")"; pwd)
 
+umask 0002
+
 project=jacs
 config_dir=$CONFIG_DIR
 data_dir=$DATA_DIR
