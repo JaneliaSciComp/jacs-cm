@@ -11,14 +11,6 @@ fi
 set -e
 DIR=$(cd "$(dirname "$0")"; pwd)
 
-umask 0002
-
-project=jacs
-config_dir=$CONFIG_DIR
-data_dir=$DATA_DIR
-db_dir=$DB_DIR
-backups_dir=$BACKUPS_DIR
-
 function init_solr_core() {
     local solr_data_dir=$1
     local core_subdir=$2
@@ -47,6 +39,15 @@ function init_solr_core() {
     echo "Verified SOLR ${core_subdir} config -> $solr_config_dir/${core_subdir}"
 }
 
+umask 0002
+
+project=jacs
+config_dir=${CONFIG_DIR}
+filedata_dir=${DATA_DIR}
+db_dir=${DB_DIR}
+backups_dir=${BACKUPS_DIR}
+
+echo "Check $config_dir"
 if mkdir -p $config_dir; then
     echo "Verified CONFIG_DIR exists: $config_dir"
 else
@@ -54,6 +55,7 @@ else
     exit 1
 fi
 
+echo "Check $db_dir"
 if mkdir -p $db_dir; then
     echo "Verified DB_DIR exists: $db_dir"
 else
@@ -61,14 +63,16 @@ else
     exit 1
 fi
 
-if mkdir -p $data_dir; then
-    echo "Verified DATA_DIR exists: $data_dir"
+echo "Check ${filedata_dir}"
+if mkdir -p ${filedata_dir}; then
+    echo "Verified DATA_DIR exists: $filedata_dir"
 else
-    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your config directory ($data_dir)"
+    echo "Before running this script, ensure your DOCKER_USER has write privilege to create your config directory ($filedata_dir)"
     exit 1
 fi
 
-if mkdir -p $backups_dir; then
+echo "Check ${backups_dir}"
+if mkdir -p ${backups_dir}; then
     echo "Verified BACKUPS_DIR exists: $backups_dir"
 else
     echo "Before running this script, ensure your DOCKER_USER has write privilege to create your backups directory ($backups_dir)"
@@ -185,7 +189,7 @@ else
     echo "Verified Jade config directory: $jade_config_dir"
 fi
 
-jade_data_dir=$data_dir/jacsstorage
+jade_data_dir=${filedata_dir}/jacsstorage
 if [[ ! -e "$jade_data_dir" ]]; then
     echo "Initializing Jade storage: $jade_data_dir"
     mkdir -p $jade_data_dir
