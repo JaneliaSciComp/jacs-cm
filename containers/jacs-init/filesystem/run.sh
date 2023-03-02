@@ -118,6 +118,13 @@ if [[ ! -e "$rabbitmq_data_dir" ]]; then
 else
     echo "Verified RabbitMQ data directory: $rabbitmq_data_dir"
 fi
+rabbitmq_logs_dir=${rabbitmq_data_dir}/logs
+if [[ ! -e "${rabbitmq_logs_dir}" ]]; then
+    echo "Initializing RabbitMQ log directory: ${rabbitmq_logs_dir}"
+    mkdir -p ${rabbitmq_logs_dir}
+else
+    echo "Verified RabbitMQ log directory: ${rabbitmq_logs_dir}"
+fi
 
 #
 # TLS Certificates
