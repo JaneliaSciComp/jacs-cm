@@ -8,4 +8,4 @@ shift
 
 curl -X POST http://${kibanaHost}:5601/api/saved_objects/_import \
      -H 'kbn-xsrf: true' \
-     --form file=@local/data/kibana-${what}.ndjson
+     --form file=@local/kibana-exports/kibana-${what}.ndjson
