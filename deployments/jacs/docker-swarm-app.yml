@@ -31,6 +31,9 @@ services:
       resources:
         limits:
           cpus: '2'
+          memory: 20M
+        reservations:
+          cpus: '1'
           memory: 10M
       restart_policy:
         condition: on-failure
