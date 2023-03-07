@@ -156,6 +156,7 @@ services:
     image: ${NAMESPACE}/jacs-dashboard:${JACS_DASHBOARD_VERSION}
     volumes:
       - ${CONFIG_DIR}/jacs-dashboard/conf.json:/var/www/conf.json:ro
+      - ${CONFIG_DIR}/jacs-dashboard/nginx.conf:/etc/nginx/nginx.conf
     environment:
       - API_GATEWAY_HOST=api-gateway
     expose:

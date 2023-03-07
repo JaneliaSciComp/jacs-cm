@@ -18,4 +18,4 @@ LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Dashboard"
 
 COPY --from=builder /tmp/jacs-dashboard/build /var/www
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx-default-server.conf /etc/nginx/conf.d/default.conf
