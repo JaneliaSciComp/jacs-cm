@@ -13,7 +13,7 @@ RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs
 RUN apk add --no-cache python nodejs npm make g++ # Necessary for node-gyp
 RUN npm install && npm run build
 
-FROM nginx:stable
+FROM nginx:1.23.3
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Dashboard"
 
