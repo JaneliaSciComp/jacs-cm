@@ -357,16 +357,16 @@
         <filter name="synonymGraph" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
         -->
         <!-- Case insensitive stop word removal.
-        -->
         <filter name="stop"
                 ignoreCase="true"
                 words="lang/stopwords_en.txt"
         />
+        -->
         <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter name="lowercase"/>
         <filter name="keywordMarker" protected="protwords.txt"/>
         <filter name="porterStem"/>
-        <filter name="flattenGraph" />
+        <!-- <filter name="flattenGraph" /> -->
       </analyzer>
       <analyzer type="query">
         <tokenizer name="whitespace"/>
