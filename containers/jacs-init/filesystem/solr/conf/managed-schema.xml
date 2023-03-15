@@ -980,17 +980,19 @@
       </analyzer>
     </fieldType>
 
+
+    <!--
+      So far we don't use nested documents so we don't need this:
+      <fieldType name="_nest_path_" class="solr.NestPathField" />
+      <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
+      <field name="_nest_path_" type="_nest_path_" />
+    -->
+
     <fields>
       <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
       <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
       <field name="_version_" type="plong" indexed="false" stored="false"/>
-  
-      <!-- If you don't use child/nested documents, then you should remove the next two fields:  -->
-      <!-- for nested documents (minimal; points to root document) -->
-      <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
-      <!-- for nested documents (relationship tracking) -->
-      <field name="_nest_path_" type="_nest_path_" /><fieldType name="_nest_path_" class="solr.NestPathField" />
-  
+
       <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
   
       <!-- hardcoded search attributes for every document -->
