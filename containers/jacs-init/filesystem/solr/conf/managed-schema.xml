@@ -110,115 +110,6 @@
          If you don't need it, consider removing it and the corresponding copyField directive.
     -->
 
-    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
-    <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
-    <field name="_version_" type="plong" indexed="false" stored="false"/>
-
-    <!-- If you don't use child/nested documents, then you should remove the next two fields:  -->
-    <!-- for nested documents (minimal; points to root document) -->
-    <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
-    <!-- for nested documents (relationship tracking) -->
-    <field name="_nest_path_" type="_nest_path_" /><fieldType name="_nest_path_" class="solr.NestPathField" />
-
-    <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
-
-    <!-- hardcoded search attributes for every document -->
-    <field name="doc_type" type="string" indexed="true" stored="true"/>
-    <field name="class" type="string" indexed="true" stored="true"/>
-    <field name="collection" type="string" indexed="true" stored="true"/>
-
-    <!-- @SearchAttributes from AbstractDomainObject -->
-    <field name="name" type="string" indexed="true" stored="true"/>
-    <field name="creation_date" type="date" indexed="true" stored="true"/>
-    <field name="updated_date" type="date" indexed="true" stored="true"/>
-    <field name="owner" type="text_general" indexed="true" stored="true"/>
-    <field name="subjects" type="string" indexed="true" stored="true" multiValued="true"/>
-    <field name="type_label" type="string" indexed="true" stored="true"/>
-    <field name="search_type" type="string" indexed="true" stored="true"/>
-
-    <!-- Ancestor lists for "Search Here" functionality -->
-    <field name="ancestor_ids" type="plongs" indexed="true" stored="true"/>
-
-    <!-- Multi-valued fulltext search for searching inside objects -->
-    <field name="fulltext_mt" type="string"  indexed="true"  stored="false" multiValued="true"/>
-
-    <!-- User annotations -->
-    <dynamicField name="*_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
-    <field name="all_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
-
-    <!-- Derived fields -->
-
-    <!-- text indexing -->
-    <field name="all_strings" type="string" indexed="true" stored="false" multiValued="true"/>
-
-    <!-- General text search field -->
-    <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
-
-    <!-- catchall text field that indexes tokens both normally and in reverse for efficient
-        leading wildcard queries. -->
-    <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
-
-    <!-- Timestamp indicating when the value was indexed -->
-    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
-
-    <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
-         because it's very expensive to index everything twice. -->
-    <!-- <copyField source="*" dest="_text_"/> -->
-
-    <!-- Dynamic field definitions allow using convention over configuration
-       for fields via the specification of patterns to match field names.
-       EXAMPLE:  name="*_i" will match any field ending in _i (like myid_i, z_i)
-       RESTRICTION: the glob-like pattern in the name attribute must have a "*"
-       only at the start or the end.  -->
-
-    <dynamicField name="*_pi"   type="pint"     indexed="true"  stored="true"/>
-    <dynamicField name="*_pis"  type="pints"    indexed="true"  stored="true"/>
-    <dynamicField name="*_s"   type="string"   indexed="true"  stored="true" />
-    <dynamicField name="*_ss"  type="strings"  indexed="true"  stored="true"/>
-    <dynamicField name="*_pl"   type="plong"    indexed="true"  stored="true"/>
-    <dynamicField name="*_pls"  type="plongs"   indexed="true"  stored="true"/>
-    <dynamicField name="*_b"   type="boolean"  indexed="true"  stored="true"/>
-    <dynamicField name="*_bs"  type="booleans" indexed="true"  stored="true"/>
-    <dynamicField name="*_pf"   type="pfloat"   indexed="true"  stored="true"/>
-    <dynamicField name="*_pfs"  type="pfloats"  indexed="true"  stored="true"/>
-    <dynamicField name="*_pd"   type="pdouble"  indexed="true"  stored="true"/>
-    <dynamicField name="*_pds"  type="pdoubles" indexed="true"  stored="true"/>
-    <dynamicField name="*_pdt"  type="pdate"    indexed="true"  stored="true"/>
-    <dynamicField name="*_pdts" type="pdates"   indexed="true"  stored="true"/>
-    <dynamicField name="*_t"   type="text_general" indexed="true" stored="true" multiValued="false"/>
-    <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
-
-    <dynamicField name="random_*" type="random"/>
-    <dynamicField name="ignored_*" type="ignored"/>
-
-    <!-- Type used for data-driven schema, to add a string copy for each text field -->
-    <dynamicField name="*_str" type="strings" stored="false" docValues="true" indexed="false" useDocValuesAsStored="false"/>
-
-    <dynamicField name="*_p"  type="location" indexed="true" stored="true"/>
-    <dynamicField name="*_srpt"  type="location_rpt" indexed="true" stored="true"/>
-
-    <!-- payloaded dynamic fields -->
-    <dynamicField name="*_dpf" type="delimited_payloads_float" indexed="true"  stored="true"/>
-    <dynamicField name="*_dpi" type="delimited_payloads_int" indexed="true"  stored="true"/>
-    <dynamicField name="*_dps" type="delimited_payloads_string" indexed="true"  stored="true"/>
-
-    <dynamicField name="attr_*" type="text_general" indexed="true" stored="true" multiValued="true"/>
-
-    <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
-    <dynamicField name="*_l"  type="long"   indexed="true"  stored="true"/>
-    <dynamicField name="*_f"  type="float"  indexed="true"  stored="true"/>
-    <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
-    <dynamicField name="*_dt" type="date"    indexed="true"  stored="true"/>
-
-    <dynamicField name="*_ti" type="tint"    indexed="true"  stored="true"/>
-    <dynamicField name="*_tl" type="tlong"   indexed="true"  stored="true"/>
-    <dynamicField name="*_tf" type="tfloat"  indexed="true"  stored="true"/>
-    <dynamicField name="*_td" type="tdouble" indexed="true"  stored="true"/>
-    <dynamicField name="*_tdt" type="tdate"  indexed="true"  stored="true"/>
-
-    <dynamicField name="*_sm"  type="string"  indexed="true"  stored="true" multiValued="true"/>
-    <dynamicField name="*_tm"  type="text_general"  indexed="true"  stored="true" multiValued="true"/>
-
     <!-- Field to use to determine and enforce document uniqueness.
       Unless this field is marked with required="false", it will be a required field
     -->
@@ -1088,6 +979,118 @@
         <filter name="snowballPorter" language="Turkish"/>
       </analyzer>
     </fieldType>
+
+    <fields>
+      <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+      <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
+      <field name="_version_" type="plong" indexed="false" stored="false"/>
+  
+      <!-- If you don't use child/nested documents, then you should remove the next two fields:  -->
+      <!-- for nested documents (minimal; points to root document) -->
+      <field name="_root_" type="string" indexed="true" stored="false" docValues="false" />
+      <!-- for nested documents (relationship tracking) -->
+      <field name="_nest_path_" type="_nest_path_" /><fieldType name="_nest_path_" class="solr.NestPathField" />
+  
+      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
+  
+      <!-- hardcoded search attributes for every document -->
+      <field name="doc_type" type="string" indexed="true" stored="true"/>
+      <field name="class" type="string" indexed="true" stored="true"/>
+      <field name="collection" type="string" indexed="true" stored="true"/>
+  
+      <!-- @SearchAttributes from AbstractDomainObject -->
+      <field name="name" type="string" indexed="true" stored="true"/>
+      <field name="creation_date" type="date" indexed="true" stored="true"/>
+      <field name="updated_date" type="date" indexed="true" stored="true"/>
+      <field name="owner" type="text_general" indexed="true" stored="true"/>
+      <field name="subjects" type="string" indexed="true" stored="true" multiValued="true"/>
+      <field name="type_label" type="string" indexed="true" stored="true"/>
+      <field name="search_type" type="string" indexed="true" stored="true"/>
+  
+      <!-- Ancestor lists for "Search Here" functionality -->
+      <field name="ancestor_ids" type="plongs" indexed="true" stored="true" multiValued="true"/>
+  
+      <!-- Multi-valued fulltext search for searching inside objects -->
+      <field name="fulltext_mt" type="string"  indexed="true"  stored="false" multiValued="true"/>
+  
+      <!-- User annotations -->
+      <dynamicField name="*_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+      <field name="all_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
+  
+      <!-- Derived fields -->
+  
+      <!-- text indexing -->
+      <field name="all_strings" type="string" indexed="true" stored="false" multiValued="true"/>
+  
+      <!-- General text search field -->
+      <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
+  
+      <!-- catchall text field that indexes tokens both normally and in reverse for efficient
+          leading wildcard queries. -->
+      <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
+  
+      <!-- Timestamp indicating when the value was indexed -->
+      <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
+  
+      <!-- This can be enabled, in case the client does not know what fields may be searched. It isn't enabled by default
+           because it's very expensive to index everything twice. -->
+      <!-- <copyField source="*" dest="_text_"/> -->
+  
+      <!-- Dynamic field definitions allow using convention over configuration
+         for fields via the specification of patterns to match field names.
+         EXAMPLE:  name="*_i" will match any field ending in _i (like myid_i, z_i)
+         RESTRICTION: the glob-like pattern in the name attribute must have a "*"
+         only at the start or the end.  -->
+  
+      <dynamicField name="*_pi"   type="pint"     indexed="true"  stored="true"/>
+      <dynamicField name="*_pis"  type="pints"    indexed="true"  stored="true"/>
+      <dynamicField name="*_s"   type="string"   indexed="true"  stored="true" />
+      <dynamicField name="*_ss"  type="strings"  indexed="true"  stored="true"/>
+      <dynamicField name="*_pl"   type="plong"    indexed="true"  stored="true"/>
+      <dynamicField name="*_pls"  type="plongs"   indexed="true"  stored="true"/>
+      <dynamicField name="*_b"   type="boolean"  indexed="true"  stored="true"/>
+      <dynamicField name="*_bs"  type="booleans" indexed="true"  stored="true"/>
+      <dynamicField name="*_pf"   type="pfloat"   indexed="true"  stored="true"/>
+      <dynamicField name="*_pfs"  type="pfloats"  indexed="true"  stored="true"/>
+      <dynamicField name="*_pd"   type="pdouble"  indexed="true"  stored="true"/>
+      <dynamicField name="*_pds"  type="pdoubles" indexed="true"  stored="true"/>
+      <dynamicField name="*_pdt"  type="pdate"    indexed="true"  stored="true"/>
+      <dynamicField name="*_pdts" type="pdates"   indexed="true"  stored="true"/>
+      <dynamicField name="*_t"   type="text_general" indexed="true" stored="true" multiValued="false"/>
+      <dynamicField name="*_txt" type="text_general" indexed="true" stored="true"/>
+  
+      <dynamicField name="random_*" type="random"/>
+      <dynamicField name="ignored_*" type="ignored"/>
+  
+      <!-- Type used for data-driven schema, to add a string copy for each text field -->
+      <dynamicField name="*_str" type="strings" stored="false" docValues="true" indexed="false" useDocValuesAsStored="false"/>
+  
+      <dynamicField name="*_p"  type="location" indexed="true" stored="true"/>
+      <dynamicField name="*_srpt"  type="location_rpt" indexed="true" stored="true"/>
+  
+      <!-- payloaded dynamic fields -->
+      <dynamicField name="*_dpf" type="delimited_payloads_float" indexed="true"  stored="true"/>
+      <dynamicField name="*_dpi" type="delimited_payloads_int" indexed="true"  stored="true"/>
+      <dynamicField name="*_dps" type="delimited_payloads_string" indexed="true"  stored="true"/>
+  
+      <dynamicField name="attr_*" type="text_general" indexed="true" stored="true" multiValued="true"/>
+  
+      <dynamicField name="*_i"  type="int"    indexed="true"  stored="true"/>
+      <dynamicField name="*_l"  type="long"   indexed="true"  stored="true"/>
+      <dynamicField name="*_f"  type="float"  indexed="true"  stored="true"/>
+      <dynamicField name="*_d"  type="double" indexed="true"  stored="true"/>
+      <dynamicField name="*_dt" type="date"    indexed="true"  stored="true"/>
+  
+      <dynamicField name="*_ti" type="tint"    indexed="true"  stored="true"/>
+      <dynamicField name="*_tl" type="tlong"   indexed="true"  stored="true"/>
+      <dynamicField name="*_tf" type="tfloat"  indexed="true"  stored="true"/>
+      <dynamicField name="*_td" type="tdouble" indexed="true"  stored="true"/>
+      <dynamicField name="*_tdt" type="tdate"  indexed="true"  stored="true"/>
+  
+      <dynamicField name="*_sm"  type="string"  indexed="true"  stored="true" multiValued="true"/>
+      <dynamicField name="*_tm"  type="text_general"  indexed="true"  stored="true" multiValued="true"/>
+  
+    </fields>
 
     <!-- capture all annotations in a single field so that we can easily check if a tree is annotated at all -->
     <copyField source="*_annotations" dest="all_annotations"/>
