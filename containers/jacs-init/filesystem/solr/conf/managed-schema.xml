@@ -360,6 +360,7 @@
         <filter name="stop"
                 ignoreCase="true"
                 words="lang/stopwords_en.txt"
+                enablePositionIncrements="true"
         />
         <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter name="lowercase"/>
@@ -532,8 +533,6 @@
       <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
       <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
       <field name="_version_" type="plong" indexed="false" stored="false"/>
-
-      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
   
       <!-- hardcoded search attributes for every document -->
       <field name="doc_type" type="string" indexed="true" stored="true"/>
@@ -545,12 +544,12 @@
       <field name="creation_date" type="date" indexed="true" stored="true"/>
       <field name="updated_date" type="date" indexed="true" stored="true"/>
       <field name="owner" type="text_general" indexed="true" stored="true"/>
-      <field name="subjects" type="string" indexed="true" stored="true" multiValued="true"/>
+      <field name="subjects" type="strings" indexed="true" stored="true"/>
       <field name="type_label" type="string" indexed="true" stored="true"/>
       <field name="search_type" type="string" indexed="true" stored="true"/>
   
       <!-- Ancestor lists for "Search Here" functionality -->
-      <field name="ancestor_ids" type="plongs" indexed="true" stored="true" multiValued="true"/>
+      <field name="ancestor_ids" type="plongs" indexed="true" stored="true"/>
   
       <!-- Multi-valued fulltext search for searching inside objects -->
       <field name="fulltext_mt" type="text_en_splitting"  indexed="true"  stored="false" multiValued="true"/>
@@ -562,7 +561,7 @@
       <!-- Derived fields -->
   
       <!-- text indexing -->
-      <field name="all_strings" type="strings" indexed="true" stored="false" multiValued="true"/>
+      <field name="all_strings" type="strings" indexed="true" stored="false" />
   
       <!-- General text search field -->
       <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
@@ -653,6 +652,13 @@
     <copyField source="*_txt" dest="text"/>
     <copyField source="*_t" dest="text"/>
     <copyField source="fulltext_mt" dest="text"/>
+
+    <copyField source="name" dest="text_rev"/>
+    <copyField source="owner" dest="text_rev"/>
+    <copyField source="search_type" dest="text_rev"/>
+    <copyField source="*_txt" dest="text_rev"/>
+    <copyField source="*_t" dest="text_rev"/>
+    <copyField source="fulltext_mt" dest="text_rev"/>
 
     <!-- Similarity is the scoring routine for each document vs. a query.
        A custom Similarity or SimilarityFactory may be specified here, but
