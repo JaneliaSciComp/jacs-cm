@@ -149,7 +149,7 @@
          before flushing.
          If both ramBufferSizeMB and maxBufferedDocs is set, then
          Lucene will flush based on whichever limit is hit first.  -->
-    <ramBufferSizeMB>512</ramBufferSizeMB>
+    <ramBufferSizeMB>1024</ramBufferSizeMB>
     <!-- <maxBufferedDocs>1000</maxBufferedDocs> -->
 
     <!-- Expert: ramPerThreadHardLimitMB sets the maximum amount of RAM that can be consumed
@@ -850,8 +850,8 @@
       <!-- Configure the standard fragmenter -->
       <!-- This could most likely be commented out in the "default" case -->
       <fragmenter name="gap"
-        default="true"
-        class="solr.highlight.GapFragmenter">
+                  default="true"
+                  class="solr.highlight.GapFragmenter">
         <lst name="defaults">
           <int name="hl.fragsize">100</int>
         </lst>
@@ -861,7 +861,7 @@
            (for sentence extraction)
         -->
       <fragmenter name="regex"
-        class="solr.highlight.RegexFragmenter">
+                  class="solr.highlight.RegexFragmenter">
         <lst name="defaults">
           <!-- slightly smaller fragsizes work better because of slop -->
           <int name="hl.fragsize">70</int>
@@ -896,13 +896,13 @@
 
       <!-- Configure the weighted fragListBuilder -->
       <fragListBuilder name="weighted"
-        default="true"
+                       default="true"
                        class="solr.highlight.WeightedFragListBuilder"/>
 
       <!-- default tag FragmentsBuilder -->
       <fragmentsBuilder name="default"
-        default="true"
-        class="solr.highlight.ScoreOrderFragmentsBuilder">
+                        default="true"
+                        class="solr.highlight.ScoreOrderFragmentsBuilder">
         <!--
         <lst name="defaults">
           <str name="hl.multiValuedSeparatorChar">/</str>
@@ -912,7 +912,7 @@
 
       <!-- multi-colored tag FragmentsBuilder -->
       <fragmentsBuilder name="colored"
-        class="solr.highlight.ScoreOrderFragmentsBuilder">
+                        class="solr.highlight.ScoreOrderFragmentsBuilder">
         <lst name="defaults">
           <str name="hl.tag.pre"><![CDATA[
                <b style="background:yellow">,<b style="background:lawgreen">,

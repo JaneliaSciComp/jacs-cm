@@ -356,12 +356,11 @@
         <!-- in this example, we will only use synonyms at query time
         <filter name="synonymGraph" synonyms="index_synonyms.txt" ignoreCase="true" expand="false"/>
         -->
-        <!-- Case insensitive stop word removal.
+        <!-- Case insensitive stop word removal. -->
         <filter name="stop"
                 ignoreCase="true"
                 words="lang/stopwords_en.txt"
         />
-        -->
         <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter name="lowercase"/>
         <filter name="keywordMarker" protected="protwords.txt"/>
@@ -1013,7 +1012,7 @@
       <field name="ancestor_ids" type="plongs" indexed="true" stored="true" multiValued="true"/>
   
       <!-- Multi-valued fulltext search for searching inside objects -->
-      <field name="fulltext_mt" type="string"  indexed="true"  stored="false" multiValued="true"/>
+      <field name="fulltext_mt" type="text"  indexed="true"  stored="false" multiValued="true"/>
   
       <!-- User annotations -->
       <dynamicField name="*_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
@@ -1022,7 +1021,7 @@
       <!-- Derived fields -->
   
       <!-- text indexing -->
-      <field name="all_strings" type="string" indexed="true" stored="false" multiValued="true"/>
+      <field name="all_strings" type="text" indexed="true" stored="false" multiValued="true"/>
   
       <!-- General text search field -->
       <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
