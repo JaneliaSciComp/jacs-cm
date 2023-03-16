@@ -733,6 +733,11 @@
     <lst name="defaults">
       <str name="echoParams">explicit</str>
       <int name="rows">10</int>
+      <str name="qf">
+        id^10.0 all_strings^0.7 fulltext_mt^0.6 text^0.5 
+     </str>
+     <str name="q.op">AND</str>
+
     </lst>
   </requestHandler>
 
