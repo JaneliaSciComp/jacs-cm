@@ -365,7 +365,7 @@
         <filter name="lowercase"/>
         <filter name="keywordMarker" protected="protwords.txt"/>
         <filter name="porterStem"/>
-        <!-- <filter name="flattenGraph" /> -->
+        <filter name="flattenGraph" />
       </analyzer>
       <analyzer type="query">
         <tokenizer name="whitespace"/>
@@ -1012,7 +1012,7 @@
       <field name="ancestor_ids" type="plongs" indexed="true" stored="true" multiValued="true"/>
   
       <!-- Multi-valued fulltext search for searching inside objects -->
-      <field name="fulltext_mt" type="text"  indexed="true"  stored="false" multiValued="true"/>
+      <field name="fulltext_mt" type="text_en_splitting"  indexed="true"  stored="false" multiValued="true"/>
   
       <!-- User annotations -->
       <dynamicField name="*_annotations" type="text_ws" indexed="true" stored="true" multiValued="true"/>
@@ -1021,7 +1021,7 @@
       <!-- Derived fields -->
   
       <!-- text indexing -->
-      <field name="all_strings" type="text" indexed="true" stored="false" multiValued="true"/>
+      <field name="all_strings" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/>
   
       <!-- General text search field -->
       <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
