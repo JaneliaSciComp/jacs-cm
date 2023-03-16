@@ -1021,7 +1021,7 @@
       <!-- Derived fields -->
   
       <!-- text indexing -->
-      <field name="all_strings" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/>
+      <field name="all_strings" type="strings" indexed="true" stored="false" multiValued="true"/>
   
       <!-- General text search field -->
       <field name="text" type="text_en_splitting" indexed="true" stored="false" multiValued="true"/> <!--termVectors="true"/>-->
