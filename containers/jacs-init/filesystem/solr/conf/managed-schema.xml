@@ -1109,9 +1109,9 @@
     <copyField source="name" dest="text"/>
     <copyField source="owner" dest="text"/>
     <copyField source="search_type" dest="text"/>
-    <copyField source="fulltext_mt" dest="text"/>
     <copyField source="*_txt" dest="text"/>
     <copyField source="*_t" dest="text"/>
+    <copyField source="fulltext_mt" dest="text"/>
 
     <!-- Similarity is the scoring routine for each document vs. a query.
        A custom Similarity or SimilarityFactory may be specified here, but
