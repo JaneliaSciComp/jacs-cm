@@ -360,7 +360,6 @@
         <filter name="stop"
                 ignoreCase="true"
                 words="lang/stopwords_en.txt"
-                enablePositionIncrements="true"
         />
         <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
         <filter name="lowercase"/>
