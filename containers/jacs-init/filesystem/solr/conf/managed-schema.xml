@@ -532,7 +532,8 @@
       <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
       <!-- docValues are enabled by default for long type so we don't need to index the version field  -->
       <field name="_version_" type="plong" indexed="false" stored="false"/>
-  
+      <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
       <!-- hardcoded search attributes for every document -->
       <field name="doc_type" type="string" indexed="true" stored="true"/>
       <field name="class" type="string" indexed="true" stored="true"/>
