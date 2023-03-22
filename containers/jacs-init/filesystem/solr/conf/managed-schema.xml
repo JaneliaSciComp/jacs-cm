@@ -637,6 +637,7 @@
     <copyField source="*_annotations" dest="all_annotations"/>
 
     <!-- all_strings gets searched first, for exact matches -->
+    <copyField source="id" dest="all_strings"/>
     <copyField source="name" dest="all_strings"/>
     <copyField source="owner" dest="all_strings"/>
     <copyField source="search_type" dest="all_strings"/>
@@ -646,19 +647,13 @@
     <!-- fulltext_mt gets searched next, for deep exact matches -->
 
     <!-- text gets searched last, since it does all the fancy splitting and tokenizing -->
+    <copyField source="id" dest="text"/>
     <copyField source="name" dest="text"/>
     <copyField source="owner" dest="text"/>
     <copyField source="search_type" dest="text"/>
     <copyField source="*_txt" dest="text"/>
     <copyField source="*_t" dest="text"/>
     <copyField source="fulltext_mt" dest="text"/>
-
-    <copyField source="name" dest="text_rev"/>
-    <copyField source="owner" dest="text_rev"/>
-    <copyField source="search_type" dest="text_rev"/>
-    <copyField source="*_txt" dest="text_rev"/>
-    <copyField source="*_t" dest="text_rev"/>
-    <copyField source="fulltext_mt" dest="text_rev"/>
 
     <!-- Similarity is the scoring routine for each document vs. a query.
        A custom Similarity or SimilarityFactory may be specified here, but
