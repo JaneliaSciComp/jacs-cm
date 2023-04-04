@@ -88,7 +88,7 @@ fi
 #
 # RabbitMQ
 #
-rabbitmq_data_dir=$db_dir/rabbitmq/$project
+rabbitmq_data_dir=$db_dir/rabbitmq/$project/logs
 if [[ ! -e "$rabbitmq_data_dir" ]]; then
     echo "Initializing RabbitMQ data directory: $rabbitmq_data_dir"
     mkdir -p $rabbitmq_data_dir
