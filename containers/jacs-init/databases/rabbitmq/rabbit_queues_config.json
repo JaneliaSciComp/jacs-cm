@@ -88,7 +88,7 @@
       "name": "ModelRefresh",
       "vhost": "/",
       "type": "fanout",
-      "durable": true,
+      "durable": false,
       "auto_delete": false,
       "internal": false,
       "arguments": {}
@@ -106,7 +106,7 @@
       "name": "DocIndexRefresh",
       "vhost": "/",
       "type": "fanout",
-      "durable": true,
+      "durable": false,
       "auto_delete": false,
       "internal": false,
       "arguments": {}
@@ -131,27 +131,11 @@
       "arguments": {}
     },
     {
-      "source": "ModelRefresh",
-      "vhost": "/",
-      "destination": "ClientRefresh",
-      "destination_type": "queue",
-      "routing_key": "",
-      "arguments": {}
-    },
-    {
       "source": "ModelUpdates",
       "vhost": "/",
       "destination": "UpdatesProcessor",
       "destination_type": "queue",
       "routing_key": "brokerqueue",
-      "arguments": {}
-    },
-    {
-      "source": "DocIndexRefresh",
-      "vhost": "/",
-      "destination": "IndexingRequests",
-      "destination_type": "queue",
-      "routing_key": "",
       "arguments": {}
     },
     {
