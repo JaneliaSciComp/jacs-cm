@@ -52,6 +52,11 @@ setup.kibana:
 
 output.logstash:
   hosts: ["logstash:5044"]
+  index: "logstash"
+  ssl.enabled: false
+
+setup.template.name: "logstash"
+setup.template.pattern: "logstash"
 
 # Write Filebeat own logs only to file to avoid catching them with itself in docker log files
 logging.to_files: true
