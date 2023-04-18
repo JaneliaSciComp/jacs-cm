@@ -289,7 +289,7 @@ services:
     volumes:
      - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
      - filebeat_data:/usr/share/filebeat/data:rw
-     - ${CONFIG_DIR}/filebeat/docker/containers:/var/lib/docker/containers:ro
+     - ${DOCKER_DATA_ROOT}/containers:/var/lib/docker/containers:ro
      - /var/run/docker.sock:/var/run/docker.sock
     user: '0:0'
     deploy:
