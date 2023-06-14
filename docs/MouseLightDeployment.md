@@ -94,10 +94,11 @@ vi .env.config
 At minimum, you must customize the following:
 1. Set `DEPLOYMENT` to **mouselight**.
 2. Ensure that `REDUNDANT_STORAGE` and `NON_REDUNDANT_STORAGE` point to the disk mounts you used during the operating system installation. Alternatively, you can make symbolic links so that the default paths point to your mounted disks.
-3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use.
+3. Set `HOST1` and `HOST2` to the two servers you are deploying on. Use fully-qualified hostnames here -- they should match the SSL certificate you intend to use. Do not use `localhost` because this will prevent the JADE agents to connect to the correct JADE master.
 4. Fill in all the unset passwords with >8 character passwords. You should only use alphanumeric characters, special characters are not currently supported.
-5. Generate 32-byte secret keys for JWT_SECRET_KEY, MONGODB_SECRET_KEY, JACS_API_KEY, and JADE_API_KEY.
-6. If you want to enable automated error reporting from the Workstation client, set `MAIL_SERVER` to an SMTP server and port, e.g. smtp.my.org:25.
+5. Generate 32-byte secret keys for JWT_SECRET_KEY, MONGODB_SECRET_KEY, JACS_API_KEY, and JADE_API_KEY. Make sure you set at least JADE_API_KEY because this needed by jacs-sync service in order to register Mouselight samples.
+6. Set `JADE_AGENT_VOLUMES` to the volumes that you want to be created when you start the system - typically `jade1,jade2`, but these really depend on the volumes that you you setup in your jade service configuration.
+7. If you want to enable automated error reporting from the Workstation client, set `MAIL_SERVER` to an SMTP server and port, e.g. smtp.my.org:25.
 
 
 ## Deploy Services
