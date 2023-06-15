@@ -12,7 +12,6 @@ services:
       - /groups/ditp:/groups/ditp:ro,shared
       - /groups/leet:/groups/leet:ro,shared
       - /groups/lightsheet:/groups/lightsheet:ro,shared
-      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda:/nrs/svoboda:ro,shared
@@ -34,7 +33,6 @@ services:
       - /groups/ditp:/groups/ditp:ro,shared
       - /groups/leet:/groups/leet:ro,shared
       - /groups/lightsheet:/groups/lightsheet:ro,shared
-      - /groups/scicomp/lsms:/groups/scicomp/lsms:ro,shared
       - /groups/mousebrainmicro:/groups/mousebrainmicro:ro,shared
       - /nrs/mouselight:/nrs/mouselight:ro,shared
       - /nrs/svoboda:/nrs/svoboda:ro,shared
