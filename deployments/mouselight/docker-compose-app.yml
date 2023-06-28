@@ -98,6 +98,7 @@ services:
       - jacs_JWT_SecretKey=${JWT_SECRET_KEY}
       - jacs_MongoDB_ServerName=${MONGODB_SERVER}
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
+      - jacs_MongoDB_ReplicaSet=${MONGODB_REPLICA_SET}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
       - jacs_Messaging_Server=rabbitmq
@@ -130,6 +131,7 @@ services:
       - JACS2_ASYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
       - jacs_JWT_SecretKey=${JWT_SECRET_KEY}
       - jacs_MongoDB_ServerName=${MONGODB_SERVER}
+      - jacs_MongoDB_ReplicaSet=${MONGODB_REPLICA_SET}
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
       - jacs_MongoDB_Username=${MONGODB_APP_USERNAME}
       - jacs_MongoDB_Password=${MONGODB_APP_PASSWORD}
