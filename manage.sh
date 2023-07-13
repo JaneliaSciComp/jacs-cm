@@ -98,7 +98,7 @@ CONTAINER_PREFIX="$NAMESPACE/"
 PUBLISHING_PREFIX="$PUBLISHING_NAMESPACE/"
 STACK_NAME=${COMPOSE_PROJECT_NAME}
 NETWORK_NAME="${COMPOSE_PROJECT_NAME}_jacs-net"
-MONGO_URL="${MONGODB_SERVER}/jacs?replicaSet=rsJacs&authSource=admin"
+MONGO_URL="${MONGODB_SERVER}/jacs?authSource=admin&replicaSet=${MONGODB_REPLICA_SET}"
 
 #
 # Collect YAML files to compose together for the given tier and deployment method

@@ -6,6 +6,7 @@ services:
     volumes:
       - /groups/scicompsys/reports:/groups/scicompsys/reports:ro,shared
       - /nrs/jacs/jacsData:/nrs/jacs/jacsData:ro,shared
+      - /groups/jacs/jacsShare:/groups/jacs/jacsShare:ro,shared
       - /groups/jacs/jacsDev:/groups/jacs/jacsDev:shared
       - /groups/flylight:/groups/flylight:ro,shared
       - /groups/projtechres:/groups/projtechres:ro,shared
