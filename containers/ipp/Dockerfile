@@ -1,4 +1,4 @@
-FROM python:3.6.8-alpine3.8
+FROM python:3.8.18-alpine3.18
 
 RUN apk update && apk upgrade && \
     apk add --no-cache pcre pcre-dev && \
@@ -10,7 +10,9 @@ RUN git clone https://github.com/JaneliaSciComp/lightsheet-pipeline
 
 WORKDIR /app/lightsheet-pipeline/lightsheetInterface
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN pip3 install --upgrade pip && \
+    pip3 install --no-cache-dir -r requirements.txt
 
 COPY ipp.ini /app
 COPY start.sh /app
