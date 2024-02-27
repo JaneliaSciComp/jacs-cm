@@ -1,3 +1,4 @@
+Jinja2==2.10
 Flask==1.0.2
 Flask-Admin==1.5.3
 Flask-Login==0.4.1
@@ -8,7 +9,11 @@ flask-mongoengine==0.9.5
 Flask-DebugToolbar==0.10.1
 Flask-DebugToolbar-Mongo==0.1
 Flask-Script==2.0.6
-ipdb==0.11
+ipdb==0.13
 python-dateutil==2.7.3
 pytz==2018.5
+uwsgi
 requests==2.20.0
+werkzeug==0.16.1
+markupsafe==2.0.1
+itsdangerous==2.0.1
