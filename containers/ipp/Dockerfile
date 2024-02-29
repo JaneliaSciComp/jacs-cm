@@ -22,4 +22,3 @@ EXPOSE 8000
 CMD [ "uwsgi", \
     "--ini", "/app/ipp.ini", \
     "--uid", "uwsgi" ]
-
