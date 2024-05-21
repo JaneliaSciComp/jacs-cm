@@ -94,15 +94,6 @@
       "arguments": {}
     },
     {
-      "name": "ModelUpdates",
-      "vhost": "/",
-      "type": "topic",
-      "durable": true,
-      "auto_delete": false,
-      "internal": false,
-      "arguments": {}
-    },
-    {
       "name": "DocIndexRefresh",
       "vhost": "/",
       "type": "fanout",
@@ -128,14 +119,6 @@
       "destination": "MouselightErrors",
       "destination_type": "queue",
       "routing_key": "",
-      "arguments": {}
-    },
-    {
-      "source": "ModelUpdates",
-      "vhost": "/",
-      "destination": "UpdatesProcessor",
-      "destination_type": "queue",
-      "routing_key": "brokerqueue",
       "arguments": {}
     },
     {
