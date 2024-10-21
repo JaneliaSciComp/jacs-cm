@@ -12,7 +12,7 @@ RUN rm Gemfile.lock && bundler exec jekyll build
 
 # Build the Workstation installers and update center
 FROM janeliascicomp/builder:1.1.0 as builder
-ARG APP_TAG=master
+ARG APP_TAG=s3-support
 ARG KEYSTORE_PASSWORD=password
 ARG WORKSTATION_CLIENT_MEM=8192m
 
