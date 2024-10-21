@@ -1,6 +1,6 @@
 # Build the jade agent container
 FROM janeliascicomp/builder:1.1.0 as builder
-ARG APP_TAG=master
+ARG APP_TAG=s3-support
 
 # Checkout and build the code
 RUN mkdir /tmp/jade
@@ -13,7 +13,8 @@ RUN mkdir client \
     && tar xf ./jacsstorage-clients/build/distributions/jacsstorage-clients-`cat version`.tar --strip-components=1 --directory client
 
 # Build the final container
-FROM scientificlinux/sl:7
+FROM oraclelinux:9
+
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JADE - JACS Storage Engine"
 

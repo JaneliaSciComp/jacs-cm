@@ -36,14 +36,13 @@ services:
       - ${DATA_DIR}:/data
     environment:
       - SERVICE_MODE=master
-      - JAVA_OPTS=-Xmx2G -Xms512M -Dlogback.configurationFile=/app/config/logback-master.xml
+      - JAVA_OPTS=-Xmx2G -Xms512M -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Dlogback.configurationFile=/app/config/logback-master.xml
       - JACSSTORAGE_CONFIG=/app/config/config.properties
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
-    expose:
-      - '8080'
     ports:
       - '9880:8080'
+      - '5001:5005'
     restart: unless-stopped
     networks:
       - jacs-net
@@ -59,16 +58,15 @@ services:
     environment:
       - SERVICE_MODE=agent
       - JACSSTORAGE_CONFIG=/app/config/config.properties
-      - JAVA_OPTS=-Xmx3G -Xms1G -Dlogback.configurationFile=/app/config/logback-agent.xml
+      - JAVA_OPTS=-Xmx3G -Xms1G -Xmx2G -Xms512M -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Dlogback.configurationFile=/app/config/logback-agent.xml
       - JADE_MASTER_URL=http://jade-master:8080/jacsstorage/master_api/v1
       - JADE_AGENT_EXPOSED_HOST=${JADE_AGENT_EXPOSED_HOST}
       - JADE_AGENT_EXPOSED_PORT=${JADE_AGENT_EXPOSED_PORT:-9881}
       - jade_JWT_SecretKey=${JWT_SECRET_KEY}
       - jade_StorageService_ApiKey=${JADE_API_KEY}
-    expose:
-      - '8080'
     ports:
       - '${JADE_AGENT_EXPOSED_PORT:-9881}:8080'
+      - '5002:5005'
     restart: unless-stopped
     networks:
       - jacs-net
@@ -82,7 +80,7 @@ services:
       - SERVICE_MODE=sync
       - HOSTNAME=jacs-sync
       - JACS2_CONFIG=/app/config/jacs.properties
-      - JACS2_SYNCWEB_OPTS=-Dlogback.configurationFile=/app/config/logback.xml
+      - JACS2_SYNCWEB_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -Dlogback.configurationFile=/app/config/logback.xml
       - jacs_JWT_SecretKey=${JWT_SECRET_KEY}
       - jacs_MongoDB_ServerName=${MONGODB_SERVER}
       - jacs_MongoDB_AuthDatabase=${MONGODB_INIT_DATABASE}
@@ -95,8 +93,8 @@ services:
       - jacs_StorageService_ApiKey=${JADE_API_KEY}
       - jacs_JACS_ApiKey=${JACS_API_KEY}
       - jacs_Solr_ServerURL=http://solr:8080/solr/
-    expose:
-      - "8080"
+    ports:
+      - '5000:5005'
     restart: unless-stopped
     networks:
       - jacs-net
@@ -109,8 +107,6 @@ services:
       - ${CONFIG_DIR}/jacs-dashboard/nginx.conf:/etc/nginx/nginx.conf
     environment:
       - API_GATEWAY_HOST=api-gateway
-    expose:
-      - "8080"
     restart: unless-stopped
     networks:
       - jacs-net
@@ -122,8 +118,6 @@ services:
       - ${CONFIG_DIR}/ipp:/app/config
     environment:
       - LIGHTSHEET_INTERFACE_SETTINGS=/app/config/env_config.py
-    expose:
-      - "8000"
     restart: unless-stopped
     networks:
       - jacs-net
