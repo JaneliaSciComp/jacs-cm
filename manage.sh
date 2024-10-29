@@ -744,16 +744,17 @@ do
         $SUDO $DOCKER stack rm ${COMPOSE_PROJECT_NAME}_elk && sleep $SLEEP_TIME
 
     elif [[ "$COMMAND" == "compose" ]]; then
-
-        COMPOSE_COMMAND=$1
-        shift 1 # remove compose command
-
+        echo "compose flags: ${@}"
         if [[ $1 == "--dbonly" ]]; then
             echo "Start docker-compose only with DB services"
             shift 1 # remove dbonly flag
+            COMPOSE_COMMAND=$1
+            shift 1 # remove compose command
             # if dbonly 
             getyml $STAGE "dbonly" "" "YML"
         else
+            COMPOSE_COMMAND=$1
+            shift 1 # remove compose command
             getyml $STAGE "" "" "YML"
         fi
 
