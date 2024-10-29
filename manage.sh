@@ -432,13 +432,30 @@ if [[ "$1" == "mongo-restore" ]]; then
         exit 1
     fi
     backupLocation="$1"
+    shift
+    # get the number of workers
+    restore_workers=1
+    if [[ $# -gt 0 ]]; then
+        restore_workers=$1
+        shift
+    fi
+    parallel_restore_collections=4
+    if [[ $# -gt 0 ]]; then
+        parallel_restore_collections=$1
+        shift
+    fi
+
     echo "MongoDB restore from $backupLocation..."
     set -x
     $SUDO $DOCKER run $ENV_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongorestore "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" ${backupLocation}
+    /usr/bin/mongorestore \
+    --numInsertionWorkersPerCollection=${restore_workers} \
+    --numParallelCollections=${parallel_restore_collections} \
+    "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+    ${backupLocation}
     set +x
     exit 0
 fi
