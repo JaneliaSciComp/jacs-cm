@@ -9,7 +9,7 @@
 
 # Builder container
 FROM janeliascicomp/builder:1.1.0 as builder
-ARG APP_TAG=master
+ARG APP_TAG=s3-support
 
 # Checkout and build the code
 WORKDIR /tmp/jacs-compute
