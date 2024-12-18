@@ -14,7 +14,7 @@ RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs
     && ./gradlew --no-daemon brokerJar
 
 # Build the final container
-FROM scientificlinux/sl:7
+FROM oraclelinux:9
 LABEL maintainer="schauderd@janelia.hhmi.org"
 LABEL description="JACS Messaging"
 
