@@ -1,5 +1,7 @@
 # JACS Configuration Management
 
+[![DOI](https://zenodo.org/badge/143904222.svg)](https://doi.org/10.5281/zenodo.14610143)
+
 Part of the [Janelia Workstation](https://github.com/JaneliaSciComp/workstation) software ecosystem.
 
 This repository allows for the creation and deployment of Docker containers which run the JACS infrastructure. It is designed around the DevOps concept of [Infrastructure as Code (IaC)](https://en.wikipedia.org/wiki/Infrastructure_as_Code).
