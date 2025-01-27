@@ -180,7 +180,7 @@ services:
     user: ${DOCKER_USER}
     depends_on:
       - jade-master
-#      - mongo1
+#     - mongo1
     volumes:
       - ${CONFIG_DIR}/jade:/app/config:ro
       - ${DATA_DIR}:/data

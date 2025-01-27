@@ -17,7 +17,7 @@ RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs
     && ./gradlew --no-daemon installDist -x test
 
 # Build the final container
-FROM scientificlinux/sl:7
+FROM oraclelinux:9
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Async Services"
 ENV HOSTNAME=localhost
@@ -32,17 +32,20 @@ RUN yum update -y && \
         https://download.docker.com/linux/centos/docker-ce.repo && \
     yum groupinstall -y 'Development Tools' && \
     yum install -y \
-        docker-ce-stable docker-ce-cli \
+        docker-ce docker-ce-cli containerd.io \
         java-1.8.0-openjdk-headless \
         wget \
         libseccomp-devel \
         squashfs-tools \
-        cryptsetup
+	fuse3-devel \
+	glib2-devel \
+        cryptsetup \
+	crun
 
 WORKDIR /gopath
 
 ENV GOPATH /gopath
-ENV GOVERSION 1.17.4.linux-amd64
+ENV GOVERSION 1.22.8.linux-amd64
 ENV PATH ${PATH}:/usr/local/go/bin:${GOPATH}/bin
 
 RUN wget https://dl.google.com/go/go$GOVERSION.tar.gz && \
@@ -51,7 +54,7 @@ RUN wget https://dl.google.com/go/go$GOVERSION.tar.gz && \
 
 WORKDIR /app
 
-ENV SINGULARITY_VERSION 3.9.1
+ENV SINGULARITY_VERSION 4.2.1
 
 VOLUME /var/lib/docker
 
@@ -59,7 +62,7 @@ RUN mkdir /singularity_install && \
     cd /singularity_install && \
     wget https://github.com/sylabs/singularity/releases/download/v${SINGULARITY_VERSION}/singularity-ce-${SINGULARITY_VERSION}.tar.gz && \
     rpmbuild -tb singularity-ce-${SINGULARITY_VERSION}.tar.gz && \
-    rpm -ivh ~/rpmbuild/RPMS/x86_64/singularity-ce-$SINGULARITY_VERSION-1.el7.x86_64.rpm && \
+    rpm -ivh ~/rpmbuild/RPMS/x86_64/singularity-ce-$SINGULARITY_VERSION-1.el9.x86_64.rpm && \
     rm -rf ~/rpmbuild && \
     rm -rf /singularity_install
 

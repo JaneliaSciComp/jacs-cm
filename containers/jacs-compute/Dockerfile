@@ -17,7 +17,7 @@ RUN git clone --branch $APP_TAG --depth 1 https://github.com/JaneliaSciComp/jacs
     && ./gradlew --no-daemon installDist -x test
 
 # Build the final container
-FROM scientificlinux/sl:7
+FROM oraclelinux:9
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JACS Sync Services"
 ENV HOSTNAME=localhost

@@ -13,7 +13,8 @@ RUN mkdir client \
     && tar xf ./jacsstorage-clients/build/distributions/jacsstorage-clients-`cat version`.tar --strip-components=1 --directory client
 
 # Build the final container
-FROM scientificlinux/sl:7
+FROM oraclelinux:9
+
 LABEL maintainer="goinac@janelia.hhmi.org"
 LABEL description="JADE - JACS Storage Engine"
 
