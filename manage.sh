@@ -745,7 +745,7 @@ do
 
     elif [[ "$COMMAND" == "compose" ]]; then
         echo "compose flags: ${@}"
-        if [[ $1 == "--dbonly" ]]; then
+        if [[ "$1" == "--dbonly" ]]; then
             echo "Start docker-compose only with DB services"
             shift 1 # remove dbonly flag
             COMPOSE_COMMAND=$1
