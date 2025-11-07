@@ -1,6 +1,6 @@
 FROM python:3.9.25-alpine3.22
 ARG GIT_BRANCH=master
-ARG GIT_COMMIT=2eb1d7e
+ARG GIT_COMMIT=d3c7a62
 
 RUN apk update && apk upgrade && \
     apk add --no-cache pcre pcre-dev && \
