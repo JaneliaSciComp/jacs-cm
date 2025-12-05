@@ -420,7 +420,7 @@ if [[ "$1" == "mongo-backup" ]]; then
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
+    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --gzip --out=${backupLocation} && \
     set +x
     exit 0
 fi
@@ -454,6 +454,7 @@ if [[ "$1" == "mongo-restore" ]]; then
     /usr/bin/mongorestore \
     --numInsertionWorkersPerCollection=${restore_workers} \
     --numParallelCollections=${parallel_restore_collections} \
+    --gzip \
     "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
     ${backupLocation}
     set +x
