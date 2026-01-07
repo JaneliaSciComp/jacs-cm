@@ -285,7 +285,7 @@ services:
 
   filebeat:
     image: docker.elastic.co/beats/filebeat:${ELASTIC_VERSION}
-    command: filebeat -e -strict.perms=false
+    command: filebeat -e --strict.perms=false
     volumes:
      - ${CONFIG_DIR}/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
      - filebeat_data:/usr/share/filebeat/data:rw
