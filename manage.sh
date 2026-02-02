@@ -420,8 +420,106 @@ if [[ "$1" == "mongo-backup" ]]; then
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --gzip --out=${backupLocation} && \
+    /usr/bin/mongodump --gzip "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
     set +x
+    exit 0
+fi
+
+if [[ "$1" == "mongo-restore-workspace" ]]; then
+    shift
+    if [[ $# -ne 4 ]]; then
+        echo "$0 mongo-restore-workspace <backup location> <db name> <workspace ObjectId> <neuron bson file>"
+        exit 1
+    fi
+
+    backupLocation="$1"
+    dbName="$2"
+    workspaceId="$3"
+    neuronBson="$4"
+
+    workspaceBson="tmWorkspace.bson"
+
+    $SUDO $DOCKER run $ENV_PARAM \
+       --network ${NETWORK_NAME} \
+       mongo:${MONGO_VERSION} \
+       mongo \
+       "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+       --eval '
+         if (db.getCollectionNames().includes("tmWorkspace_restore_tmp")) {
+            db.tmWorkspace_restore_tmp.drop();
+            print("Dropped tmWorkspace_restore_tmp");
+         } else {
+            print("tmWorkspace_restore_tmp not found");
+         }
+
+         if (db.getCollectionNames().includes("tmNeuron_restore_tmp")) {
+            db.tmNeuron_restore_tmp.drop();
+            print("Dropped tmNeuron_restore_tmp");
+         } else {
+            print("tmNeuron_restore_tmp not found");
+         }
+        '
+
+
+    # 1. Restore workspace BSON into temp collection
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      -v $backupLocation:$backupLocation \
+      mongo:${MONGO_VERSION} \
+      mongorestore \
+        --uri="mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --db "$dbName" \
+        --collection tmWorkspace_restore_tmp \
+        "$backupLocation/$workspaceBson"
+
+ # 2. Restore neuron BSON into temp collection
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      -v $backupLocation:$backupLocation \
+      mongo:${MONGO_VERSION} \
+      mongorestore --gzip \
+        --uri="mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --db "$dbName" \
+        --collection tmNeuron_restore_tmp \
+        "$backupLocation/$neuronBson"
+
+     $SUDO $DOCKER run $ENV_PARAM \
+  --network ${NETWORK_NAME} \
+  mongo:${MONGO_VERSION} \
+  mongo \
+  "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+  --eval "
+    const wsId  = NumberLong('$workspaceId');
+    const wsRef = 'TmWorkspace#$workspaceId';
+
+    const wdoc = db.tmWorkspace.findOne({ _id: wsId });
+    if (!wdoc) {
+      throw 'Workspace not found';
+    }
+
+    const neuronColl = db.getCollection(wdoc.neuronCollection);
+
+    db.tmNeuron_restore_tmp.find({ workspaceRef: wsRef }).forEach(doc => {
+      if (!neuronColl.findOne({ _id: doc._id })) {
+        neuronColl.insertOne(doc);
+      }
+    });
+  "
+
+    # 5. Cleanup
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      mongo:${MONGO_VERSION} \
+      mongo \
+        "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --eval "
+          db = db.getSiblingDB('$dbName');
+          db.tmWorkspace_restore_tmp.drop();
+          db.tmNeuron_restore_tmp.drop();
+        "
+
+    set +x
+    echo "Restore complete for workspace $workspaceId"
     exit 0
 fi
 
@@ -454,7 +552,6 @@ if [[ "$1" == "mongo-restore" ]]; then
     /usr/bin/mongorestore \
     --numInsertionWorkersPerCollection=${restore_workers} \
     --numParallelCollections=${parallel_restore_collections} \
-    --gzip \
     "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
     ${backupLocation}
     set +x
