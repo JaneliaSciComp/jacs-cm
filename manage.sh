@@ -550,6 +550,7 @@ if [[ "$1" == "mongo-restore" ]]; then
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
     /usr/bin/mongorestore \
+    --gzip \
     --numInsertionWorkersPerCollection=${restore_workers} \
     --numParallelCollections=${parallel_restore_collections} \
     "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
