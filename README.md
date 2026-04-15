@@ -1,6 +1,5 @@
 # JACS Configuration Management
 
-[![DOI](https://zenodo.org/badge/143904222.svg)](https://doi.org/10.5281/zenodo.14610143)
 
 Part of the [Janelia Workstation](https://github.com/JaneliaSciComp/workstation) software ecosystem.
 
@@ -34,4 +33,3 @@ Different types of deployments are possible which provide various combinations o
 ## License
 
 Modified [Janelia Open Source License](LICENSE.md), requiring citation for use in publications.
-
