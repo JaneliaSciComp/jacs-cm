@@ -4,7 +4,7 @@ LABEL description="One-shot initialization procedures for JACS deployments"
 
 # Add Mongo
 RUN apt-get update
-RUN apt-get install -y gnupg curl gettext-base
+RUN apt-get install -y gnupg curl gettext-base python3 python-is-python3
 
 # Add MongoDB public GPG key (new keyserver)
 RUN curl -fsSL https://pgp.mongodb.com/server-4.4.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-archive-keyring.gpg
