@@ -18,7 +18,7 @@ services:
     volumes:
       - ${DB_DIR}/rabbitmq/jacs:/var/lib/rabbitmq
     environment:
-      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq loopback_users []
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit loopback_users []
     restart: unless-stopped
     networks:
       - jacs-net
