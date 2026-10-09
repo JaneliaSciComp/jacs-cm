@@ -161,7 +161,7 @@ function getyml() {
 }
 
 #
-# Takes the container identifier, which might be "builder" or "./containers/builder" or "builder/" 
+# Takes the container identifier, which might be "builder" or "./containers/builder" or "builder/"
 # and returns just the container name (e.g. "builder")
 #
 function getcontainer {
@@ -189,6 +189,49 @@ function getversion {
 }
 
 #
+# Detect whether a mongorestore input path should use --gzip.
+# Supports:
+#   - a directory backup containing *.bson.gz / *.metadata.json.gz
+#   - a directory backup containing *.bson / *.metadata.json
+#   - a single file ending in .gz or not
+#
+function get_mongorestore_gzip_flag {
+    local _path="$1"
+    local _result_var="$2"
+
+    if [[ -f "$_path" ]]; then
+        if [[ "$_path" == *.gz ]]; then
+            eval $_result_var="'--gzip'"
+        else
+            eval $_result_var="''"
+        fi
+        return
+    fi
+
+    local has_gz=0
+    local has_plain=0
+
+    if find "$_path" -type f \( -name "*.bson.gz" -o -name "*.metadata.json.gz" \) | grep -q .; then
+        has_gz=1
+    fi
+
+    if find "$_path" -type f \( -name "*.bson" -o -name "*.metadata.json" \) \
+        ! -name "*.bson.gz" ! -name "*.metadata.json.gz" | grep -q .; then
+        has_plain=1
+    fi
+
+    if [[ $has_gz -eq 1 && $has_plain -eq 1 ]]; then
+        echo "Error: mixed compressed and uncompressed Mongo backup files found in $_path"
+        echo "Please make the backup format consistent before restoring."
+        exit 1
+    elif [[ $has_gz -eq 1 ]]; then
+        eval $_result_var="'--gzip'"
+    else
+        eval $_result_var="''"
+    fi
+}
+
+#
 # Builds and tags the given container.
 #
 function build {
@@ -209,7 +252,7 @@ function build {
         BUILD_ARGS="$BUILD_ARGS --build-arg API_GATEWAY_EXPOSED_HOST=$API_GATEWAY_EXPOSED_HOST"
 
         if [[ $NAME == "workstation-site" ]]; then
-        
+
             if [[ ! -z $WORKSTATION_CLIENT_MEM ]]; then
                 BUILD_ARGS="$BUILD_ARGS --build-arg WORKSTATION_CLIENT_MEM=$WORKSTATION_CLIENT_MEM"
             fi
@@ -221,7 +264,7 @@ function build {
                 echo
                 exit 1
             fi
-        
+
         fi
 
         echo "---------------------------------------------------------------------------------"
@@ -420,8 +463,116 @@ if [[ "$1" == "mongo-backup" ]]; then
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
-    /usr/bin/mongodump "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
+    /usr/bin/mongodump --gzip "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}&readPreference=secondary" --out=${backupLocation} && \
     set +x
+    exit 0
+fi
+
+if [[ "$1" == "mongo-restore-workspace" ]]; then
+    shift
+    if [[ $# -ne 4 ]]; then
+        echo "$0 mongo-restore-workspace <backup location> <db name> <workspace ObjectId> <neuron bson file>"
+        exit 1
+    fi
+
+    backupLocation="$1"
+    dbName="$2"
+    workspaceId="$3"
+    neuronBson="$4"
+
+    workspaceBson="tmWorkspace.bson"
+
+    if [[ -f "$backupLocation/tmWorkspace.bson.gz" ]]; then
+        workspaceBson="tmWorkspace.bson.gz"
+    fi
+
+    get_mongorestore_gzip_flag "$backupLocation/$workspaceBson" "WORKSPACE_RESTORE_GZIP_FLAG"
+    get_mongorestore_gzip_flag "$backupLocation/$neuronBson" "NEURON_RESTORE_GZIP_FLAG"
+
+    $SUDO $DOCKER run $ENV_PARAM \
+       --network ${NETWORK_NAME} \
+       mongo:${MONGO_VERSION} \
+       mongo \
+       "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+       --eval '
+         db = db.getSiblingDB("'"$dbName"'");
+         if (db.getCollectionNames().includes("tmWorkspace_restore_tmp")) {
+            db.tmWorkspace_restore_tmp.drop();
+            print("Dropped tmWorkspace_restore_tmp");
+         } else {
+            print("tmWorkspace_restore_tmp not found");
+         }
+
+         if (db.getCollectionNames().includes("tmNeuron_restore_tmp")) {
+            db.tmNeuron_restore_tmp.drop();
+            print("Dropped tmNeuron_restore_tmp");
+         } else {
+            print("tmNeuron_restore_tmp not found");
+         }
+        '
+
+    # 1. Restore workspace BSON into temp collection
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      -v $backupLocation:$backupLocation \
+      mongo:${MONGO_VERSION} \
+      mongorestore \
+        ${WORKSPACE_RESTORE_GZIP_FLAG} \
+        --uri="mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --db "$dbName" \
+        --collection tmWorkspace_restore_tmp \
+        "$backupLocation/$workspaceBson"
+
+    # 2. Restore neuron BSON into temp collection
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      -v $backupLocation:$backupLocation \
+      mongo:${MONGO_VERSION} \
+      mongorestore \
+        ${NEURON_RESTORE_GZIP_FLAG} \
+        --uri="mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --db "$dbName" \
+        --collection tmNeuron_restore_tmp \
+        "$backupLocation/$neuronBson"
+
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      mongo:${MONGO_VERSION} \
+      mongo \
+      "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+      --eval "
+        db = db.getSiblingDB('$dbName');
+        const wsId  = NumberLong('$workspaceId');
+        const wsRef = 'TmWorkspace#$workspaceId';
+
+        const wdoc = db.tmWorkspace.findOne({ _id: wsId });
+        if (!wdoc) {
+          throw 'Workspace not found';
+        }
+
+        const neuronColl = db.getCollection(wdoc.neuronCollection);
+
+        db.tmNeuron_restore_tmp.find({ workspaceRef: wsRef }).forEach(doc => {
+          if (!neuronColl.findOne({ _id: doc._id })) {
+            neuronColl.insertOne(doc);
+          }
+        });
+      "
+
+    # 5. Cleanup
+    $SUDO $DOCKER run $ENV_PARAM \
+      --network ${NETWORK_NAME} \
+      mongo:${MONGO_VERSION} \
+      mongo \
+        "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
+        --eval "
+          db = db.getSiblingDB('$dbName');
+          db.tmWorkspace_restore_tmp.drop();
+          db.tmNeuron_restore_tmp.drop();
+        "
+
+    set +x
+    echo "Restore complete for workspace $workspaceId"
     exit 0
 fi
 
@@ -445,13 +596,22 @@ if [[ "$1" == "mongo-restore" ]]; then
         shift
     fi
 
+    get_mongorestore_gzip_flag "$backupLocation" "MONGORESTORE_GZIP_FLAG"
+
     echo "MongoDB restore from $backupLocation..."
+    if [[ -n "$MONGORESTORE_GZIP_FLAG" ]]; then
+        echo "Detected gzipped backup files"
+    else
+        echo "Detected uncompressed backup files"
+    fi
+
     set -x
     $SUDO $DOCKER run $ENV_PARAM \
     --network ${NETWORK_NAME} \
     -v $backupLocation:$backupLocation \
     mongo:${MONGO_VERSION} \
     /usr/bin/mongorestore \
+    ${MONGORESTORE_GZIP_FLAG} \
     --numInsertionWorkersPerCollection=${restore_workers} \
     --numParallelCollections=${parallel_restore_collections} \
     "mongodb://${MONGODB_APP_USERNAME}:${MONGODB_APP_PASSWORD}@${MONGO_URL}" \
@@ -750,7 +910,7 @@ do
             shift 1 # remove dbonly flag
             COMPOSE_COMMAND=$1
             shift 1 # remove compose command
-            # if dbonly 
+            # if dbonly
             getyml $STAGE "dbonly" "" "YML"
         else
             COMPOSE_COMMAND=$1

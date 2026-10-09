@@ -26,4 +26,4 @@ salted_hash = salt + tmp1
 # 5. convert to base64 encoding:
 pass_hash = base64.b64encode(salted_hash)
 
-print(pass_hash)
+print(pass_hash.decode('utf-8'))
