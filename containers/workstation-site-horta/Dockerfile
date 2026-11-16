@@ -38,7 +38,7 @@ RUN WORKSTATION_BUILD_VERSION=$APP_TAG \
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install -P horta \
     && cd modules/application_horta \
-    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD package -P horta,deployment
+    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD -Djpackage.skip=true package -P horta,deployment
 
 # Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
