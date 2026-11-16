@@ -11,7 +11,7 @@ COPY jekyll_config.yml _config.yml
 RUN rm Gemfile.lock && bundler exec jekyll build
 
 # Build the Workstation installers and update center
-FROM janeliascicomp/builder:1.1.0 as builder
+FROM janeliascicomp/builder:2.0.0 as builder
 ARG APP_TAG=master
 ARG KEYSTORE_PASSWORD=password
 ARG WORKSTATION_CLIENT_MEM=8192m

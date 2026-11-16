@@ -1,4 +1,4 @@
-FROM alpine:3.13.12
+FROM alpine:3.20
 LABEL maintainer="rokickik@janelia.hhmi.org"
 LABEL description="Tiny builder image which includes bash, git and other useful tools"
 RUN apk update && apk upgrade \
@@ -9,12 +9,14 @@ RUN apk update && apk upgrade \
     # envsubst
     && apk add --no-cache gettext libintl \
     # remote access
-    && apk add --no-cache git curl openssh libressl \
-    # Java builds
-    && apk add --no-cache openjdk8 gradle maven \
+    && apk add --no-cache git curl openssh openssl \
+    # Java builds (JDK 21; binutils is needed by jpackage)
+    && apk add --no-cache openjdk21 binutils gradle maven \
     # node.js builds
     && apk add --no-cache npm \
     # python utils
     && apk add --no-cache python3 py3-pip \
-    && pip3 install yq
+    && pip3 install --break-system-packages yq
+ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 COPY ./scripts/ /usr/local/bin
