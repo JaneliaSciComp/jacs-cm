@@ -11,7 +11,7 @@ COPY jekyll_config.yml _config.yml
 RUN rm Gemfile.lock && bundler exec jekyll build
 
 # Build the Workstation installers and update center
-FROM janeliascicomp/builder:1.1.0 as builder
+FROM ghcr.io/janeliascicomp/builder:2.0.0 as builder
 ARG APP_TAG=master
 ARG KEYSTORE_PASSWORD=password
 ARG WORKSTATION_CLIENT_MEM=8192m
@@ -38,7 +38,7 @@ RUN WORKSTATION_BUILD_VERSION=$APP_TAG \
 
 RUN mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD clean install -P janeliaws \
     && cd modules/application \
-    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD package -P janeliaws,deployment
+    && mvn --batch-mode -Djava.awt.headless=true -Dkeystorepass=$KEYSTORE_PASSWORD -Djpackage.skip=true package -P janeliaws,deployment
 
 # Build the final container for serving the website and update center using Nginx
 FROM nginx:stable
